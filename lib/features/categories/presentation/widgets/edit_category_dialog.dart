@@ -1,5 +1,5 @@
-import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -23,7 +23,8 @@ class EditCategoryDialog extends StatefulWidget {
 class _EditCategoryDialogState extends State<EditCategoryDialog> {
   late TextEditingController ruNameController;
   late TextEditingController uzNameController;
-  File? selectedImage;
+  Uint8List? _webImage;
+  XFile? _pickedFile;
 
   @override
   void initState() {
@@ -47,8 +48,10 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
     );
 
     if (image != null) {
+      var f = await image.readAsBytes();
       setState(() {
-        selectedImage = File(image.path);
+        _webImage = f;
+        _pickedFile = image;
       });
     }
   }
@@ -135,7 +138,7 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
                       ),
                       const SizedBox(width: 20.0),
                     ],
-                    if (selectedImage != null) ...[
+                    if (_webImage != null) ...[
                       Column(
                         children: [
                           Text(
@@ -150,10 +153,7 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
                               borderRadius: BorderRadius.circular(8.0),
                             ),
                             clipBehavior: Clip.antiAlias,
-                            child: Image.file(
-                              selectedImage!,
-                              fit: BoxFit.cover,
-                            ),
+                            child: Image.memory(_webImage!, fit: BoxFit.cover),
                           ),
                         ],
                       ),
@@ -169,7 +169,7 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
                       foregroundColor: const Color(0xFF0069F4),
                     ),
                     child: Text(
-                      selectedImage == null
+                      _pickedFile == null
                           ? 'Изменить изображение'
                           : 'Выбрать другое изображение',
                       style: GoogleFonts.inter(
@@ -215,7 +215,7 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
                             id: widget.category.id,
                             nameRu: ruNameController.text.trim(),
                             nameUz: uzNameController.text.trim(),
-                            imagePath: selectedImage?.path ?? '',
+                            image: _pickedFile,
                           ),
                         );
                       },

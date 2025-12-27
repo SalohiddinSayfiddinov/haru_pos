@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:haru_pos/core/errors/errors.dart';
 import 'package:haru_pos/core/errors/failures.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:injectable/injectable.dart';
 import '../../domain/entities/product_entity.dart';
 import '../../domain/repositories/product_repository.dart';
@@ -41,8 +42,10 @@ class ProductRepositoryImpl implements ProductRepository {
     required String nameRu,
     required String nameUz,
     required int price,
-    required String imagePath,
+    required XFile image,
     required int categoryId,
+    required String descriptionRu,
+    required String descriptionUz,
     bool? status,
     String? comment,
   }) async {
@@ -51,10 +54,12 @@ class ProductRepositoryImpl implements ProductRepository {
         nameRu: nameRu,
         nameUz: nameUz,
         price: price,
-        imagePath: imagePath,
+        image: image,
         categoryId: categoryId,
         status: status,
         comment: comment,
+        descriptionRu: descriptionRu,
+        descriptionUz: descriptionUz,
       );
       return Right(product.toEntity());
     } on DioException catch (e) {
@@ -71,8 +76,10 @@ class ProductRepositoryImpl implements ProductRepository {
     required String nameRu,
     required String nameUz,
     required int price,
-    required String imagePath,
+    XFile? image,
     required int categoryId,
+    required String descriptionRu,
+    required String descriptionUz,
     bool? status,
     String? comment,
   }) async {
@@ -82,8 +89,10 @@ class ProductRepositoryImpl implements ProductRepository {
         nameRu: nameRu,
         nameUz: nameUz,
         price: price,
-        imagePath: imagePath,
+        image: image,
         categoryId: categoryId,
+        descriptionRu: descriptionRu,
+        descriptionUz: descriptionUz,
         status: status,
         comment: comment,
       );

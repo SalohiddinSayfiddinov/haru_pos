@@ -9,6 +9,8 @@ class ProductEntity extends Equatable {
   final bool? status;
   final String? comment;
   final String image;
+  final String descriptionRu;
+  final String descriptionUz;
 
   const ProductEntity({
     required this.id,
@@ -16,6 +18,8 @@ class ProductEntity extends Equatable {
     required this.nameUz,
     required this.price,
     required this.categoryId,
+    required this.descriptionRu,
+    required this.descriptionUz,
     this.status,
     this.comment,
     required this.image,

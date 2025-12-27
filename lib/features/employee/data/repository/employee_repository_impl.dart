@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:haru_pos/core/errors/errors.dart';
 import 'package:haru_pos/core/errors/failures.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:injectable/injectable.dart';
 import '../../domain/entities/employee_entity.dart';
 import '../../domain/repositories/employee_repository.dart';
@@ -32,7 +33,7 @@ class EmployeeRepositoryImpl implements EmployeeRepository {
     required String username,
     required String password,
     required String role,
-    required String imagePath,
+    required XFile image,
   }) async {
     try {
       final employee = await remoteDataSource.createEmployee(
@@ -40,7 +41,7 @@ class EmployeeRepositoryImpl implements EmployeeRepository {
         username: username,
         password: password,
         role: role,
-        imagePath: imagePath,
+        image: image,
       );
       return Right(employee.toEntity());
     } on DioException catch (e) {
@@ -58,7 +59,7 @@ class EmployeeRepositoryImpl implements EmployeeRepository {
     required String username,
     required String password,
     required String role,
-    required String imagePath,
+    XFile? image,
   }) async {
     try {
       final employee = await remoteDataSource.updateEmployee(
@@ -67,7 +68,7 @@ class EmployeeRepositoryImpl implements EmployeeRepository {
         username: username,
         password: password,
         role: role,
-        imagePath: imagePath,
+        image: image,
       );
       return Right(employee.toEntity());
     } on DioException catch (e) {

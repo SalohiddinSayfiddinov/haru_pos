@@ -12,33 +12,33 @@ class LoadCategoriesEvent extends CategoryEvent {}
 class CreateCategoryEvent extends CategoryEvent {
   final String nameRu;
   final String nameUz;
-  final String imagePath;
+  final XFile image;
 
   const CreateCategoryEvent({
     required this.nameRu,
     required this.nameUz,
-    required this.imagePath,
+    required this.image,
   });
 
   @override
-  List<Object> get props => [nameRu, nameUz, imagePath];
+  List<Object> get props => [nameRu, nameUz, image];
 }
 
 class UpdateCategoryEvent extends CategoryEvent {
   final int id;
   final String nameRu;
   final String nameUz;
-  final String imagePath;
+  final XFile? image;
 
   const UpdateCategoryEvent({
     required this.id,
     required this.nameRu,
     required this.nameUz,
-    required this.imagePath,
+    required this.image,
   });
 
   @override
-  List<Object> get props => [id, nameRu, nameUz, imagePath];
+  List<Object> get props => [id, nameRu, nameUz, ?image];
 }
 
 class DeleteCategoryEvent extends CategoryEvent {

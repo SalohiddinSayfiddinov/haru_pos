@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -13,6 +12,7 @@ import 'package:haru_pos/features/products/presentation/widgets/add_photo_drop_t
 import 'package:haru_pos/features/products/presentation/widgets/delete_product_dialog.dart';
 import 'package:haru_pos/features/products/presentation/widgets/product_form_fields.dart';
 import 'package:haru_pos/features/products/presentation/widgets/product_form_header.dart';
+import 'package:image_picker/image_picker.dart';
 
 class AddProductScreen extends StatefulWidget {
   final ProductScreenExtra extra;
@@ -37,7 +37,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
   // State variables
   CategoryEntity? _selectedCategory;
   String? _selectedStatus = 'Есть в наличии';
-  File? _selectedImage;
+  XFile? _selectedImage;
   final List<String> _statuses = ['Есть в наличии', 'Нет в наличии'];
 
   bool get isEdit => widget.extra.isEdit;
@@ -66,8 +66,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
     _nameUzController.text = product.nameUz;
     _nameRuController.text = product.nameRu;
     _priceController.text = product.price.toString();
-    _descUzController.text = product.comment ?? '';
-    _descRuController.text = product.comment ?? '';
+    _descUzController.text = product.descriptionRu;
+    _descRuController.text = product.descriptionUz;
     _commentController.text = product.comment ?? '';
     _selectedStatus = product.status == true
         ? 'Есть в наличии'
@@ -99,7 +99,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
     _commentController.dispose();
   }
 
-  void _onImageSelected(File image) {
+  void _onImageSelected(XFile image) {
     setState(() => _selectedImage = image);
   }
 
@@ -154,9 +154,11 @@ class _AddProductScreenState extends State<AddProductScreen> {
         nameRu: _nameRuController.text.trim(),
         nameUz: _nameUzController.text.trim(),
         price: price,
-        imagePath: _selectedImage!.path,
+        image: _selectedImage!,
         categoryId: _selectedCategory!.id,
         status: _selectedStatus?.statusToBool(),
+        descriptionRu: _descRuController.text.trim(),
+        descriptionUz: _descUzController.text.trim(),
         comment: _commentController.text.trim().isNotEmpty
             ? _commentController.text.trim()
             : null,
@@ -171,8 +173,10 @@ class _AddProductScreenState extends State<AddProductScreen> {
         nameRu: _nameRuController.text.trim(),
         nameUz: _nameUzController.text.trim(),
         price: price,
-        imagePath: _selectedImage?.path ?? '',
+        image: _selectedImage,
         categoryId: _selectedCategory!.id,
+        descriptionRu: _descRuController.text.trim(),
+        descriptionUz: _descUzController.text.trim(),
         status: _selectedStatus!.statusToBool(),
         comment: _commentController.text.trim().isNotEmpty
             ? _commentController.text.trim()

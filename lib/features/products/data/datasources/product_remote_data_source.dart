@@ -1,4 +1,6 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:injectable/injectable.dart';
 import '../models/product_model.dart';
 
@@ -13,8 +15,10 @@ abstract class ProductRemoteDataSource {
     required String nameRu,
     required String nameUz,
     required int price,
-    required String imagePath,
+    required XFile image,
     required int categoryId,
+    required String descriptionRu,
+    required String descriptionUz,
     bool? status,
     String? comment,
   });
@@ -23,8 +27,10 @@ abstract class ProductRemoteDataSource {
     required String nameRu,
     required String nameUz,
     required int price,
-    required String imagePath,
+    XFile? image,
     required int categoryId,
+    required String descriptionRu,
+    required String descriptionUz,
     bool? status,
     String? comment,
   });
@@ -67,17 +73,23 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
     required String nameRu,
     required String nameUz,
     required int price,
-    required String imagePath,
+    required XFile image,
     required int categoryId,
+    required String descriptionRu,
+    required String descriptionUz,
     bool? status,
     String? comment,
   }) async {
+    final bytes = await image.readAsBytes();
     final formData = FormData.fromMap({
       'name_ru': nameRu,
       'name_uz': nameUz,
       'price': price,
       'category_id': categoryId,
-      'image': await MultipartFile.fromFile(imagePath),
+      'description_ru': descriptionRu,
+      'description_uz': descriptionUz,
+      'image': MultipartFile.fromBytes(bytes, filename: image.name),
+
       if (status != null) 'status': status,
       if (comment != null && comment.isNotEmpty) 'comment': comment,
     });
@@ -93,18 +105,26 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
     required String nameRu,
     required String nameUz,
     required int price,
-    required String imagePath,
+    XFile? image,
     required int categoryId,
+    required String descriptionRu,
+    required String descriptionUz,
     bool? status,
     String? comment,
   }) async {
+    Uint8List? bytes;
+    if (image != null) {
+      bytes = await image.readAsBytes();
+    }
     final formData = FormData.fromMap({
       'name_ru': nameRu,
       'name_uz': nameUz,
       'price': price.toString(),
       'category_id': categoryId.toString(),
-      if (imagePath.isNotEmpty)
-        'image': await MultipartFile.fromFile(imagePath),
+      'description_ru': descriptionRu,
+      'description_uz': descriptionUz,
+      if (bytes != null)
+        'image': MultipartFile.fromBytes(bytes, filename: image!.name),
       if (status != null) 'status': status,
       if (comment != null) 'comment': comment,
     });

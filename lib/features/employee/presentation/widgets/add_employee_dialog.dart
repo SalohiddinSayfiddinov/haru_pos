@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'package:flutter/foundation.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -28,8 +28,9 @@ class _AddEmployeeDialogState extends State<AddEmployeeDialog> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  File? _selectedImage;
   String? _selectedRole;
+  Uint8List? _webImage;
+  XFile? _pickedFile;
 
   @override
   void initState() {
@@ -62,8 +63,10 @@ class _AddEmployeeDialogState extends State<AddEmployeeDialog> {
     );
 
     if (image != null) {
+      var f = await image.readAsBytes();
       setState(() {
-        _selectedImage = File(image.path);
+        _webImage = f;
+        _pickedFile = image;
       });
     }
   }
@@ -71,7 +74,7 @@ class _AddEmployeeDialogState extends State<AddEmployeeDialog> {
   void _onSave() {
     if (!_formKey.currentState!.validate()) return;
 
-    if (!widget.isEdit && _selectedImage == null) {
+    if (!widget.isEdit && _pickedFile == null) {
       AppSnackbar.error(context, 'Выберите изображение');
       return;
     }
@@ -95,7 +98,7 @@ class _AddEmployeeDialogState extends State<AddEmployeeDialog> {
         username: _usernameController.text.trim(),
         password: _passwordController.text.trim(),
         role: _selectedRole!,
-        imagePath: _selectedImage!.path,
+        image: _pickedFile!,
       ),
     );
   }
@@ -108,7 +111,7 @@ class _AddEmployeeDialogState extends State<AddEmployeeDialog> {
         username: _usernameController.text.trim(),
         password: _passwordController.text.trim(),
         role: _selectedRole!,
-        imagePath: _selectedImage?.path ?? '',
+        image: _pickedFile,
       ),
     );
   }
@@ -154,13 +157,13 @@ class _AddEmployeeDialogState extends State<AddEmployeeDialog> {
                     child: CircleAvatar(
                       radius: 40.0,
                       backgroundColor: const Color(0xFFECECEE),
-                      backgroundImage: _selectedImage != null
-                          ? FileImage(_selectedImage!)
+                      backgroundImage: _webImage != null
+                          ? MemoryImage(_webImage!)
                           : (widget.isEdit && widget.employee!.image.isNotEmpty
                                 ? NetworkImage(widget.employee!.image)
                                 : null),
                       child:
-                          _selectedImage == null &&
+                          _webImage == null &&
                               (!widget.isEdit || widget.employee!.image.isEmpty)
                           ? const Icon(
                               CupertinoIcons.camera_fill,

@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:haru_pos/core/errors/failures.dart';
 import 'package:haru_pos/features/products/domain/entities/product_entity.dart';
 import 'package:haru_pos/features/products/domain/usecases/product_usecases.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:injectable/injectable.dart';
 
 part 'product_event.dart';
@@ -110,10 +111,12 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       nameRu: event.nameRu,
       nameUz: event.nameUz,
       price: event.price,
-      imagePath: event.imagePath,
+      image: event.image,
       categoryId: event.categoryId,
       status: event.status,
       comment: event.comment,
+      descriptionRu: event.descriptionRu,
+      descriptionUz: event.descriptionUz,
     );
 
     result.fold(
@@ -155,10 +158,12 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       nameRu: event.nameRu,
       nameUz: event.nameUz,
       price: event.price,
-      imagePath: event.imagePath,
+      image: event.image,
       categoryId: event.categoryId,
       status: event.status,
       comment: event.comment,
+      descriptionRu: event.descriptionRu,
+      descriptionUz: event.descriptionUz,
     );
 
     result.fold(

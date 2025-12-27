@@ -3,6 +3,7 @@ import 'package:haru_pos/core/errors/errors.dart';
 import 'package:haru_pos/core/errors/failures.dart';
 import 'package:haru_pos/features/categories/domain/entities/categories_entity.dart';
 import 'package:haru_pos/features/categories/domain/repositories/categories_repository.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:injectable/injectable.dart';
 import '../datasources/category_remote_data_source.dart';
 import 'package:dio/dio.dart';
@@ -30,13 +31,13 @@ class CategoryRepositoryImpl implements CategoryRepository {
   Future<Either<Failure, CategoryEntity>> createCategory({
     required String nameRu,
     required String nameUz,
-    required String imagePath,
+    required XFile image,
   }) async {
     try {
       final category = await remoteDataSource.createCategory(
         nameRu: nameRu,
         nameUz: nameUz,
-        imagePath: imagePath,
+        image: image,
       );
       return Right(category.toEntity());
     } on DioException catch (e) {
@@ -52,14 +53,14 @@ class CategoryRepositoryImpl implements CategoryRepository {
     required int id,
     required String nameRu,
     required String nameUz,
-    required String imagePath,
+    XFile? image,
   }) async {
     try {
       final category = await remoteDataSource.updateCategory(
         id: id,
         nameRu: nameRu,
         nameUz: nameUz,
-        imagePath: imagePath,
+        image: image,
       );
       return Right(category.toEntity());
     } on DioException catch (e) {

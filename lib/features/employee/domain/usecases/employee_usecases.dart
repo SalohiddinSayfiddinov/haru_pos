@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:haru_pos/core/errors/failures.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:injectable/injectable.dart';
 import '../entities/employee_entity.dart';
 import '../repositories/employee_repository.dart';
@@ -26,14 +27,14 @@ class CreateEmployeeUseCase {
     required String username,
     required String password,
     required String role,
-    required String imagePath,
+    required XFile image,
   }) async {
     return await repository.createEmployee(
       fullName: fullName,
       username: username,
       password: password,
       role: role,
-      imagePath: imagePath,
+      image: image,
     );
   }
 }
@@ -50,7 +51,7 @@ class UpdateEmployeeUseCase {
     required String username,
     required String password,
     required String role,
-    required String imagePath,
+    XFile? image,
   }) async {
     return await repository.updateEmployee(
       id: id,
@@ -58,7 +59,7 @@ class UpdateEmployeeUseCase {
       username: username,
       password: password,
       role: role,
-      imagePath: imagePath,
+      image: image,
     );
   }
 }

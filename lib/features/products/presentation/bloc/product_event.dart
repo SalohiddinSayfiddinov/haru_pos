@@ -36,8 +36,10 @@ class CreateProductEvent extends ProductEvent {
   final String nameRu;
   final String nameUz;
   final int price;
-  final String imagePath;
+  final XFile image;
   final int categoryId;
+  final String descriptionRu;
+  final String descriptionUz;
   final bool? status;
   final String? comment;
 
@@ -45,14 +47,16 @@ class CreateProductEvent extends ProductEvent {
     required this.nameRu,
     required this.nameUz,
     required this.price,
-    required this.imagePath,
+    required this.image,
     required this.categoryId,
+    required this.descriptionRu,
+    required this.descriptionUz,
     this.status,
     this.comment,
   });
 
   @override
-  List<Object> get props => [nameRu, nameUz, price, imagePath, categoryId];
+  List<Object> get props => [nameRu, nameUz, price, image, categoryId];
 }
 
 class UpdateProductEvent extends ProductEvent {
@@ -60,8 +64,10 @@ class UpdateProductEvent extends ProductEvent {
   final String nameRu;
   final String nameUz;
   final int price;
-  final String imagePath;
+  final XFile? image;
   final int categoryId;
+  final String descriptionRu;
+  final String descriptionUz;
   final bool? status;
   final String? comment;
 
@@ -70,14 +76,16 @@ class UpdateProductEvent extends ProductEvent {
     required this.nameRu,
     required this.nameUz,
     required this.price,
-    required this.imagePath,
+    this.image,
     required this.categoryId,
+    required this.descriptionRu,
+    required this.descriptionUz,
     this.status,
     this.comment,
   });
 
   @override
-  List<Object> get props => [id, nameRu, nameUz, price, imagePath, categoryId];
+  List<Object> get props => [id, nameRu, nameUz, price, ?image, categoryId];
 }
 
 class DeleteProductEvent extends ProductEvent {

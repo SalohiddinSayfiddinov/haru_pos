@@ -27,6 +27,9 @@ abstract class OrderRepository {
     required List<Map<String, dynamic>> orderItems,
   });
   Future<Either<Failure, OrderEntity>> updateOrderItems({
+    required String type,
+    required int userId,
+    int? tableId,
     required String password,
     required int orderId,
     required List<Map<String, dynamic>> orderItems,

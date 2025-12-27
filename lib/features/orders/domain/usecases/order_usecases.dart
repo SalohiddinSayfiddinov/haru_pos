@@ -113,11 +113,17 @@ class UpdateOrderItemsUseCase {
   UpdateOrderItemsUseCase(this.repository);
 
   Future<Either<Failure, OrderEntity>> call({
+    required String type,
+    required int userId,
+    int? tableId,
     required String password,
     required int orderId,
     required List<Map<String, dynamic>> orderItems,
   }) async {
     return await repository.updateOrderItems(
+      type: type,
+      userId: userId,
+      tableId: tableId,
       password: password,
       orderId: orderId,
       orderItems: orderItems,

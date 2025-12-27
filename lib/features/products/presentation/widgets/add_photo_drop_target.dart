@@ -2,14 +2,16 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:dotted_border/dotted_border.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 
 class AddPhotoDropTarget extends StatefulWidget {
-  final Function(File)? onImageSelected;
+  final Function(XFile)? onImageSelected;
   final String? initialImage;
-  final File? selectedImage;
+  final XFile? selectedImage;
+
   final double? width;
   final double? height;
 
@@ -37,7 +39,7 @@ class _AddPhotoDropTargetState extends State<AddPhotoDropTarget> {
     );
 
     if (image != null && widget.onImageSelected != null) {
-      widget.onImageSelected!(File(image.path));
+      widget.onImageSelected!(image);
     }
   }
 
@@ -69,7 +71,7 @@ class _AddPhotoDropTargetState extends State<AddPhotoDropTarget> {
               extension.endsWith('.gif') ||
               extension.endsWith('.webp')) {
             if (widget.onImageSelected != null) {
-              widget.onImageSelected!(File(file.path));
+              widget.onImageSelected!(file);
             }
           } else {
             // Show error for non-image files
@@ -119,7 +121,15 @@ class _AddPhotoDropTargetState extends State<AddPhotoDropTarget> {
             width: double.infinity,
             height: double.infinity,
             child: widget.selectedImage != null
-                ? Image.file(widget.selectedImage!, fit: BoxFit.cover)
+                ? (kIsWeb
+                      ? Image.network(
+                          widget.selectedImage!.path,
+                          fit: BoxFit.cover,
+                        )
+                      : Image.file(
+                          File(widget.selectedImage!.path),
+                          fit: BoxFit.cover,
+                        ))
                 : widget.initialImage != null && widget.initialImage!.isNotEmpty
                 ? CachedNetworkImage(
                     imageUrl: widget.initialImage!,

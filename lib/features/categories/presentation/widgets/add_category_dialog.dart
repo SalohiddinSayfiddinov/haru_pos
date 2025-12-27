@@ -1,4 +1,5 @@
-import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -19,7 +20,8 @@ class AddCategoryDialog extends StatefulWidget {
 class _AddCategoryDialogState extends State<AddCategoryDialog> {
   final TextEditingController ruNameController = TextEditingController();
   final TextEditingController uzNameController = TextEditingController();
-  File? selectedImage;
+  Uint8List? _webImage;
+  XFile? _pickedFile;
 
   @override
   void dispose() {
@@ -36,8 +38,10 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
     );
 
     if (image != null) {
+      var f = await image.readAsBytes();
       setState(() {
-        selectedImage = File(image.path);
+        _webImage = f;
+        _pickedFile = image;
       });
     }
   }
@@ -96,7 +100,7 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
                   textStyle: GoogleFonts.inter(fontSize: 13.0),
                 ),
                 const SizedBox(height: 16.0),
-                if (selectedImage != null) ...[
+                if (_webImage != null) ...[
                   Container(
                     height: 150,
                     width: 150,
@@ -108,7 +112,7 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
                       ),
                     ),
                     clipBehavior: Clip.antiAlias,
-                    child: Image.file(selectedImage!, fit: BoxFit.cover),
+                    child: Image.memory(_webImage!),
                   ),
                   const SizedBox(height: 10.0),
                 ],
@@ -124,11 +128,11 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
                       ),
                     ),
                     icon: Icon(
-                      selectedImage == null ? Icons.upload_file : Icons.edit,
+                      _webImage == null ? Icons.upload_file : Icons.edit,
                       size: 18,
                     ),
                     label: Text(
-                      selectedImage == null
+                      _webImage == null
                           ? 'Загрузить изображение'
                           : 'Изменить изображение',
                       style: GoogleFonts.inter(
@@ -169,7 +173,7 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
                           return;
                         }
 
-                        if (selectedImage == null) {
+                        if (_pickedFile == null) {
                           AppSnackbar.error(context, 'Выберите изображение');
                           return;
                         }
@@ -178,7 +182,7 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
                           CreateCategoryEvent(
                             nameRu: ruNameController.text.trim(),
                             nameUz: uzNameController.text.trim(),
-                            imagePath: selectedImage!.path,
+                            image: _pickedFile!,
                           ),
                         );
                       },

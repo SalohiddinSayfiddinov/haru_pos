@@ -26,7 +26,8 @@ class _EditOrderDrawerState extends State<EditOrderDrawer> {
   }
 
   void _onCheckout() {
-    final orderId = context.read<OrderBloc>().state.orderId;
+    final isUpdatingOrder = context.read<OrderBloc>().state.isUpdatingOrder;
+    if (isUpdatingOrder == null) return;
 
     final orderItems = context.read<OrderBloc>().state.cartItems.map((item) {
       return {'product_id': item.productId, 'amount': item.quantity};
@@ -34,8 +35,10 @@ class _EditOrderDrawerState extends State<EditOrderDrawer> {
 
     context.read<OrderBloc>().add(
       UpdateOrderItemsEvent(
+        type: isUpdatingOrder.order.type,
+        userId: isUpdatingOrder.order.user!.id,
         password: '',
-        orderId: orderId!,
+        orderId: isUpdatingOrder.order.id,
         orderItems: orderItems,
       ),
     );

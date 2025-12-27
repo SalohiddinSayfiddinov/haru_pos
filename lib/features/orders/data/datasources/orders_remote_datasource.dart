@@ -20,6 +20,9 @@ abstract class OrderRemoteDataSource {
     required List<Map<String, dynamic>> orderItems,
   });
   Future<OrderModel> updateOrderItems({
+    required String type,
+    required int userId,
+    int? tableId,
     required String password,
     required int orderId,
     required List<Map<String, dynamic>> orderItems,
@@ -122,11 +125,23 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
 
   @override
   Future<OrderModel> updateOrderItems({
+    required String type,
+    required int userId,
+    int? tableId,
     required String password,
     required int orderId,
     required List<Map<String, dynamic>> orderItems,
   }) async {
-    final data = {'password': password, 'items': orderItems};
+    final data = {
+      'type': type,
+      'user_id': userId,
+      'password': password,
+      'items': orderItems,
+    };
+
+    if (tableId != null) {
+      data['table_id'] = tableId;
+    }
     final response = await dio.put('/orders/$orderId/items', data: data);
     return OrderModel.fromJson(response.data);
   }

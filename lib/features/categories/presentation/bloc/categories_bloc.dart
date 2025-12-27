@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:haru_pos/core/errors/failures.dart';
 import 'package:haru_pos/features/categories/domain/entities/categories_entity.dart';
 import 'package:haru_pos/features/categories/domain/usecases/category_usecases.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:injectable/injectable.dart';
 
 part 'categories_event.dart';
@@ -50,7 +51,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
     final result = await createCategoryUseCase(
       nameRu: event.nameRu,
       nameUz: event.nameUz,
-      imagePath: event.imagePath,
+      image: event.image,
     );
 
     result.fold(
@@ -70,7 +71,7 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       id: event.id,
       nameRu: event.nameRu,
       nameUz: event.nameUz,
-      imagePath: event.imagePath,
+      image: event.image,
     );
 
     result.fold(

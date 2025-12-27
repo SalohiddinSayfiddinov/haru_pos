@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:haru_pos/core/errors/failures.dart';
+import 'package:image_picker/image_picker.dart';
 import '../entities/product_entity.dart';
 
 abstract class ProductRepository {
@@ -13,8 +14,10 @@ abstract class ProductRepository {
     required String nameRu,
     required String nameUz,
     required int price,
-    required String imagePath,
+    required XFile image,
     required int categoryId,
+    required String descriptionRu,
+    required String descriptionUz,
     bool? status,
     String? comment,
   });
@@ -23,8 +26,10 @@ abstract class ProductRepository {
     required String nameRu,
     required String nameUz,
     required int price,
-    required String imagePath,
+    XFile? image,
     required int categoryId,
+    required String descriptionRu,
+    required String descriptionUz,
     bool? status,
     String? comment,
   });

@@ -9,6 +9,8 @@ class ProductModel extends ProductEntity {
     required super.nameUz,
     required super.price,
     required super.categoryId,
+    required super.descriptionRu,
+    required super.descriptionUz,
     super.status,
     super.comment,
     required super.image,
@@ -23,6 +25,8 @@ class ProductModel extends ProductEntity {
       categoryId: json['category_id'] ?? 0,
       status: json['status'],
       comment: json['comment'],
+      descriptionRu: json['description_ru'] ?? '',
+      descriptionUz: json['description_uz'] ?? '',
       image: json['image'] != null ? "${Api.baseUrl}${json['image']}" : '',
     );
   }
@@ -61,6 +65,8 @@ class ProductModel extends ProductEntity {
       status: status,
       comment: comment,
       image: image,
+      descriptionRu: descriptionRu,
+      descriptionUz: descriptionUz,
     );
   }
 }

@@ -1,4 +1,7 @@
+import 'package:flutter/foundation.dart';
+
 import 'package:dio/dio.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:injectable/injectable.dart';
 import '../models/employee_model.dart';
 
@@ -9,7 +12,7 @@ abstract class EmployeeRemoteDataSource {
     required String username,
     required String password,
     required String role,
-    required String imagePath,
+    required XFile image,
   });
   Future<EmployeeModel> updateEmployee({
     required int id,
@@ -17,7 +20,7 @@ abstract class EmployeeRemoteDataSource {
     required String username,
     required String password,
     required String role,
-    required String imagePath,
+    XFile? image,
   });
   Future<void> deleteEmployee(int id);
 }
@@ -47,14 +50,15 @@ class EmployeeRemoteDataSourceImpl implements EmployeeRemoteDataSource {
     required String username,
     required String password,
     required String role,
-    required String imagePath,
+    required XFile image,
   }) async {
+    final bytes = await image.readAsBytes();
     final formData = FormData.fromMap({
       'full_name': fullName,
       'username': username,
       'password': password,
       'role': role,
-      'image': await MultipartFile.fromFile(imagePath),
+      'image': MultipartFile.fromBytes(bytes, filename: image.name),
     });
 
     final response = await dio.post('/staff/create', data: formData);
@@ -69,15 +73,19 @@ class EmployeeRemoteDataSourceImpl implements EmployeeRemoteDataSource {
     required String username,
     required String password,
     required String role,
-    required String imagePath,
+    XFile? image,
   }) async {
+    Uint8List? bytes;
+    if (image != null) {
+      bytes = await image.readAsBytes();
+    }
     final formData = FormData.fromMap({
       'full_name': fullName,
       'username': username,
       if (password.isNotEmpty) 'password': password,
       'role': role,
-      if (imagePath.isNotEmpty)
-        'image': await MultipartFile.fromFile(imagePath),
+      if (bytes != null)
+        'image': MultipartFile.fromBytes(bytes, filename: image!.name),
     });
 
     final response = await dio.put('/staff/$id', data: formData);

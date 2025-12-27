@@ -129,12 +129,18 @@ class OrderRepositoryImpl implements OrderRepository {
 
   @override
   Future<Either<Failure, OrderEntity>> updateOrderItems({
+    required String type,
+    required int userId,
+    int? tableId,
     required String password,
     required int orderId,
     required List<Map<String, dynamic>> orderItems,
   }) async {
     try {
       final order = await remoteDataSource.updateOrderItems(
+        type: type,
+        userId: userId,
+        tableId: tableId,
         password: password,
         orderId: orderId,
         orderItems: orderItems,

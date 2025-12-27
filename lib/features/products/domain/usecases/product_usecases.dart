@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:haru_pos/core/errors/failures.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:injectable/injectable.dart';
 import '../entities/product_entity.dart';
 import '../repositories/product_repository.dart';
@@ -35,8 +36,10 @@ class CreateProductUseCase {
     required String nameRu,
     required String nameUz,
     required int price,
-    required String imagePath,
+    required XFile image,
     required int categoryId,
+    required String descriptionRu,
+    required String descriptionUz,
     bool? status,
     String? comment,
   }) async {
@@ -44,8 +47,10 @@ class CreateProductUseCase {
       nameRu: nameRu,
       nameUz: nameUz,
       price: price,
-      imagePath: imagePath,
+      image: image,
       categoryId: categoryId,
+      descriptionRu: descriptionRu,
+      descriptionUz: descriptionUz,
       status: status,
       comment: comment,
     );
@@ -63,8 +68,10 @@ class UpdateProductUseCase {
     required String nameRu,
     required String nameUz,
     required int price,
-    required String imagePath,
+    XFile? image,
     required int categoryId,
+    required String descriptionRu,
+    required String descriptionUz,
     bool? status,
     String? comment,
   }) async {
@@ -73,8 +80,10 @@ class UpdateProductUseCase {
       nameRu: nameRu,
       nameUz: nameUz,
       price: price,
-      imagePath: imagePath,
+      image: image,
       categoryId: categoryId,
+      descriptionRu: descriptionRu,
+      descriptionUz: descriptionUz,
       status: status,
       comment: comment,
     );

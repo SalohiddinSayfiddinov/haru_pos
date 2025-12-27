@@ -124,11 +124,17 @@ class AddItemsToOrderEvent extends OrderEvent {
 }
 
 class UpdateOrderItemsEvent extends OrderEvent {
+  final String type;
+  final int userId;
+  final int? tableNumber;
   final String password;
   final int orderId;
   final List<Map<String, dynamic>> orderItems;
 
   const UpdateOrderItemsEvent({
+    required this.type,
+    required this.userId,
+    this.tableNumber,
     required this.password,
     required this.orderId,
     required this.orderItems,

@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:haru_pos/core/errors/failures.dart';
 import 'package:haru_pos/features/categories/domain/entities/categories_entity.dart';
 import 'package:haru_pos/features/categories/domain/repositories/categories_repository.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:injectable/injectable.dart';
 
 @injectable
@@ -24,12 +25,12 @@ class CreateCategoryUseCase {
   Future<Either<Failure, CategoryEntity>> call({
     required String nameRu,
     required String nameUz,
-    required String imagePath,
+    required XFile image,
   }) async {
     return await repository.createCategory(
       nameRu: nameRu,
       nameUz: nameUz,
-      imagePath: imagePath,
+      image: image,
     );
   }
 }
@@ -44,13 +45,13 @@ class UpdateCategoryUseCase {
     required int id,
     required String nameRu,
     required String nameUz,
-    required String imagePath,
+    XFile? image,
   }) async {
     return await repository.updateCategory(
       id: id,
       nameRu: nameRu,
       nameUz: nameUz,
-      imagePath: imagePath,
+      image: image,
     );
   }
 }

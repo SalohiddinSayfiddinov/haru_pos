@@ -336,8 +336,29 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     Emitter<OrderState> emit,
   ) async {
     emit(OrderLoading(cartItems: state.cartItems, orders: state.orders));
+    int? tableId;
+    if (event.tableNumber != null) {
+      final tableResult = await getTableByNumberUseCase(
+        tableNumber: event.tableNumber!,
+      );
 
+      tableId = tableResult.fold((failure) => null, (table) => table.id);
+
+      if (tableId == null) {
+        emit(
+          OrderError(
+            message: 'Table not found',
+            cartItems: state.cartItems,
+            orders: state.orders,
+          ),
+        );
+        return;
+      }
+    }
     final result = await updateOrderItemsUseCase(
+      type: event.type,
+      userId: event.userId,
+      tableId: tableId,
       password: event.password,
       orderId: event.orderId,
       orderItems: event.orderItems,
@@ -496,7 +517,10 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
 
     emit(
       CartUpdated(
-        orderId: event.order.id,
+        isUpdatingOrder: UpdateOrderModel(
+          order: event.order,
+          cartItems: cartItems,
+        ),
         cartItems: cartItems,
         orders: state.orders,
         hasReachedMax: state.hasReachedMax,

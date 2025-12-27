@@ -8,6 +8,7 @@ import 'package:haru_pos/core/widgets/app_buttons.dart';
 import 'package:haru_pos/features/orders/domain/entities/orders_entity.dart';
 import 'package:haru_pos/features/orders/presentation/bloc/orders_bloc.dart';
 import 'package:haru_pos/features/orders/presentation/widgets/orders_grid.dart';
+import 'package:haru_pos/features/products/presentation/widgets/edit_order_drawer.dart';
 import 'package:haru_pos/features/products/presentation/widgets/order_drawer.dart';
 import 'package:intl/intl.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
@@ -159,8 +160,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
               }
             },
             builder: (context, state) {
-              if (state.cartItems.isNotEmpty) {
-                return const Positioned(right: 0, child: OrderDrawer());
+              if (state.isUpdatingOrder != null) {
+                return const Positioned(right: 0, child: EditOrderDrawer());
               }
               return SizedBox();
             },

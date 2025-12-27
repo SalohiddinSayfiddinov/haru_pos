@@ -28,12 +28,13 @@ abstract class DioModule {
           if (token != null) {
             options.headers['Authorization'] = 'Bearer $token';
           }
-          print('➡️  ${options.method} ${options.uri}');
-          print('➡️  ${options.data}');
+          // print('➡️  ${options.method} ${options.uri}');
+          // print('➡️  ${options.data}');
 
           return handler.next(options);
         },
         onError: (error, handler) async {
+          // print(error);
           if (error.response?.statusCode == 401) {
             getIt<TokenService>().clearTokens();
             AppRouter.router.go(AppPages.auth);

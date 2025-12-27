@@ -1,5 +1,8 @@
+import 'package:flutter/foundation.dart';
+
 import 'package:dio/dio.dart';
 import 'package:haru_pos/features/categories/data/models/categories_model.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:injectable/injectable.dart';
 
 abstract class CategoryRemoteDataSource {
@@ -7,13 +10,13 @@ abstract class CategoryRemoteDataSource {
   Future<CategoryModel> createCategory({
     required String nameRu,
     required String nameUz,
-    required String imagePath,
+    required XFile image,
   });
   Future<CategoryModel> updateCategory({
     required int id,
     required String nameRu,
     required String nameUz,
-    required String imagePath,
+    XFile? image,
   });
   Future<void> deleteCategory(int id);
 }
@@ -41,12 +44,13 @@ class CategoryRemoteDataSourceImpl implements CategoryRemoteDataSource {
   Future<CategoryModel> createCategory({
     required String nameRu,
     required String nameUz,
-    required String imagePath,
+    required XFile image,
   }) async {
+    final bytes = await image.readAsBytes();
     final formData = FormData.fromMap({
       'name_ru': nameRu,
       'name_uz': nameUz,
-      'image': await MultipartFile.fromFile(imagePath),
+      'image': MultipartFile.fromBytes(bytes, filename: image.name),
     });
 
     final response = await dio.post('/categories/create', data: formData);
@@ -59,13 +63,17 @@ class CategoryRemoteDataSourceImpl implements CategoryRemoteDataSource {
     required int id,
     required String nameRu,
     required String nameUz,
-    required String imagePath,
+    XFile? image,
   }) async {
+    Uint8List? bytes;
+    if (image != null) {
+      bytes = await image.readAsBytes();
+    }
     final formData = FormData.fromMap({
       'name_ru': nameRu,
       'name_uz': nameUz,
-      if (imagePath.isNotEmpty)
-        'image': await MultipartFile.fromFile(imagePath),
+      if (bytes != null)
+        'image': MultipartFile.fromBytes(bytes, filename: image!.name),
     });
 
     final response = await dio.put('/categories/$id', data: formData);

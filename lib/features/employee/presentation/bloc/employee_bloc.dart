@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:haru_pos/core/errors/failures.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:injectable/injectable.dart';
 
 import '../../domain/entities/employee_entity.dart';
@@ -53,7 +54,7 @@ class EmployeeBloc extends Bloc<EmployeeEvent, EmployeeState> {
       username: event.username,
       password: event.password,
       role: event.role,
-      imagePath: event.imagePath,
+      image: event.image,
     );
 
     result.fold(
@@ -76,7 +77,7 @@ class EmployeeBloc extends Bloc<EmployeeEvent, EmployeeState> {
       username: event.username,
       password: event.password,
       role: event.role,
-      imagePath: event.imagePath,
+      image: event.image,
     );
 
     result.fold(
