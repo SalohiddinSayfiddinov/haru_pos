@@ -19,11 +19,6 @@ abstract class DioModule {
         receiveTimeout: Duration(seconds: 10),
       ),
     );
-    (dio.httpClientAdapter as IOHttpClientAdapter).onHttpClientCreate =
-        (client) {
-          client.badCertificateCallback = (cert, host, port) => true;
-          return client;
-        };
 
     dio.interceptors.add(
       InterceptorsWrapper(

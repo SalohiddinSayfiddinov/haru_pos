@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:haru_pos/core/di/injection.dart';
 import 'package:haru_pos/core/routes/app_pages.dart';
+import 'package:haru_pos/core/utils/token_service.dart';
 import 'package:haru_pos/core/widgets/home_scaffold.dart';
 import 'package:haru_pos/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:haru_pos/features/auth/presentation/screens/auth_screen.dart';
@@ -24,6 +25,22 @@ import 'package:haru_pos/features/products/presentation/screens/products_screen.
 class AppRouter {
   static final GoRouter router = GoRouter(
     initialLocation: AppPages.auth,
+    redirect: (context, state) async {
+      final tokenService = getIt<TokenService>();
+      final isLoggedIn = await tokenService.hasTokens();
+
+      final isGoingToAuth = state.matchedLocation == AppPages.auth;
+
+      if (!isLoggedIn && !isGoingToAuth) {
+        return AppPages.auth;
+      }
+
+      if (isLoggedIn && isGoingToAuth) {
+        return AppPages.dashboard;
+      }
+
+      return null;
+    },
     routes: [
       GoRoute(
         path: AppPages.auth,
