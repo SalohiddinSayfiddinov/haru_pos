@@ -119,7 +119,7 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
     required int orderId,
     required List<Map<String, dynamic>> orderItems,
   }) async {
-    final response = await dio.post('/orders/$orderId/items', data: orderItems);
+    final response = await dio.post('/orders/waiter/$orderId/items', data: orderItems);
     return OrderModel.fromJson(response.data);
   }
 
@@ -142,7 +142,7 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
     if (tableId != null) {
       data['table_id'] = tableId;
     }
-    final response = await dio.put('/orders/$orderId/items', data: data);
+    final response = await dio.put('/orders/admin/$orderId/items', data: data);
     return OrderModel.fromJson(response.data);
   }
 }

@@ -51,8 +51,11 @@ class AppRouter {
       ),
 
       ShellRoute(
-        builder: (context, state, child) => BlocProvider(
-          create: (context) => getIt<AuthBloc>(),
+        builder: (context, state, child) => MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (context) => getIt<AuthBloc>()),
+            BlocProvider(create: (context) => getIt<OrderBloc>()),
+          ],
           child: HomeScaffold(
             body: child,
             padding: state.fullPath == AppPages.products
@@ -82,7 +85,6 @@ class AppRouter {
                 providers: [
                   BlocProvider(create: (context) => getIt<CategoryBloc>()),
                   BlocProvider(create: (context) => getIt<ProductBloc>()),
-                  BlocProvider(create: (context) => getIt<OrderBloc>()),
                   BlocProvider(create: (context) => getIt<TableBloc>()),
                 ],
                 child: ProductsScreen(),
@@ -118,12 +120,7 @@ class AppRouter {
           GoRoute(
             path: AppPages.orders,
             pageBuilder: (context, state) {
-              return NoTransitionPage(
-                child: BlocProvider(
-                  create: (context) => getIt<OrderBloc>(),
-                  child: OrdersScreen(),
-                ),
-              );
+              return NoTransitionPage(child: OrdersScreen());
             },
           ),
           GoRoute(

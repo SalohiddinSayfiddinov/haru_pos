@@ -7,6 +7,7 @@ import 'package:haru_pos/core/utils/extensions.dart';
 import 'package:haru_pos/core/widgets/app_snack_bar.dart';
 import 'package:haru_pos/core/widgets/app_text_field.dart';
 import 'package:haru_pos/features/orders/presentation/bloc/orders_bloc.dart';
+import 'package:haru_pos/features/products/presentation/widgets/password_confirm_dialog.dart';
 
 class EditOrderDrawer extends StatefulWidget {
   const EditOrderDrawer({super.key});
@@ -20,25 +21,45 @@ class _EditOrderDrawerState extends State<EditOrderDrawer> {
   int _selectedOrderType = 0;
 
   @override
+  void initState() {
+    super.initState();
+    final state = context.read<OrderBloc>().state;
+    if (state.updatingOrder != null) {
+      _selectedOrderType = state.updatingOrder!.order.type == 'dine_in' ? 1 : 0;
+      _tableController.text =
+          state.updatingOrder!.order.table?.tableNumber.toString() ?? '';
+    }
+  }
+
+  @override
   void dispose() {
     _tableController.dispose();
     super.dispose();
   }
 
-  void _onCheckout() {
-    final isUpdatingOrder = context.read<OrderBloc>().state.isUpdatingOrder;
-    if (isUpdatingOrder == null) return;
+  void _onCheckout() async {
+    final String? password = await showDialog<String>(
+      context: context,
+      builder: (ctx) => const PasswordConfirmDialog(),
+    );
+
+    if (password == null || !mounted) return;
 
     final orderItems = context.read<OrderBloc>().state.cartItems.map((item) {
       return {'product_id': item.productId, 'amount': item.quantity};
     }).toList();
 
+    final updatingOrder = context.read<OrderBloc>().state.updatingOrder!;
+
     context.read<OrderBloc>().add(
       UpdateOrderItemsEvent(
-        type: isUpdatingOrder.order.type,
-        userId: isUpdatingOrder.order.user!.id,
-        password: '',
-        orderId: isUpdatingOrder.order.id,
+        type: getOrderType,
+        userId: updatingOrder.order.user!.id,
+        tableNumber: _selectedOrderType == 1
+            ? int.tryParse(_tableController.text)
+            : null,
+        password: password,
+        orderId: updatingOrder.order.id,
         orderItems: orderItems,
       ),
     );
@@ -363,6 +384,7 @@ class _EditOrderDrawerState extends State<EditOrderDrawer> {
               AppSnackbar.error(context, state.message);
             } else if (state is OrderOperationSuccess) {
               AppSnackbar.success(context, state.message);
+              context.read<OrderBloc>().add(const LoadOrdersEvent());
             }
           },
           builder: (context, state) {

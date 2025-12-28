@@ -335,7 +335,21 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     UpdateOrderItemsEvent event,
     Emitter<OrderState> emit,
   ) async {
-    emit(OrderLoading(cartItems: state.cartItems, orders: state.orders));
+    // Capture the original items before update for diffing
+    final oldOrderItems = <int, int>{};
+    if (state.updatingOrder != null) {
+      for (final item in state.updatingOrder!.order.orderItems) {
+        oldOrderItems[item.product.id] = item.amount;
+      }
+    }
+
+    emit(
+      OrderLoading(
+        updatingOrder: state.updatingOrder,
+        cartItems: state.cartItems,
+        orders: state.orders,
+      ),
+    );
     int? tableId;
     if (event.tableNumber != null) {
       final tableResult = await getTableByNumberUseCase(
@@ -364,15 +378,55 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
       orderItems: event.orderItems,
     );
 
-    result.fold(
-      (failure) => emit(
-        OrderError(
-          message: _mapFailureToMessage(failure),
-          cartItems: state.cartItems,
-          orders: state.orders,
-        ),
-      ),
-      (order) {
+    await result.fold(
+      (failure) async {
+        emit(
+          OrderError(
+            message: _mapFailureToMessage(failure),
+            cartItems: state.cartItems,
+            orders: state.orders,
+          ),
+        );
+      },
+      (order) async {
+        // Calculate newly added items or increased quantities
+        final itemsToPrint = <OrderItemEntity>[];
+        for (final newItem in order.orderItems) {
+          final oldQty = oldOrderItems[newItem.product.id] ?? 0;
+          final diff = newItem.amount - oldQty;
+          if (diff > 0) {
+            // Create a copy of the item with the detailed amount
+            itemsToPrint.add(
+              OrderItemEntity(
+                id: newItem.id,
+                amount: diff,
+                product: newItem.product,
+              ),
+            );
+          }
+        }
+
+        if (itemsToPrint.isNotEmpty) {
+          try {
+            // Create a temporary order entity for printing
+            final printOrder = OrderEntity(
+              id: order.id,
+              type: order.type,
+              fullPrice: order.fullPrice,
+              table: order.table,
+              user: order.user,
+              active: order.active,
+              orderItems: itemsToPrint,
+              createdAt: order.createdAt,
+            );
+
+            await kitchenPrinterService.printKitchenTicket(printOrder);
+          } catch (e) {
+            print("Error printing updated items: $e");
+          }
+        }
+
+        print("Order updated successfully");
         final updatedOrders = state.orders.map((o) {
           return o.id == order.id ? order : o;
         }).toList();
@@ -380,7 +434,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
         emit(
           OrderOperationSuccess(
             message: 'Order updated successfully',
-            cartItems: state.cartItems,
+            cartItems: const [],
             orders: updatedOrders,
           ),
         );
@@ -460,7 +514,13 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
       updatedCart[existingItemIndex] = updatedCart[existingItemIndex].copyWith(
         quantity: updatedCart[existingItemIndex].quantity + 1,
       );
-      emit(CartUpdated(cartItems: updatedCart, orders: state.orders));
+      emit(
+        CartUpdated(
+          updatingOrder: state.updatingOrder,
+          cartItems: updatedCart,
+          orders: state.orders,
+        ),
+      );
     } else {
       final newItem = CartItem(
         productId: event.productId,
@@ -471,6 +531,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
       );
       emit(
         CartUpdated(
+          updatingOrder: state.updatingOrder,
           cartItems: [...state.cartItems, newItem],
           orders: state.orders,
         ),
@@ -491,7 +552,13 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
       } else {
         updatedCart.removeAt(existingItemIndex);
       }
-      emit(CartUpdated(cartItems: updatedCart, orders: state.orders));
+      emit(
+        CartUpdated(
+          updatingOrder: state.updatingOrder,
+          cartItems: updatedCart,
+          orders: state.orders,
+        ),
+      );
     }
   }
 
@@ -517,7 +584,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
 
     emit(
       CartUpdated(
-        isUpdatingOrder: UpdateOrderModel(
+        updatingOrder: UpdateOrderModel(
           order: event.order,
           cartItems: cartItems,
         ),

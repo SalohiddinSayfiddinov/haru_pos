@@ -113,7 +113,7 @@ class KitchenPrinterService {
       // 5.2 NAME - Standard width, but tall
       // We don't truncate names as aggressively in kitchen, they need to know what it is.
       // But we wrap if too long ideally, or just print full line.
-      buffer.add(_encode('${item.product.nameUz}'));
+      buffer.add(_encode(item.product.nameUz));
 
       buffer.add(_normalSize);
       buffer.add(_boldOff);

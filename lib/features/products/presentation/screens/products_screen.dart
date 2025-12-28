@@ -13,6 +13,7 @@ import 'package:haru_pos/features/products/data/models/products_screen_extra.dar
 import 'package:haru_pos/features/products/domain/entities/product_entity.dart';
 import 'package:haru_pos/features/products/presentation/bloc/product_bloc.dart';
 import 'package:haru_pos/features/products/presentation/widgets/category_filter.dart';
+import 'package:haru_pos/features/products/presentation/widgets/edit_order_drawer.dart';
 import 'package:haru_pos/features/products/presentation/widgets/order_drawer.dart';
 import 'package:haru_pos/features/products/presentation/widgets/products_grid.dart';
 import 'package:haru_pos/features/products/presentation/widgets/products_header.dart';
@@ -201,6 +202,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     }
                   },
                   builder: (context, state) {
+                    if (state.updatingOrder != null) {
+                      return const EditOrderDrawer();
+                    }
                     if (state.cartItems.isNotEmpty) {
                       return const OrderDrawer();
                     }

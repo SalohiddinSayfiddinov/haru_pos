@@ -37,13 +37,13 @@ class UpdateOrderModel {
 
 abstract class OrderState extends Equatable {
   final List<CartItem> cartItems;
-  final UpdateOrderModel? isUpdatingOrder;
+  final UpdateOrderModel? updatingOrder;
   final List<OrderEntity> orders;
   final bool hasReachedMax;
   final bool isLoadMore;
 
   const OrderState({
-    this.isUpdatingOrder,
+    this.updatingOrder,
     this.cartItems = const [],
     this.orders = const [],
     this.hasReachedMax = false,
@@ -64,6 +64,7 @@ class OrderInitial extends OrderState {
 
 class OrderLoading extends OrderState {
   const OrderLoading({
+    super.updatingOrder,
     super.cartItems,
     super.orders,
     super.hasReachedMax,
@@ -81,7 +82,7 @@ class OrdersLoaded extends OrderState {
 
 class CartUpdated extends OrderState {
   const CartUpdated({
-    super.isUpdatingOrder,
+    super.updatingOrder,
     required super.cartItems,
     super.orders,
     super.hasReachedMax,

@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:dio/io.dart';
 import 'package:haru_pos/core/constants/api.dart';
 import 'package:haru_pos/core/di/injection.dart';
 import 'package:haru_pos/core/routes/app_pages.dart';
