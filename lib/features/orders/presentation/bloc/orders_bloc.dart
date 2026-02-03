@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:haru_pos/core/errors/failures.dart';
@@ -5,6 +7,7 @@ import 'package:haru_pos/core/services/kitchen_printer_service.dart';
 import 'package:haru_pos/core/services/thermal_priner_service.dart';
 import 'package:haru_pos/features/auth/domain/usecases/auth_usecases.dart';
 import 'package:haru_pos/features/hall/domain/usecases/table_usecases.dart';
+import 'package:haru_pos/features/orders/data/models/orders_dto.dart';
 import 'package:haru_pos/features/orders/domain/entities/orders_entity.dart';
 import 'package:injectable/injectable.dart';
 
@@ -16,6 +19,7 @@ part 'orders_state.dart';
 @injectable
 class OrderBloc extends Bloc<OrderEvent, OrderState> {
   final GetOrdersUseCase getOrdersUseCase;
+  final GetOrderHistoryUseCase getOrdersHistoryUseCase;
   final GetTableByNumberUseCase getTableByNumberUseCase;
   final CreateOrderUseCase createOrderUseCase;
   final UpdateOrderUseCase updateOrderUseCase;
@@ -26,6 +30,8 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
   final KitchenPrinterService kitchenPrinterService;
   final AddItemsToOrderUseCase addItemsToOrderUseCase;
   final UpdateOrderItemsUseCase updateOrderItemsUseCase;
+  final RejectOrderUseCase rejectOrderUseCase;
+  final WatchOrdersUseCase watchOrdersUseCase;
 
   OrderBloc({
     required this.getOrdersUseCase,
@@ -39,8 +45,12 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     required this.kitchenPrinterService,
     required this.addItemsToOrderUseCase,
     required this.updateOrderItemsUseCase,
+    required this.rejectOrderUseCase,
+    required this.getOrdersHistoryUseCase,
+    required this.watchOrdersUseCase,
   }) : super(const OrderInitial()) {
     on<LoadOrdersEvent>(_onLoadOrders);
+    on<LoadOrdersHistoryEvent>(_onLoadOrdersHistory);
     on<CreateOrderEvent>(_onCreateOrder);
     on<UpdateOrderEvent>(_onUpdateOrder);
     on<DeleteOrderEvent>(_onDeleteOrder);
@@ -52,13 +62,15 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     on<AddItemsToOrderEvent>(_onAddItemsToOrder);
     on<UpdateOrderItemsEvent>(_onUpdateOrderItems);
     on<SetOrderForEditing>(_onSetOrderForEditing);
+    on<RejectOrderEvent>(_onRejectOrder);
+    on<WatchOrdersEvent>(_onWatchOrders);
   }
+  StreamSubscription? _orderSubscription;
 
   Future<void> _onLoadOrders(
     LoadOrdersEvent event,
     Emitter<OrderState> emit,
   ) async {
-    // If loading more, keep existing orders and set isLoadMore flag
     if (event.loadMore) {
       emit(
         OrderLoading(
@@ -69,7 +81,6 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
         ),
       );
     } else {
-      // Initial load - clear orders
       emit(
         OrderLoading(
           cartItems: state.cartItems,
@@ -85,7 +96,65 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
       offset: event.offset,
       startDt: event.startDt?.toString(),
       endDt: event.endDt?.toString(),
-      // status: event.status,
+    );
+
+    result.fold(
+      (failure) => emit(
+        OrderError(
+          message: _mapFailureToMessage(failure),
+          cartItems: state.cartItems,
+          orders: state.orders,
+          hasReachedMax: state.hasReachedMax,
+        ),
+      ),
+      (newOrders) {
+        final hasReachedMax = newOrders.length < event.limit;
+
+        final allOrders = event.loadMore
+            ? [...state.orders, ...newOrders]
+            : newOrders;
+
+        emit(
+          OrdersLoaded(
+            orders: allOrders,
+            cartItems: state.cartItems,
+            hasReachedMax: hasReachedMax,
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _onLoadOrdersHistory(
+    LoadOrdersHistoryEvent event,
+    Emitter<OrderState> emit,
+  ) async {
+    if (event.loadMore) {
+      emit(
+        OrderLoading(
+          cartItems: state.cartItems,
+          orders: state.orders,
+          hasReachedMax: state.hasReachedMax,
+          isLoadMore: true,
+        ),
+      );
+    } else {
+      emit(
+        OrderLoading(
+          cartItems: state.cartItems,
+          orders: const [],
+          hasReachedMax: false,
+          isLoadMore: false,
+        ),
+      );
+    }
+
+    final result = await getOrdersHistoryUseCase(
+      limit: event.limit,
+      offset: event.offset,
+      startDt: event.startDt?.toString(),
+      endDt: event.endDt?.toString(),
+      type: event.type,
     );
 
     result.fold(
@@ -219,11 +288,30 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
   ) async {
     emit(OrderLoading(cartItems: state.cartItems, orders: state.orders));
 
+    int? tableId;
+    if (event.tableNumber != null) {
+      final tableResult = await getTableByNumberUseCase(
+        tableNumber: event.tableNumber!,
+      );
+
+      tableId = tableResult.fold((failure) => null, (table) => table.id);
+
+      if (tableId == null) {
+        emit(
+          OrderError(
+            message: 'Table not found',
+            cartItems: state.cartItems,
+            orders: state.orders,
+          ),
+        );
+        return;
+      }
+    }
     final result = await updateOrderUseCase(
       id: event.id,
       type: event.type,
       userId: event.userId,
-      tableId: event.tableId,
+      tableId: tableId,
     );
 
     result.fold(
@@ -244,6 +332,37 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
             message: 'Order updated successfully',
             cartItems: state.cartItems,
             orders: updatedOrders,
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _onRejectOrder(
+    RejectOrderEvent event,
+    Emitter<OrderState> emit,
+  ) async {
+    emit(OrderLoading(cartItems: state.cartItems, orders: state.orders));
+
+    final result = await rejectOrderUseCase(
+      id: event.id,
+      request: event.request,
+    );
+
+    result.fold(
+      (failure) => emit(
+        OrderError(
+          message: _mapFailureToMessage(failure),
+          cartItems: [],
+          orders: state.orders,
+        ),
+      ),
+      (order) {
+        emit(
+          OrderOperationSuccess(
+            message: 'Order rejected successfully',
+            cartItems: const [],
+            orders: state.orders,
           ),
         );
       },
@@ -335,7 +454,6 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     UpdateOrderItemsEvent event,
     Emitter<OrderState> emit,
   ) async {
-    // Capture the original items before update for diffing
     final oldOrderItems = <int, int>{};
     if (state.updatingOrder != null) {
       for (final item in state.updatingOrder!.order.orderItems) {
@@ -389,18 +507,17 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
         );
       },
       (order) async {
-        // Calculate newly added items or increased quantities
         final itemsToPrint = <OrderItemEntity>[];
         for (final newItem in order.orderItems) {
           final oldQty = oldOrderItems[newItem.product.id] ?? 0;
           final diff = newItem.amount - oldQty;
           if (diff > 0) {
-            // Create a copy of the item with the detailed amount
             itemsToPrint.add(
               OrderItemEntity(
                 id: newItem.id,
                 amount: diff,
                 product: newItem.product,
+                comment: newItem.comment,
               ),
             );
           }
@@ -408,7 +525,6 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
 
         if (itemsToPrint.isNotEmpty) {
           try {
-            // Create a temporary order entity for printing
             final printOrder = OrderEntity(
               id: order.id,
               type: order.type,
@@ -418,6 +534,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
               active: order.active,
               orderItems: itemsToPrint,
               createdAt: order.createdAt,
+              rejectedSessions: order.rejectedSessions,
             );
 
             await kitchenPrinterService.printKitchenTicket(printOrder);
@@ -450,6 +567,8 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
 
     final result = await addItemsToOrderUseCase(
       orderId: event.orderId,
+      type: event.type,
+      tableId: event.tableId,
       orderItems: event.orderItems,
     );
 
@@ -472,6 +591,40 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
             cartItems: state.cartItems,
             orders: updatedOrders,
           ),
+        );
+      },
+    );
+  }
+
+  Future<void> _onWatchOrders(
+    WatchOrdersEvent event,
+    Emitter<OrderState> emit,
+  ) async {
+    emit(OrderLoading(cartItems: state.cartItems, orders: state.orders));
+    await emit.forEach(
+      watchOrdersUseCase(),
+      onData: (result) {
+        return result.fold(
+          (failure) => OrderError(
+            message: _mapFailureToMessage(failure),
+            cartItems: state.cartItems,
+            orders: state.orders,
+          ),
+          (orders) {
+            print(orders);
+            return OrdersLoaded(
+              orders: orders,
+              cartItems: state.cartItems,
+              hasReachedMax: false,
+            );
+          },
+        );
+      },
+      onError: (error, stackTrace) {
+        return OrderError(
+          message: error.toString(),
+          cartItems: state.cartItems,
+          orders: state.orders,
         );
       },
     );
@@ -606,5 +759,11 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
       default:
         return 'Unexpected error';
     }
+  }
+
+  @override
+  Future<void> close() {
+    _orderSubscription?.cancel();
+    return super.close();
   }
 }

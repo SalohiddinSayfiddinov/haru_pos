@@ -23,6 +23,7 @@ abstract class EmployeeRemoteDataSource {
     XFile? image,
   });
   Future<void> deleteEmployee(int id);
+  Future<EmployeeModel> updateLimit({required int userId, required int limit});
 }
 
 @LazySingleton(as: EmployeeRemoteDataSource)
@@ -96,5 +97,23 @@ class EmployeeRemoteDataSourceImpl implements EmployeeRemoteDataSource {
   @override
   Future<void> deleteEmployee(int id) async {
     await dio.delete('/staff/$id');
+  }
+
+  @override
+  Future<EmployeeModel> updateLimit({
+    required int userId,
+    required int limit,
+  }) async {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final response = await dio.post(
+      '/staff/fee',
+      data: FormData.fromMap({
+        'user_id': userId,
+        'money': limit,
+        'created_at': today.toString().split(' ')[0],
+      }),
+    );
+    return EmployeeModel.fromJson(response.data);
   }
 }

@@ -57,3 +57,13 @@ class DeleteEmployeeEvent extends EmployeeEvent {
   @override
   List<Object> get props => [id];
 }
+
+class UpdateLimitEvent extends EmployeeEvent {
+  final int userId;
+  final int limit;
+
+  const UpdateLimitEvent({required this.userId, required this.limit});
+
+  @override
+  List<Object> get props => [userId, limit];
+}

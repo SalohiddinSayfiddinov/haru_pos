@@ -74,3 +74,17 @@ class DeleteEmployeeUseCase {
     return await repository.deleteEmployee(id);
   }
 }
+
+@injectable
+class UpdateLimitUseCase {
+  final EmployeeRepository repository;
+
+  UpdateLimitUseCase(this.repository);
+
+  Future<Either<Failure, EmployeeEntity>> call({
+    required int userId,
+    required int limit,
+  }) async {
+    return await repository.updateLimit(userId: userId, limit: limit);
+  }
+}

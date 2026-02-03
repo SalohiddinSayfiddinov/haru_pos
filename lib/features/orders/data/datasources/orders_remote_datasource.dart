@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
+import 'package:haru_pos/features/orders/data/models/orders_dto.dart';
 import 'package:haru_pos/features/orders/data/models/orders_model.dart';
 import 'package:injectable/injectable.dart';
+import 'package:web_socket_channel/io.dart';
 
 abstract class OrderRemoteDataSource {
   Future<List<OrderModel>> getOrders({
@@ -8,6 +12,13 @@ abstract class OrderRemoteDataSource {
     int? offset,
     String? startDt,
     String? endDt,
+  });
+  Future<List<OrderModel>> getOrdersHistory({
+    int? limit,
+    int? offset,
+    String? startDt,
+    String? endDt,
+    String? type,
   });
   Future<OrderModel> createOrder({
     required String type,
@@ -17,6 +28,8 @@ abstract class OrderRemoteDataSource {
   });
   Future<OrderModel> addItemsToOrder({
     required int orderId,
+    required String type,
+    int? tableId,
     required List<Map<String, dynamic>> orderItems,
   });
   Future<OrderModel> updateOrderItems({
@@ -36,6 +49,14 @@ abstract class OrderRemoteDataSource {
   });
   Future<void> deleteOrder(int id);
   Future<void> closeOrder(int id);
+  Future<void> rejectOrder(int id, RejectOrderRequest request);
+  Stream<List<OrderModel>> watchOrders({
+    int? limit,
+    int? offset,
+    String? startDt,
+    String? endDt,
+    List<String>? orderTypes,
+  });
 }
 
 @LazySingleton(as: OrderRemoteDataSource)
@@ -60,12 +81,40 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
 
     final response = await dio.get('/orders', queryParameters: queryParams);
 
+    if (response.data['orders'] is List) {
+      return (response.data['orders'] as List)
+          .map((json) => OrderModel.fromJson(json))
+          .toList();
+    }
+    throw Exception('Invalid response format');
+  }
+
+  @override
+  Future<List<OrderModel>> getOrdersHistory({
+    int? limit,
+    int? offset,
+    String? startDt,
+    String? endDt,
+    String? type,
+  }) async {
+    final Map<String, dynamic> queryParams = {};
+
+    if (limit != null) queryParams['limit'] = limit;
+    if (offset != null) queryParams['offset'] = offset;
+    if (startDt != null) queryParams['start_dt'] = startDt;
+    if (endDt != null) queryParams['end_dt'] = endDt;
+    if (type != null) queryParams['order_types'] = type;
+
+    final response = await dio.get(
+      '/orders/history',
+      queryParameters: queryParams,
+    );
+
     if (response.data is List) {
       return (response.data as List)
           .map((json) => OrderModel.fromJson(json))
           .toList();
     }
-
     throw Exception('Invalid response format');
   }
 
@@ -117,9 +166,20 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
   @override
   Future<OrderModel> addItemsToOrder({
     required int orderId,
+    required String type,
+    int? tableId,
     required List<Map<String, dynamic>> orderItems,
   }) async {
-    final response = await dio.post('/orders/waiter/$orderId/items', data: orderItems);
+    final data = {'type': type, 'items': orderItems};
+
+    if (tableId != null) {
+      data['table_id'] = tableId;
+    }
+
+    final response = await dio.post(
+      '/orders/waiter/$orderId/items',
+      data: data,
+    );
     return OrderModel.fromJson(response.data);
   }
 
@@ -144,5 +204,44 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
     }
     final response = await dio.put('/orders/admin/$orderId/items', data: data);
     return OrderModel.fromJson(response.data);
+  }
+
+  @override
+  Future<void> rejectOrder(int id, RejectOrderRequest request) async {
+    await dio.post('/orders/$id/reject', data: request.toJson());
+  }
+
+  @override
+  Stream<List<OrderModel>> watchOrders({
+    int? limit,
+    int? offset,
+    String? startDt,
+    String? endDt,
+    List<String>? orderTypes,
+  }) {
+    final channel = IOWebSocketChannel.connect(
+      'wss://api.haru-sushi.uz/ws/orders',
+    );
+
+    channel.sink.add(
+      jsonEncode({
+        "offset": offset ?? 0,
+        "limit": limit ?? 100,
+        "start_dt": startDt,
+        "end_dt": endDt,
+        "order_types": orderTypes ?? ["takeaway", "dine_in"],
+        "interval_sec": 2.0,
+      }),
+    );
+
+    return channel.stream.map((data) {
+      final decoded = jsonDecode(data);
+      if (decoded['payload']['orders'] is List) {
+        return (decoded['payload']['orders'] as List)
+            .map((json) => OrderModel.fromJson(json))
+            .toList();
+      }
+      return [];
+    });
   }
 }

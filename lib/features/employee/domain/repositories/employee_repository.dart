@@ -21,4 +21,8 @@ abstract class EmployeeRepository {
     XFile? image,
   });
   Future<Either<Failure, void>> deleteEmployee(int id);
+  Future<Either<Failure, EmployeeEntity>> updateLimit({
+    required int userId,
+    required int limit,
+  });
 }

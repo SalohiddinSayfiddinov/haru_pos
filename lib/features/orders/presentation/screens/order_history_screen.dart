@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:haru_pos/core/di/injection.dart';
 import 'package:haru_pos/core/utils/extensions.dart';
+import 'package:haru_pos/features/orders/domain/entities/orders_entity.dart';
+import 'package:haru_pos/features/orders/presentation/bloc/orders_bloc.dart';
+import 'package:intl/intl.dart';
 
 class OrderHistoryScreen extends StatefulWidget {
   const OrderHistoryScreen({super.key});
@@ -11,69 +17,89 @@ class OrderHistoryScreen extends StatefulWidget {
 }
 
 class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
-  final List<_MockOrder> orders = [
-    _MockOrder(
-      number: 'Заказ #351',
-      name: 'Роллы, суши нигири',
-      price: 280500,
-      waiter: 'Кобилов Одил',
-      paymentType: 'Наличные',
-      date: '20.11.2025',
-    ),
-  ];
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(30.0),
-        child: Column(
-          crossAxisAlignment: .start,
-          children: [
-            Row(
+    return BlocProvider(
+      create: (context) =>
+          getIt<OrderBloc>()..add(const LoadOrdersHistoryEvent()),
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF9FAFB),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(30.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                IconButton(
-                  onPressed: context.pop,
-                  icon: Icon(Icons.arrow_back_ios),
-                ),
-                Text(
-                  'История заказов',
-                  style: GoogleFonts.inter(
-                    fontSize: 25.0,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 40.0),
-            Card(
-              margin: EdgeInsets.zero,
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              color: Colors.white,
-              child: DividerTheme(
-                data: DividerThemeData(thickness: 0, color: Colors.transparent),
-                child: DataTable(
-                  dividerThickness: 0,
-                  dataRowColor: WidgetStateProperty.all(Colors.white),
-                  columns: [
-                    _buildHeaderText('#'),
-                    _buildHeaderText('Наименование'),
-                    _buildHeaderText('Цена'),
-                    _buildHeaderText('Официант'),
-                    _buildHeaderText('Способ оплаты'),
-                    _buildHeaderText('Дата'),
-                  ],
-                  rows: [
-                    ...orders.map(
-                      (order) => DataRow(cells: _buildOrderRow(order)),
+                Row(
+                  children: [
+                    IconButton(
+                      onPressed: context.pop,
+                      icon: const Icon(Icons.arrow_back_ios),
+                    ),
+                    Text(
+                      'История заказов',
+                      style: GoogleFonts.inter(
+                        fontSize: 25.0,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ],
                 ),
-              ),
+                const SizedBox(height: 40.0),
+                BlocBuilder<OrderBloc, OrderState>(
+                  builder: (context, state) {
+                    if (state is OrderLoading && !state.isLoadMore) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (state is OrderError) {
+                      return Center(child: Text(state.message));
+                    }
+
+                    final orders = state.orders;
+
+                    if (orders.isEmpty) {
+                      return const Center(child: Text('История заказов пуста'));
+                    }
+
+                    return Card(
+                      margin: EdgeInsets.zero,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      color: Colors.white,
+                      child: DividerTheme(
+                        data: const DividerThemeData(
+                          thickness: 0,
+                          color: Colors.transparent,
+                        ),
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: DataTable(
+                            dividerThickness: 0,
+                            dataRowColor: WidgetStateProperty.all(Colors.white),
+                            columns: [
+                              _buildHeaderText('#'),
+                              _buildHeaderText('Наименование'),
+                              _buildHeaderText('Цена'),
+                              _buildHeaderText('Официант'),
+                              _buildHeaderText('Тип'),
+                              _buildHeaderText('Дата'),
+                            ],
+                            rows: [
+                              ...orders.map(
+                                (order) =>
+                                    DataRow(cells: _buildOrderRow(order)),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -81,26 +107,44 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
 
   DataColumn _buildHeaderText(String title) {
     return DataColumn(
-      columnWidth: FlexColumnWidth(),
       label: Text(
         title,
         style: GoogleFonts.inter(
           fontSize: 15.0,
           fontWeight: FontWeight.w500,
-          color: Color(0xFF87888C),
+          color: const Color(0xFF87888C),
         ),
       ),
     );
   }
 
-  List<DataCell> _buildOrderRow(_MockOrder order) {
+  List<DataCell> _buildOrderRow(OrderEntity order) {
+    final productsName = order.orderItems
+        .map((e) => e.product.nameRu)
+        .join(', ');
+
     return [
-      DataCell(_buildRowText(order.number)),
-      DataCell(_buildRowText(order.name)),
-      DataCell(_buildRowText(order.price.formatCurrency())),
-      DataCell(_buildRowText(order.waiter)),
-      DataCell(_buildRowText(order.paymentType)),
-      DataCell(_buildRowText(order.date)),
+      DataCell(_buildRowText('#${order.id}')),
+      DataCell(
+        SizedBox(
+          width: 200,
+          child: Text(
+            productsName,
+            style: GoogleFonts.inter(
+              fontSize: 13.0,
+              fontWeight: FontWeight.w500,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ),
+      DataCell(_buildRowText(order.fullPrice.formatCurrencyUz())),
+      DataCell(_buildRowText(order.user?.fullName ?? 'Неизвестно')),
+      DataCell(_buildRowText(_mapOrderType(order.type))),
+      DataCell(
+        _buildRowText(DateFormat('dd.MM.yyyy HH:mm').format(order.createdAt)),
+      ),
     ];
   }
 
@@ -110,22 +154,17 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
       style: GoogleFonts.inter(fontSize: 13.0, fontWeight: FontWeight.w500),
     );
   }
-}
 
-class _MockOrder {
-  final String number;
-  final String name;
-  final int price;
-  final String waiter;
-  final String paymentType;
-  final String date;
-
-  _MockOrder({
-    required this.number,
-    required this.name,
-    required this.price,
-    required this.waiter,
-    required this.paymentType,
-    required this.date,
-  });
+  String _mapOrderType(String type) {
+    switch (type) {
+      case 'dine_in':
+        return 'В зале';
+      case 'take_away':
+        return 'С собой';
+      case 'delivery':
+        return 'Доставка';
+      default:
+        return type;
+    }
+  }
 }

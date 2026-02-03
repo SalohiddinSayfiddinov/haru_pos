@@ -16,17 +16,20 @@ class EmployeeBloc extends Bloc<EmployeeEvent, EmployeeState> {
   final CreateEmployeeUseCase createEmployeeUseCase;
   final UpdateEmployeeUseCase updateEmployeeUseCase;
   final DeleteEmployeeUseCase deleteEmployeeUseCase;
+  final UpdateLimitUseCase updateLimitUseCase;
 
   EmployeeBloc({
     required this.getEmployeesUseCase,
     required this.createEmployeeUseCase,
     required this.updateEmployeeUseCase,
     required this.deleteEmployeeUseCase,
+    required this.updateLimitUseCase,
   }) : super(EmployeeInitial()) {
     on<LoadEmployeesEvent>(_onLoadEmployees);
     on<CreateEmployeeEvent>(_onCreateEmployee);
     on<UpdateEmployeeEvent>(_onUpdateEmployee);
     on<DeleteEmployeeEvent>(_onDeleteEmployee);
+    on<UpdateLimitEvent>(_onUpdateLimit);
   }
 
   Future<void> _onLoadEmployees(
@@ -100,6 +103,25 @@ class EmployeeBloc extends Bloc<EmployeeEvent, EmployeeState> {
       (failure) => emit(EmployeeError(_mapFailureToMessage(failure))),
       (_) {
         emit(EmployeeOperationSuccess('Employee deleted successfully'));
+      },
+    );
+  }
+
+  Future<void> _onUpdateLimit(
+    UpdateLimitEvent event,
+    Emitter<EmployeeState> emit,
+  ) async {
+    emit(EmployeeLoading());
+
+    final result = await updateLimitUseCase(
+      userId: event.userId,
+      limit: event.limit,
+    );
+
+    result.fold(
+      (failure) => emit(EmployeeError(_mapFailureToMessage(failure))),
+      (employee) {
+        emit(EmployeeOperationSuccess('Employee limit updated successfully'));
       },
     );
   }

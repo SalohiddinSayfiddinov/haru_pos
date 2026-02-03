@@ -18,11 +18,22 @@ class OrderDrawer extends StatefulWidget {
 class _OrderDrawerState extends State<OrderDrawer> {
   final TextEditingController _tableController = TextEditingController();
   int _selectedOrderType = 0;
+  final Map<int, TextEditingController> _productCommentControllers = {};
 
   @override
   void dispose() {
     _tableController.dispose();
+    for (var controller in _productCommentControllers.values) {
+      controller.dispose();
+    }
     super.dispose();
+  }
+
+  TextEditingController _getCommentController(int productId) {
+    if (!_productCommentControllers.containsKey(productId)) {
+      _productCommentControllers[productId] = TextEditingController();
+    }
+    return _productCommentControllers[productId]!;
   }
 
   void _onCheckout() {
@@ -34,7 +45,13 @@ class _OrderDrawerState extends State<OrderDrawer> {
     }
 
     final orderItems = context.read<OrderBloc>().state.cartItems.map((item) {
-      return {'product_id': item.productId, 'amount': item.quantity};
+      final commentController = _getCommentController(item.productId);
+      final comment = commentController.text.trim();
+      return {
+        'product_id': item.productId,
+        'amount': item.quantity,
+        if (comment.isNotEmpty) 'comment': comment,
+      };
     }).toList();
 
     context.read<OrderBloc>().add(
@@ -114,64 +131,79 @@ class _OrderDrawerState extends State<OrderDrawer> {
         ...items.map(
           (item) => Padding(
             padding: const EdgeInsets.only(bottom: 15.0),
-            child: Row(
+            child: Column(
+              spacing: 10,
               children: [
-                Container(
-                  height: 50.0,
-                  width: 50.0,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Color(0xFFD8D8D8)),
-                    borderRadius: BorderRadius.circular(10.0),
-                    image: DecorationImage(
-                      image: NetworkImage(item.image),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                SizedBox(width: 20.0),
-                Text(
-                  item.productName,
-                  style: GoogleFonts.inter(
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                Spacer(),
-                IconButton(
-                  onPressed: () {
-                    context.read<OrderBloc>().add(
-                      RemoveFromCartEvent(item.productId),
-                    );
-                  },
-                  style: IconButton.styleFrom(
-                    foregroundColor: AppColors.primary,
-                  ),
-                  icon: Icon(Icons.remove, size: 15.0),
-                ),
-                Text(
-                  item.quantity.toString(),
-                  style: GoogleFonts.inter(
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.primary,
-                  ),
-                ),
-                IconButton(
-                  onPressed: () {
-                    context.read<OrderBloc>().add(
-                      AddToCartEvent(
-                        image: item.image,
-                        price: item.price,
-                        productId: item.productId,
-                        productName: item.productName,
+                Row(
+                  children: [
+                    Container(
+                      height: 50.0,
+                      width: 50.0,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Color(0xFFD8D8D8)),
+                        borderRadius: BorderRadius.circular(10.0),
+                        image: DecorationImage(
+                          image: NetworkImage(item.image),
+                          fit: BoxFit.cover,
+                        ),
                       ),
-                    );
-                  },
-                  style: IconButton.styleFrom(
-                    foregroundColor: AppColors.primary,
+                    ),
+                    SizedBox(width: 20.0),
+                    Text(
+                      item.productName,
+                      style: GoogleFonts.inter(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    Spacer(),
+                    IconButton(
+                      onPressed: () {
+                        context.read<OrderBloc>().add(
+                          RemoveFromCartEvent(item.productId),
+                        );
+                      },
+                      style: IconButton.styleFrom(
+                        foregroundColor: AppColors.primary,
+                      ),
+                      icon: Icon(Icons.remove, size: 15.0),
+                    ),
+                    Text(
+                      item.quantity.toString(),
+                      style: GoogleFonts.inter(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        context.read<OrderBloc>().add(
+                          AddToCartEvent(
+                            image: item.image,
+                            price: item.price,
+                            productId: item.productId,
+                            productName: item.productName,
+                          ),
+                        );
+                      },
+                      style: IconButton.styleFrom(
+                        foregroundColor: AppColors.primary,
+                      ),
+                      icon: Icon(Icons.add, size: 15.0),
+                    ),
+                  ],
+                ),
+                AppTextField(
+                  controller: _getCommentController(item.productId),
+                  hintText: 'Комментарий',
+                  contentPadding: const EdgeInsets.all(16.0),
+                  hintStyle: GoogleFonts.inter(
+                    fontSize: 13.0,
+                    color: const Color(0xFF7A7A7A),
                   ),
-                  icon: Icon(Icons.add, size: 15.0),
+                  textStyle: GoogleFonts.inter(fontSize: 13.0),
                 ),
               ],
             ),

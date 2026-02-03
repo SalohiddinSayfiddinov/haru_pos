@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:haru_pos/core/errors/failures.dart';
+import 'package:haru_pos/features/orders/data/models/orders_dto.dart';
 import 'package:haru_pos/features/orders/domain/entities/orders_entity.dart';
 import 'package:haru_pos/features/orders/domain/repositories/orders_repository.dart';
 import 'package:injectable/injectable.dart';
@@ -21,6 +22,29 @@ class GetOrdersUseCase {
       offset: offset,
       startDt: startDt,
       endDt: endDt,
+    );
+  }
+}
+
+@injectable
+class GetOrderHistoryUseCase {
+  final OrderRepository repository;
+
+  GetOrderHistoryUseCase(this.repository);
+
+  Future<Either<Failure, List<OrderEntity>>> call({
+    int? limit,
+    int? offset,
+    String? startDt,
+    String? endDt,
+    String? type,
+  }) async {
+    return await repository.getOrderHistory(
+      limit: limit,
+      offset: offset,
+      startDt: startDt,
+      endDt: endDt,
+      type: type,
     );
   }
 }
@@ -97,10 +121,14 @@ class AddItemsToOrderUseCase {
 
   Future<Either<Failure, OrderEntity>> call({
     required int orderId,
+    required String type,
+    int? tableId,
     required List<Map<String, dynamic>> orderItems,
   }) async {
     return await repository.addItemsToOrder(
       orderId: orderId,
+      type: type,
+      tableId: tableId,
       orderItems: orderItems,
     );
   }
@@ -127,6 +155,40 @@ class UpdateOrderItemsUseCase {
       password: password,
       orderId: orderId,
       orderItems: orderItems,
+    );
+  }
+}
+
+@injectable
+class RejectOrderUseCase {
+  final OrderRepository repository;
+
+  RejectOrderUseCase(this.repository);
+
+  Future<Either<Failure, void>> call({
+    required int id,
+    required RejectOrderRequest request,
+  }) async {
+    return await repository.rejectOrder(id: id, request: request);
+  }
+}
+
+@injectable
+class WatchOrdersUseCase {
+  final OrderRepository repository;
+  WatchOrdersUseCase(this.repository);
+
+  Stream<Either<Failure, List<OrderEntity>>> call({
+    int? limit,
+    int? offset,
+    String? startDt,
+    String? endDt,
+  }) {
+    return repository.watchOrders(
+      limit: limit,
+      offset: offset,
+      startDt: startDt,
+      endDt: endDt,
     );
   }
 }

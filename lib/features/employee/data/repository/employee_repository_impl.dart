@@ -91,4 +91,25 @@ class EmployeeRepositoryImpl implements EmployeeRepository {
       return Left(ServerFailure('An unexpected error occurred'));
     }
   }
+
+  @override
+  Future<Either<Failure, EmployeeEntity>> updateLimit({
+    required int userId,
+    required int limit,
+  }) async {
+    try {
+      final employee = await remoteDataSource.updateLimit(
+        userId: userId,
+        limit: limit,
+      );
+      return Right(employee.toEntity());
+    } on DioException catch (e) {
+      print('#' * 20);
+      print(e.response?.data);
+      final errorMessage = handleDioError(e);
+      return Left(ServerFailure(errorMessage));
+    } catch (e) {
+      return Left(ServerFailure('An unexpected error occurred'));
+    }
+  }
 }

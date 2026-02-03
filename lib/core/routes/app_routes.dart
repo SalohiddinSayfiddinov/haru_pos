@@ -15,6 +15,7 @@ import 'package:haru_pos/features/employee/presentation/screens/employee_screen.
 import 'package:haru_pos/features/hall/presentation/bloc/table_bloc.dart';
 import 'package:haru_pos/features/hall/presentation/screens/hall_screen.dart';
 import 'package:haru_pos/features/orders/presentation/bloc/orders_bloc.dart';
+import 'package:haru_pos/features/orders/presentation/screens/kitchen_orders_screen.dart';
 import 'package:haru_pos/features/orders/presentation/screens/order_history_screen.dart';
 import 'package:haru_pos/features/orders/presentation/screens/orders_screen.dart';
 import 'package:haru_pos/features/products/data/models/products_screen_extra.dart';
@@ -120,7 +121,7 @@ class AppRouter {
           GoRoute(
             path: AppPages.orders,
             pageBuilder: (context, state) {
-              return NoTransitionPage(child: OrdersScreen());
+              return NoTransitionPage(child: KitchenOrdersScreen());
             },
           ),
           GoRoute(

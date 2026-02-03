@@ -28,6 +28,29 @@ class LoadOrdersEvent extends OrderEvent {
   List<Object?> get props => [limit, offset, startDt, endDt, status, loadMore];
 }
 
+class LoadOrdersHistoryEvent extends OrderEvent {
+  final int limit;
+  final int offset;
+  final DateTime? startDt;
+  final DateTime? endDt;
+  final String? status;
+  final String? type;
+  final bool loadMore;
+
+  const LoadOrdersHistoryEvent({
+    this.limit = 20,
+    this.offset = 0,
+    this.startDt,
+    this.endDt,
+    this.status,
+    this.type,
+    this.loadMore = false,
+  });
+
+  @override
+  List<Object?> get props => [limit, offset, startDt, endDt, status, loadMore];
+}
+
 class CreateOrderEvent extends OrderEvent {
   final String type;
   final int? tableNumber;
@@ -47,17 +70,17 @@ class UpdateOrderEvent extends OrderEvent {
   final int id;
   final String type;
   final int userId;
-  final int? tableId;
+  final int? tableNumber;
 
   const UpdateOrderEvent({
     required this.id,
     required this.type,
     required this.userId,
-    this.tableId,
+    this.tableNumber,
   });
 
   @override
-  List<Object?> get props => [id, type, userId, tableId];
+  List<Object?> get props => [id, type, userId, tableNumber];
 }
 
 class DeleteOrderEvent extends OrderEvent {
@@ -115,9 +138,16 @@ class RetryPrintEvent extends OrderEvent {
 
 class AddItemsToOrderEvent extends OrderEvent {
   final int orderId;
+  final String type;
+  final int? tableId;
   final List<Map<String, dynamic>> orderItems;
 
-  const AddItemsToOrderEvent({required this.orderId, required this.orderItems});
+  const AddItemsToOrderEvent({
+    required this.orderId,
+    required this.orderItems,
+    required this.type,
+    this.tableId,
+  });
 
   @override
   List<Object?> get props => [orderId, orderItems];
@@ -152,3 +182,15 @@ class SetOrderForEditing extends OrderEvent {
   @override
   List<Object?> get props => [order];
 }
+
+class RejectOrderEvent extends OrderEvent {
+  final int id;
+  final RejectOrderRequest request;
+
+  const RejectOrderEvent({required this.id, required this.request});
+
+  @override
+  List<Object?> get props => [id, request];
+}
+
+class WatchOrdersEvent extends OrderEvent {}

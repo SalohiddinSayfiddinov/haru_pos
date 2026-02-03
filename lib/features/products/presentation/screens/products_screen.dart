@@ -197,6 +197,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       CustomSnackBar.error(message: state.message);
                     } else if (state is OrderOperationSuccess) {
                       CustomSnackBar.error(message: state.message);
+                      context.go(AppPages.orders);
                     } else if (state is OrderCreatedPrintFailed) {
                       _showRetryDialog(state.order, state.errorMessage);
                     }

@@ -1,3 +1,4 @@
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -118,17 +119,17 @@ class _OrdersScreenState extends State<OrdersScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _OrdersHeader(),
-                  const SizedBox(height: 30.0),
-                  _OrdersFilters(
-                    startDate: _startDate,
-                    endDate: _endDate,
-                    selectedStatus: _selectedStatus,
-                    onSelectDateRange: _selectDateRange,
-                    onClearDateRange: _clearDateRange,
-                    onStatusSelected: _onStatusSelected,
-                    onRefresh: _refreshOrders,
+                  _OrdersHeader(
+                    _startDate,
+                    _endDate,
+                    _selectedStatus,
+                    _selectDateRange,
+                    _clearDateRange,
+                    _onStatusSelected,
+                    _refreshOrders,
                   ),
+                  const SizedBox(height: 30.0),
+
                   const SizedBox(height: 30.0),
                   OrdersGrid(
                     onRefresh: _refreshOrders,
@@ -170,16 +171,41 @@ class _OrdersScreenState extends State<OrdersScreen> {
 }
 
 class _OrdersHeader extends StatelessWidget {
-  const _OrdersHeader();
+  final DateTime? _startDate;
+  final DateTime? _endDate;
+  final String? _selectedStatus;
+  final Function() _selectDateRange;
+  final Function() _clearDateRange;
+  final Function(String?) _onStatusSelected;
+  final Function() _refreshOrders;
+
+  const _OrdersHeader(
+    this._startDate,
+    this._endDate,
+    this._selectedStatus,
+    this._selectDateRange,
+    this._clearDateRange,
+    this._onStatusSelected,
+    this._refreshOrders,
+  );
 
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           'Заказы',
           style: GoogleFonts.inter(fontSize: 25.0, fontWeight: FontWeight.w600),
+        ),
+        const Spacer(),
+        _OrdersFilters(
+          startDate: _startDate,
+          endDate: _endDate,
+          selectedStatus: _selectedStatus,
+          onSelectDateRange: _selectDateRange,
+          onClearDateRange: _clearDateRange,
+          onStatusSelected: _onStatusSelected,
+          onRefresh: _refreshOrders,
         ),
         PrimaryButton(
           width: 185.0,
@@ -218,10 +244,8 @@ class _OrdersFilters extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
+    return Row(
       spacing: 15.0,
-      runSpacing: 15.0,
-      crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         _DateRangeFilter(
           startDate: startDate,
@@ -235,6 +259,7 @@ class _OrdersFilters extends StatelessWidget {
           onChanged: onStatusSelected,
         ),
         _RefreshButton(onPressed: onRefresh),
+        const SizedBox.shrink(),
       ],
     );
   }
@@ -299,41 +324,47 @@ class _StatusFilter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+      height: 30.0,
+      padding: const EdgeInsets.only(right: 12.0),
       decoration: BoxDecoration(
         border: Border.all(color: AppColors.primary),
-        borderRadius: BorderRadius.circular(4.0),
+        borderRadius: BorderRadius.circular(8.0),
       ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: selectedStatus,
-          hint: Text('Все статусы', style: GoogleFonts.inter(fontSize: 13.0)),
-          items: [
-            DropdownMenuItem<String>(
-              value: null,
-              child: Text(
-                'Все статусы',
-                style: GoogleFonts.inter(fontSize: 13.0),
-              ),
-            ),
-            DropdownMenuItem<String>(
-              value: 'unpaid',
-              child: Text(
-                'Не оплачен',
-                style: GoogleFonts.inter(fontSize: 13.0),
-              ),
-            ),
-            DropdownMenuItem<String>(
-              value: 'paid',
-              child: Text('Оплачен', style: GoogleFonts.inter(fontSize: 13.0)),
-            ),
-            DropdownMenuItem<String>(
-              value: 'cancelled',
-              child: Text('Отменён', style: GoogleFonts.inter(fontSize: 13.0)),
-            ),
-          ],
-          onChanged: onChanged,
+      child: DropdownButton2<String>(
+        value: selectedStatus,
+        iconStyleData: IconStyleData(
+          icon: Icon(Icons.keyboard_arrow_down, size: 18.0),
         ),
+        underline: SizedBox(),
+        dropdownStyleData: DropdownStyleData(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12.0),
+            color: Colors.white,
+          ),
+        ),
+        hint: Text('Все заказы', style: GoogleFonts.inter(fontSize: 13.0)),
+        items: [
+          DropdownMenuItem<String>(
+            value: null,
+            child: Text('Все заказы', style: GoogleFonts.inter(fontSize: 13.0)),
+          ),
+          DropdownMenuItem<String>(
+            value: 'dine_in',
+            child: Text(
+              'В ресторане',
+              style: GoogleFonts.inter(fontSize: 13.0),
+            ),
+          ),
+          DropdownMenuItem<String>(
+            value: 'delivery',
+            child: Text('Доставка', style: GoogleFonts.inter(fontSize: 13.0)),
+          ),
+          DropdownMenuItem<String>(
+            value: 'takeaway',
+            child: Text('С собой', style: GoogleFonts.inter(fontSize: 13.0)),
+          ),
+        ],
+        onChanged: onChanged,
       ),
     );
   }
@@ -346,13 +377,21 @@ class _RefreshButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      onPressed: onPressed,
-      icon: const Icon(Icons.refresh, size: 20.0),
-      tooltip: 'Обновить',
-      style: IconButton.styleFrom(
-        backgroundColor: AppColors.primary.withValues(alpha: .1),
-        foregroundColor: AppColors.primary,
+    return SizedBox(
+      height: 30.0,
+      width: 30.0,
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          elevation: 0,
+          padding: EdgeInsets.all(5.0),
+          backgroundColor: AppColors.primary,
+          foregroundColor: Colors.white,
+        ),
+        child: Icon(Icons.refresh),
       ),
     );
   }

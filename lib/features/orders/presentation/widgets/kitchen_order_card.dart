@@ -8,17 +8,15 @@ import 'package:haru_pos/core/utils/extensions.dart';
 import 'package:haru_pos/features/auth/domain/entities/auth_entity.dart';
 import 'package:haru_pos/features/orders/domain/entities/orders_entity.dart';
 import 'package:haru_pos/features/orders/presentation/bloc/orders_bloc.dart';
-import 'package:haru_pos/features/orders/presentation/widgets/change_table_dialog.dart';
 import 'package:haru_pos/features/orders/presentation/widgets/close_order_dialog.dart';
 import 'package:haru_pos/features/orders/presentation/widgets/rejected_items_dialog.dart';
-import 'package:haru_pos/features/orders/presentation/widgets/remove_order_item_dialog.dart';
 
-class OrderCard extends StatefulWidget {
+class KitchenOrderCard extends StatefulWidget {
   final OrderEntity order;
   final VoidCallback onCloseOrder;
   final VoidCallback onUpdateOrder;
 
-  const OrderCard({
+  const KitchenOrderCard({
     super.key,
     required this.order,
     required this.onCloseOrder,
@@ -26,10 +24,10 @@ class OrderCard extends StatefulWidget {
   });
 
   @override
-  State<OrderCard> createState() => _OrderCardState();
+  State<KitchenOrderCard> createState() => _KitchenOrderCardState();
 }
 
-class _OrderCardState extends State<OrderCard> {
+class _KitchenOrderCardState extends State<KitchenOrderCard> {
   bool _isExpanded = false;
 
   void _toggleExpanded() {
@@ -52,33 +50,33 @@ class _OrderCardState extends State<OrderCard> {
     }
   }
 
-  void _showChangeTableDialog(BuildContext context, OrderEntity order) async {
-    final result = await showDialog(
-      context: context,
-      builder: (context) => BlocProvider(
-        create: (context) => getIt<OrderBloc>(),
-        child: ChangeTableDialog(order: order),
-      ),
-    );
+  // void _showChangeTableDialog(BuildContext context, OrderEntity order) async {
+  //   final result = await showDialog(
+  //     context: context,
+  //     builder: (context) => BlocProvider(
+  //       create: (context) => getIt<OrderBloc>(),
+  //       child: ChangeTableDialog(order: order),
+  //     ),
+  //   );
 
-    if (result == true) {
-      widget.onCloseOrder();
-    }
-  }
+  //   if (result == true) {
+  //     widget.onCloseOrder();
+  //   }
+  // }
 
-  void _showRemoveItemDialog(BuildContext context, OrderEntity order) async {
-    final result = await showDialog(
-      context: context,
-      builder: (context) => BlocProvider(
-        create: (context) => getIt<OrderBloc>(),
-        child: RemoveOrderItemDialog(order: order),
-      ),
-    );
+  // void _showRemoveItemDialog(BuildContext context, OrderEntity order) async {
+  //   final result = await showDialog(
+  //     context: context,
+  //     builder: (context) => BlocProvider(
+  //       create: (context) => getIt<OrderBloc>(),
+  //       child: RemoveOrderItemDialog(order: order),
+  //     ),
+  //   );
 
-    if (result == true) {
-      widget.onCloseOrder();
-    }
-  }
+  //   if (result == true) {
+  //     widget.onCloseOrder();
+  //   }
+  // }
 
   void _showRejectedItemsDialog(BuildContext context, OrderEntity order) async {
     showDialog(
@@ -104,102 +102,97 @@ class _OrderCardState extends State<OrderCard> {
         border: Border.all(color: Colors.black.withValues(alpha: .46)),
         borderRadius: BorderRadius.circular(9),
       ),
-      padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 21.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          _buildOrderCardHeader(order: widget.order),
-          const SizedBox(height: 4.0),
-          if (widget.order.rejectedSessions.isNotEmpty)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+          _buildKitchenOrderCardHeader(order: widget.order),
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 20.0,
+              vertical: 15.0,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                TextButton(
-                  onPressed: () {
-                    _showRejectedItemsDialog(context, widget.order);
-                  },
-                  style: TextButton.styleFrom(
-                    foregroundColor: AppColors.primary,
-                    textStyle: GoogleFonts.inter(
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.w500,
-                    ),
+                if (widget.order.rejectedSessions.isNotEmpty)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          _showRejectedItemsDialog(context, widget.order);
+                        },
+                        style: TextButton.styleFrom(
+                          foregroundColor: AppColors.primary,
+                          textStyle: GoogleFonts.inter(
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        child: Text('Отказано'),
+                      ),
+                    ],
                   ),
-                  child: Text('Отказано'),
+                _buildOrderItemsList(
+                  items: itemsToShow,
+                  isExpanded: _isExpanded,
                 ),
+                if (hasMoreItems) ...[
+                  const SizedBox(height: 10.0),
+                  _buildShowMoreButton(
+                    isExpanded: _isExpanded,
+                    remainingCount: widget.order.orderItems.length - 2,
+                    onPressed: _toggleExpanded,
+                  ),
+                ],
+                const Divider(height: 30.0),
+                if (widget.order.table != null)
+                  Text(
+                    'Стол - ${widget.order.table!.tableNumber}',
+                    style: GoogleFonts.inter(color: const Color(0xFF797B7E)),
+                  ),
+                SizedBox(height: 10.0),
+                _buildStatus(order: widget.order),
               ],
             ),
-          _buildOrderItemsList(items: itemsToShow, isExpanded: _isExpanded),
-          if (hasMoreItems) ...[
-            const SizedBox(height: 10.0),
-            _buildShowMoreButton(
-              isExpanded: _isExpanded,
-              remainingCount: widget.order.orderItems.length - 2,
-              onPressed: _toggleExpanded,
-            ),
-          ],
-          const Divider(height: 30.0),
-          _buildFooter(order: widget.order),
+          ),
         ],
       ),
     );
   }
 
-  Row _buildOrderCardHeader({required OrderEntity order}) {
-    return Row(
-      spacing: 15.0,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (order.user != null) _UserAvatar(user: order.user!),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Заказ #${order.id}',
-              style: GoogleFonts.inter(
-                fontSize: 16.0,
-                fontWeight: FontWeight.w500,
+  Container _buildKitchenOrderCardHeader({required OrderEntity order}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 21.0, horizontal: 25.0),
+      decoration: BoxDecoration(
+        color: Colors.blue,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(7)),
+      ),
+      child: Row(
+        spacing: 15.0,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Заказ #${order.id}',
+                style: GoogleFonts.inter(
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.white,
+                ),
               ),
-            ),
-            Text(
-              order.createdAt.formatted,
-              style: GoogleFonts.inter(color: const Color(0xFF797B7E)),
-            ),
-          ],
-        ),
-        const Spacer(),
-        PopupMenuButton<String>(
-          tooltip: '',
-          color: Colors.white,
-          iconSize: 20.0,
-          iconColor: const Color(0xFF757575),
-          icon: const Icon(Icons.more_vert),
-          itemBuilder: (context) => [
-            const PopupMenuItem(
-              value: 'change_table',
-              child: Text('Пересадить'),
-            ),
-            const PopupMenuItem(
-              value: 'remove_item',
-              child: Text('Отказ блюд'),
-            ),
-            const PopupMenuItem(
-              value: 'add_items',
-              child: Text('Добавить блюда'),
-            ),
-          ],
-          onSelected: (value) {
-            if (value == 'change_table') {
-              _showChangeTableDialog(context, order);
-            } else if (value == 'remove_item') {
-              _showRemoveItemDialog(context, order);
-            } else if (value == 'add_items') {
-              widget.onUpdateOrder();
-            }
-          },
-        ),
-      ],
+              Text(
+                "${order.createdAt.formatted} ${order.createdAt.formattedTime}",
+                style: GoogleFonts.inter(color: Colors.white),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -284,43 +277,14 @@ class _OrderCardState extends State<OrderCard> {
     );
   }
 
-  Widget _buildFooter({required OrderEntity order}) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        _buildOrderInfo(order: order),
-        _buildStatus(order: order),
-      ],
-    );
-  }
-
-  Widget _buildOrderInfo({required OrderEntity order}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (order.table != null)
-          Text(
-            'Стол - ${order.table!.tableNumber}',
-            style: GoogleFonts.inter(color: const Color(0xFF797B7E)),
-          ),
-        const SizedBox(height: 10.0),
-        Text(
-          'Итого - ${order.fullPrice.formatCurrency()}',
-          style: GoogleFonts.inter(color: const Color(0xFF797B7E)),
-        ),
-      ],
-    );
-  }
-
   Widget _buildStatus({required OrderEntity order}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Row(
       children: [
         Text(
           'Статус:',
           style: GoogleFonts.inter(color: const Color(0xFF797B7E)),
         ),
-        const SizedBox(height: 5.0),
+        const SizedBox(width: 15.0),
         InkWell(
           onTap: () {
             _showCloseOrderDialog(context, order);

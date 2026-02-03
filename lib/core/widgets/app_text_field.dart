@@ -125,6 +125,7 @@ class _AppTextFieldState extends State<AppTextField> {
           borderRadius: BorderRadius.circular(8),
           borderSide: BorderSide(color: AppColors.border),
         ),
+        errorMaxLines: 3,
         prefixIcon: widget.prefixIcon,
         suffixIcon:
             widget.suffixIcon ??

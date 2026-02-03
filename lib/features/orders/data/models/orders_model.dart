@@ -8,13 +8,15 @@ class OrderItemModel extends OrderItemEntity {
     required super.id,
     required super.amount,
     required super.product,
+    required super.comment,
   });
 
   factory OrderItemModel.fromJson(Map<String, dynamic> json) {
     return OrderItemModel(
       id: json['id'] ?? 0,
       amount: json['amount'] ?? 1,
-      product: OrderProductModel.fromJson(json['product']),
+      product: OrderProductModel.fromJson(json['product'] ?? {}),
+      comment: json['comment'] ?? '',
     );
   }
 
@@ -23,11 +25,39 @@ class OrderItemModel extends OrderItemEntity {
       'id': id,
       'amount': amount,
       'product': (product as OrderProductModel).toJson(),
+      'comment': comment,
     };
   }
 
   Map<String, dynamic> toCreateJson() {
-    return {'product_id': product.id, 'amount': amount};
+    return {'product_id': product.id, 'amount': amount, 'comment': comment};
+  }
+}
+
+class RejectedSessionModel extends OrderRejectedSession {
+  const RejectedSessionModel({
+    required super.id,
+    required super.voidFault,
+    required super.comment,
+    required super.createdAt,
+    required super.items,
+  });
+
+  factory RejectedSessionModel.fromJson(Map<String, dynamic> json) {
+    final items =
+        (json['items'] as List?)
+            ?.map((e) => OrderItemModel.fromJson(e))
+            .toList() ??
+        [];
+    return RejectedSessionModel(
+      id: json['id'] ?? 0,
+      voidFault: json['void_fault'] ?? 'staff',
+      comment: json['comment'] ?? '',
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'])
+          : DateTime.now(),
+      items: items,
+    );
   }
 }
 
@@ -40,6 +70,7 @@ class OrderModel extends OrderEntity {
     required super.user,
     required super.active,
     required super.orderItems,
+    required super.rejectedSessions,
     required super.createdAt,
   });
 
@@ -47,6 +78,11 @@ class OrderModel extends OrderEntity {
     final orderItems =
         (json['order_items'] as List?)
             ?.map((e) => OrderItemModel.fromJson(e))
+            .toList() ??
+        [];
+    final rejectedSessions =
+        (json['rejected_sessions'] as List?)
+            ?.map((e) => RejectedSessionModel.fromJson(e))
             .toList() ??
         [];
     return OrderModel(
@@ -57,6 +93,7 @@ class OrderModel extends OrderEntity {
       user: json['user'] != null ? UserModel.fromJson(json['user']) : null,
       active: json['active'] ?? false,
       orderItems: orderItems,
+      rejectedSessions: rejectedSessions,
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'])
           : DateTime.now(),
@@ -100,6 +137,7 @@ class OrderModel extends OrderEntity {
       table: table,
       user: user,
       orderItems: orderItems,
+      rejectedSessions: rejectedSessions,
       createdAt: createdAt,
       active: active,
     );

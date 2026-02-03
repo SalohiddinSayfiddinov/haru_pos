@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:haru_pos/core/errors/errors.dart';
 import 'package:haru_pos/core/errors/failures.dart';
 import 'package:haru_pos/features/orders/data/datasources/orders_remote_datasource.dart';
+import 'package:haru_pos/features/orders/data/models/orders_dto.dart';
 import 'package:haru_pos/features/orders/domain/entities/orders_entity.dart';
 import 'package:haru_pos/features/orders/domain/repositories/orders_repository.dart';
 import 'package:injectable/injectable.dart';
@@ -111,11 +112,15 @@ class OrderRepositoryImpl implements OrderRepository {
   @override
   Future<Either<Failure, OrderEntity>> addItemsToOrder({
     required int orderId,
+    required String type,
+    int? tableId,
     required List<Map<String, dynamic>> orderItems,
   }) async {
     try {
       final order = await remoteDataSource.addItemsToOrder(
         orderId: orderId,
+        type: type,
+        tableId: tableId,
         orderItems: orderItems,
       );
       return Right(order.toEntity());
@@ -152,5 +157,69 @@ class OrderRepositoryImpl implements OrderRepository {
     } catch (e) {
       return Left(ServerFailure('An unexpected error occurred'));
     }
+  }
+
+  @override
+  Future<Either<Failure, void>> rejectOrder({
+    required int id,
+    required RejectOrderRequest request,
+  }) async {
+    try {
+      await remoteDataSource.rejectOrder(id, request);
+      return const Right(null);
+    } on DioException catch (e) {
+      final errorMessage = handleDioError(e);
+      return Left(ServerFailure(errorMessage));
+    } catch (e) {
+      return Left(ServerFailure('An unexpected error occurred'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<OrderEntity>>> getOrderHistory({
+    int? limit,
+    int? offset,
+    String? startDt,
+    String? endDt,
+    String? type,
+  }) async {
+    try {
+      final orders = await remoteDataSource.getOrdersHistory(
+        limit: limit,
+        offset: offset,
+        startDt: startDt,
+        endDt: endDt,
+        type: type,
+      );
+      return Right(orders.map((model) => model.toEntity()).toList());
+    } on DioException catch (e) {
+      final errorMessage = handleDioError(e);
+      return Left(ServerFailure(errorMessage));
+    } catch (e, s) {
+      print(e);
+      print(s);
+      return Left(ServerFailure('An unexpected error occurred'));
+    }
+  }
+
+  @override
+  Stream<Either<Failure, List<OrderEntity>>> watchOrders({
+    int? limit,
+    int? offset,
+    String? startDt,
+    String? endDt,
+  }) {
+    return remoteDataSource
+        .watchOrders(
+          limit: limit,
+          offset: offset,
+          startDt: startDt,
+          endDt: endDt,
+        )
+        .map((models) {
+          final entities = models.map((m) => m.toEntity()).toList();
+          return Right<Failure, List<OrderEntity>>(entities);
+        })
+        .handleError((_) => Left(ServerFailure('WebSocket Error')));
   }
 }

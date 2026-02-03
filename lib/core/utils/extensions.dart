@@ -6,6 +6,7 @@ extension FormatExtension on num {
     );
     return '$amountStr сум';
   }
+
   String formatCurrencyUz() {
     final amountStr = toString().replaceAllMapped(
       RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
@@ -85,6 +86,34 @@ extension TypeToString on String {
         return 'Доставка';
       default:
         return 'Не опознано';
+    }
+  }
+}
+
+extension FaultToString on String {
+  String faultToRu() {
+    switch (this) {
+      case 'customer':
+        return 'Клиент';
+      case 'kitchen':
+        return 'Кухня';
+      case 'staff':
+        return 'Сотрудник';
+      default:
+        return 'Не опознано';
+    }
+  }
+
+  String faultToUz() {
+    switch (this) {
+      case 'customer':
+        return 'Mijoz';
+      case 'kitchen':
+        return 'Oshxona';
+      case 'staff':
+        return 'Ishchilar';
+      default:
+        return 'Nomalum';
     }
   }
 }

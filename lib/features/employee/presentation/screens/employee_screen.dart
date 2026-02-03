@@ -4,10 +4,12 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:haru_pos/core/di/injection.dart';
 import 'package:haru_pos/core/widgets/app_buttons.dart';
 import 'package:haru_pos/core/widgets/app_snack_bar.dart';
+import 'package:haru_pos/features/employee/domain/entities/employee_entity.dart';
 import 'package:haru_pos/features/employee/presentation/bloc/employee_bloc.dart';
 import 'package:haru_pos/features/employee/presentation/widgets/add_employee_dialog.dart';
 import 'package:haru_pos/features/employee/presentation/widgets/delete_employee_dialog.dart';
 import 'package:haru_pos/features/employee/presentation/widgets/employee_card.dart';
+import 'package:haru_pos/features/employee/presentation/widgets/penalty_confirmation_dialog.dart';
 
 class EmployeeScreen extends StatefulWidget {
   const EmployeeScreen({super.key});
@@ -42,6 +44,19 @@ class _EmployeeScreenState extends State<EmployeeScreen> {
       builder: (context) => BlocProvider(
         create: (context) => getIt<EmployeeBloc>(),
         child: AddEmployeeDialog(employee: employee),
+      ),
+    );
+    if (result == true && mounted) {
+      context.read<EmployeeBloc>().add(LoadEmployeesEvent());
+    }
+  }
+
+  void _showPenaltyConfirmationDialog(EmployeeEntity employee) async {
+    final result = await showDialog(
+      context: context,
+      builder: (context) => BlocProvider(
+        create: (context) => getIt<EmployeeBloc>(),
+        child: PenaltyConfirmationDialog(employee: employee),
       ),
     );
     if (result == true && mounted) {
@@ -172,6 +187,7 @@ class _EmployeeScreenState extends State<EmployeeScreen> {
                   employee.id,
                   employee.fullName,
                 ),
+                onPenalty: () => _showPenaltyConfirmationDialog(employee),
               );
             }).toList(),
           );

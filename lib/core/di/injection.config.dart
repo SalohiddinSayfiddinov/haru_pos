@@ -119,6 +119,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i949.GetOrdersUseCase>(
       () => _i949.GetOrdersUseCase(gh<_i740.OrderRepository>()),
     );
+    gh.factory<_i949.GetOrderHistoryUseCase>(
+      () => _i949.GetOrderHistoryUseCase(gh<_i740.OrderRepository>()),
+    );
     gh.factory<_i949.CreateOrderUseCase>(
       () => _i949.CreateOrderUseCase(gh<_i740.OrderRepository>()),
     );
@@ -136,6 +139,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i949.UpdateOrderItemsUseCase>(
       () => _i949.UpdateOrderItemsUseCase(gh<_i740.OrderRepository>()),
+    );
+    gh.factory<_i949.RejectOrderUseCase>(
+      () => _i949.RejectOrderUseCase(gh<_i740.OrderRepository>()),
+    );
+    gh.factory<_i949.WatchOrdersUseCase>(
+      () => _i949.WatchOrdersUseCase(gh<_i740.OrderRepository>()),
     );
     gh.lazySingleton<_i140.CategoryRemoteDataSource>(
       () => _i140.CategoryRemoteDataSourceImpl(dio: gh<_i361.Dio>()),
@@ -225,6 +234,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i355.DeleteEmployeeUseCase>(
       () => _i355.DeleteEmployeeUseCase(gh<_i222.EmployeeRepository>()),
     );
+    gh.factory<_i355.UpdateLimitUseCase>(
+      () => _i355.UpdateLimitUseCase(gh<_i222.EmployeeRepository>()),
+    );
     gh.factory<_i1016.LoginUseCase>(
       () => _i1016.LoginUseCase(gh<_i731.AuthRepository>()),
     );
@@ -274,6 +286,15 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i791.DeleteProductUseCase>(
       () => _i791.DeleteProductUseCase(gh<_i411.ProductRepository>()),
     );
+    gh.factory<_i102.EmployeeBloc>(
+      () => _i102.EmployeeBloc(
+        getEmployeesUseCase: gh<_i355.GetEmployeesUseCase>(),
+        createEmployeeUseCase: gh<_i355.CreateEmployeeUseCase>(),
+        updateEmployeeUseCase: gh<_i355.UpdateEmployeeUseCase>(),
+        deleteEmployeeUseCase: gh<_i355.DeleteEmployeeUseCase>(),
+        updateLimitUseCase: gh<_i355.UpdateLimitUseCase>(),
+      ),
+    );
     gh.factory<_i101.ProductBloc>(
       () => _i101.ProductBloc(
         getProductsUseCase: gh<_i791.GetProductsUseCase>(),
@@ -295,14 +316,9 @@ extension GetItInjectableX on _i174.GetIt {
         kitchenPrinterService: gh<_i114.KitchenPrinterService>(),
         addItemsToOrderUseCase: gh<_i949.AddItemsToOrderUseCase>(),
         updateOrderItemsUseCase: gh<_i949.UpdateOrderItemsUseCase>(),
-      ),
-    );
-    gh.factory<_i102.EmployeeBloc>(
-      () => _i102.EmployeeBloc(
-        getEmployeesUseCase: gh<_i355.GetEmployeesUseCase>(),
-        createEmployeeUseCase: gh<_i355.CreateEmployeeUseCase>(),
-        updateEmployeeUseCase: gh<_i355.UpdateEmployeeUseCase>(),
-        deleteEmployeeUseCase: gh<_i355.DeleteEmployeeUseCase>(),
+        rejectOrderUseCase: gh<_i949.RejectOrderUseCase>(),
+        getOrdersHistoryUseCase: gh<_i949.GetOrderHistoryUseCase>(),
+        watchOrdersUseCase: gh<_i949.WatchOrdersUseCase>(),
       ),
     );
     return this;

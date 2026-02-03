@@ -6,16 +6,37 @@ import 'package:haru_pos/features/orders/domain/entities/order_product_entity.da
 class OrderItemEntity extends Equatable {
   final int id;
   final int amount;
+  final String comment;
   final OrderProductEntity product;
 
   const OrderItemEntity({
     required this.id,
     required this.amount,
     required this.product,
+    required this.comment,
   });
 
   @override
   List<Object> get props => [id, amount, product];
+}
+
+class OrderRejectedSession extends Equatable {
+  final int id;
+  final String voidFault;
+  final String comment;
+  final DateTime createdAt;
+  final List<OrderItemEntity> items;
+
+  const OrderRejectedSession({
+    required this.id,
+    required this.voidFault,
+    required this.comment,
+    required this.createdAt,
+    required this.items,
+  });
+
+  @override
+  List<Object> get props => [id, voidFault, comment, createdAt, items];
 }
 
 class OrderEntity extends Equatable {
@@ -26,6 +47,7 @@ class OrderEntity extends Equatable {
   final UserEntity? user;
   final bool active;
   final List<OrderItemEntity> orderItems;
+  final List<OrderRejectedSession> rejectedSessions;
   final DateTime createdAt;
 
   const OrderEntity({
@@ -36,6 +58,7 @@ class OrderEntity extends Equatable {
     required this.user,
     required this.active,
     required this.orderItems,
+    required this.rejectedSessions,
     required this.createdAt,
   });
 
