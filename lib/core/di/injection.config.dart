@@ -313,7 +313,6 @@ extension GetItInjectableX on _i174.GetIt {
         deleteOrderUseCase: gh<_i949.DeleteOrderUseCase>(),
         closeOrderUseCase: gh<_i949.CloseOrderUseCase>(),
         printerService: gh<_i950.ThermalPrinterService>(),
-        kitchenPrinterService: gh<_i114.KitchenPrinterService>(),
         addItemsToOrderUseCase: gh<_i949.AddItemsToOrderUseCase>(),
         updateOrderItemsUseCase: gh<_i949.UpdateOrderItemsUseCase>(),
         rejectOrderUseCase: gh<_i949.RejectOrderUseCase>(),

@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:haru_pos/core/errors/failures.dart';
-import 'package:haru_pos/core/services/kitchen_printer_service.dart';
 import 'package:haru_pos/core/services/thermal_priner_service.dart';
 import 'package:haru_pos/features/auth/domain/usecases/auth_usecases.dart';
 import 'package:haru_pos/features/hall/domain/usecases/table_usecases.dart';
@@ -27,7 +26,6 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
   final CloseOrderUseCase closeOrderUseCase;
   final GetCurrentUserUseCase getCurrentUserUseCase;
   final ThermalPrinterService printerService;
-  final KitchenPrinterService kitchenPrinterService;
   final AddItemsToOrderUseCase addItemsToOrderUseCase;
   final UpdateOrderItemsUseCase updateOrderItemsUseCase;
   final RejectOrderUseCase rejectOrderUseCase;
@@ -42,7 +40,6 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     required this.deleteOrderUseCase,
     required this.closeOrderUseCase,
     required this.printerService,
-    required this.kitchenPrinterService,
     required this.addItemsToOrderUseCase,
     required this.updateOrderItemsUseCase,
     required this.rejectOrderUseCase,
@@ -58,7 +55,6 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     on<RemoveFromCartEvent>(_onRemoveFromCart);
     on<ClearCartEvent>(_onClearCart);
     on<CloseOrderEvent>(_onCloseOrder);
-    on<RetryPrintEvent>(_onRetryEvent);
     on<AddItemsToOrderEvent>(_onAddItemsToOrder);
     on<UpdateOrderItemsEvent>(_onUpdateOrderItems);
     on<SetOrderForEditing>(_onSetOrderForEditing);
@@ -234,7 +230,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     );
 
     await result.fold(
-      (failure) async {
+      (failure) {
         emit(
           OrderError(
             message: _mapFailureToMessage(failure),
@@ -243,41 +239,14 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
           ),
         );
       },
-      (order) async {
-        try {
-          final printResult = await kitchenPrinterService.printKitchenTicket(
-            order,
-          );
-
-          if (emit.isDone) return;
-
-          if (printResult) {
-            emit(
-              OrderOperationSuccess(
-                message: 'Order created successfully',
-                cartItems: const [],
-                orders: [...state.orders, order],
-              ),
-            );
-          } else {
-            emit(
-              OrderCreatedPrintFailed(
-                order: order,
-                errorMessage:
-                    'Buyurtma yaratildi, oshxonadagi printer ishlamadi.',
-              ),
-            );
-          }
-        } catch (e) {
-          if (emit.isDone) return;
-          emit(
-            OrderError(
-              message: 'Xatolik yuz berdi: $e',
-              cartItems: state.cartItems,
-              orders: state.orders,
-            ),
-          );
-        }
+      (order) {
+        emit(
+          OrderOperationSuccess(
+            message: 'Order created successfully',
+            cartItems: const [],
+            orders: [...state.orders, order],
+          ),
+        );
       },
     );
   }
@@ -523,27 +492,6 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
           }
         }
 
-        if (itemsToPrint.isNotEmpty) {
-          try {
-            final printOrder = OrderEntity(
-              id: order.id,
-              type: order.type,
-              fullPrice: order.fullPrice,
-              table: order.table,
-              user: order.user,
-              active: order.active,
-              orderItems: itemsToPrint,
-              createdAt: order.createdAt,
-              rejectedSessions: order.rejectedSessions,
-            );
-
-            await kitchenPrinterService.printKitchenTicket(printOrder);
-          } catch (e) {
-            print("Error printing updated items: $e");
-          }
-        }
-
-        print("Order updated successfully");
         final updatedOrders = state.orders.map((o) {
           return o.id == order.id ? order : o;
         }).toList();
@@ -611,7 +559,6 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
             orders: state.orders,
           ),
           (orders) {
-            print(orders);
             return OrdersLoaded(
               orders: orders,
               cartItems: state.cartItems,
@@ -628,33 +575,6 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
         );
       },
     );
-  }
-
-  void _onRetryEvent(RetryPrintEvent event, Emitter<OrderState> emit) async {
-    emit(OrderLoading());
-    try {
-      final success = await kitchenPrinterService.printKitchenTicket(
-        event.order,
-      );
-      if (success) {
-        OrderOperationSuccess(
-          message: 'Order closed successfully',
-          cartItems: state.cartItems,
-          orders: [event.order],
-        );
-      } else {
-        emit(
-          OrderCreatedPrintFailed(
-            order: event.order,
-            errorMessage: "Still cannot connect to printer.",
-          ),
-        );
-      }
-    } catch (e) {
-      emit(
-        OrderCreatedPrintFailed(order: event.order, errorMessage: e.toString()),
-      );
-    }
   }
 
   void _onAddToCart(AddToCartEvent event, Emitter<OrderState> emit) {

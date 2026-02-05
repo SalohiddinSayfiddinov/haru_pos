@@ -167,7 +167,9 @@ class _KitchenOrderCardState extends State<KitchenOrderCard> {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 21.0, horizontal: 25.0),
       decoration: BoxDecoration(
-        color: Colors.blue,
+        color: order.type == 'dine_in'
+            ? Color(0xFF0069F4).withValues(alpha: .8)
+            : Color(0xFF1BB90C).withValues(alpha: .80),
         borderRadius: BorderRadius.vertical(top: Radius.circular(7)),
       ),
       child: Row(
@@ -215,6 +217,7 @@ class _KitchenOrderCardState extends State<KitchenOrderCard> {
       children: [
         CircleAvatar(
           radius: 35.0,
+          backgroundColor: Colors.white,
           backgroundImage: NetworkImage(item.product.image),
         ),
         const SizedBox(width: 20.0),
@@ -230,17 +233,16 @@ class _KitchenOrderCardState extends State<KitchenOrderCard> {
               ),
               const SizedBox(height: 4.0),
               Text(
-                item.product.category.nameRu,
-                style: GoogleFonts.inter(color: const Color(0xFF797B7E)),
+                'Ед: ${item.amount}',
+                style: GoogleFonts.inter(fontSize: 15.0),
               ),
               Text(
-                item.product.price.formatCurrency(),
-                style: GoogleFonts.inter(),
+                item.product.comment ?? '',
+                style: GoogleFonts.inter(color: AppColors.primary),
               ),
             ],
           ),
         ),
-        Text('Ед: ${item.amount}', style: GoogleFonts.inter(fontSize: 15.0)),
       ],
     );
   }

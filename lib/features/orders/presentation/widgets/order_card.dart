@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -368,25 +369,27 @@ class _UserAvatarState extends State<_UserAvatar> {
         ? widget.user.username
         : widget.user.fullName;
 
-    return Tooltip(
-      message: displayName,
-      waitDuration: const Duration(milliseconds: 500),
-      child: CircleAvatar(
-        radius: 25.0,
-        backgroundColor: Colors.grey[200],
-        backgroundImage: widget.user.image != null
-            ? NetworkImage(widget.user.image!)
-            : null,
-        child: widget.user.image == null
-            ? Text(
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 30.0),
+      child: Tooltip(
+        message: displayName,
+        waitDuration: const Duration(milliseconds: 500),
+        child: ClipOval(
+          child: CachedNetworkImage(
+            imageUrl: widget.user.image ?? '',
+            fit: BoxFit.cover,
+            width: 45,
+            height: 45,
+            errorWidget: (context, url, error) => CircleAvatar(
+              backgroundColor: AppColors.primary,
+              radius: 22,
+              child: Text(
                 widget.user.username[0].toUpperCase(),
-                style: GoogleFonts.inter(
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
-                ),
-              )
-            : null,
+                style: TextStyle(fontSize: 20.0, color: Colors.white),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

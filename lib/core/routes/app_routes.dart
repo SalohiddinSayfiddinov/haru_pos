@@ -121,7 +121,7 @@ class AppRouter {
           GoRoute(
             path: AppPages.orders,
             pageBuilder: (context, state) {
-              return NoTransitionPage(child: KitchenOrdersScreen());
+              return NoTransitionPage(child: OrdersScreen());
             },
           ),
           GoRoute(
