@@ -142,6 +142,33 @@ class _OrderCardState extends State<OrderCard> {
           ],
           const Divider(height: 30.0),
           _buildFooter(order: widget.order),
+          SizedBox(height: 10),
+          InkWell(
+            onTap: () {
+              _showCloseOrderDialog(context, widget.order);
+            },
+            child: Container(
+              height: 40.0,
+              decoration: BoxDecoration(
+                color: widget.order.active ? AppColors.primary : Colors.green,
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              padding: const EdgeInsets.symmetric(
+                vertical: 7.0,
+                horizontal: 20.0,
+              ),
+              child: Center(
+                child: Text(
+                  widget.order.active ? 'Не оплачен' : 'Оплачен',
+                  style: GoogleFonts.montserrat(
+                    fontSize: 12.0,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -223,6 +250,7 @@ class _OrderCardState extends State<OrderCard> {
       children: [
         CircleAvatar(
           radius: 35.0,
+          backgroundColor: Colors.white,
           backgroundImage: NetworkImage(item.product.image),
         ),
         const SizedBox(width: 20.0),
@@ -299,11 +327,13 @@ class _OrderCardState extends State<OrderCard> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (order.table != null)
-          Text(
-            'Стол - ${order.table!.tableNumber}',
-            style: GoogleFonts.inter(color: const Color(0xFF797B7E)),
-          ),
+        Text(
+          order.table != null
+              ? 'Стол - ${order.table!.tableNumber}'
+              : 'На вынос',
+          style: GoogleFonts.inter(color: const Color(0xFF797B7E)),
+        ),
+
         const SizedBox(height: 10.0),
         Text(
           'Итого - ${order.fullPrice.formatCurrency()}',
@@ -322,32 +352,6 @@ class _OrderCardState extends State<OrderCard> {
           style: GoogleFonts.inter(color: const Color(0xFF797B7E)),
         ),
         const SizedBox(height: 5.0),
-        InkWell(
-          onTap: () {
-            _showCloseOrderDialog(context, order);
-          },
-          child: Container(
-            height: 30.0,
-            decoration: BoxDecoration(
-              color: order.active ? AppColors.primary : Colors.green,
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-            padding: const EdgeInsets.symmetric(
-              vertical: 7.0,
-              horizontal: 20.0,
-            ),
-            child: Center(
-              child: Text(
-                order.active ? 'Не оплачен' : 'Оплачен',
-                style: GoogleFonts.montserrat(
-                  fontSize: 12.0,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ),
-        ),
       ],
     );
   }
@@ -364,7 +368,6 @@ class _UserAvatar extends StatefulWidget {
 class _UserAvatarState extends State<_UserAvatar> {
   @override
   Widget build(BuildContext context) {
-    // Logic to determine the display name for the tooltip
     final String displayName = (widget.user.fullName.isEmpty)
         ? widget.user.username
         : widget.user.fullName;
