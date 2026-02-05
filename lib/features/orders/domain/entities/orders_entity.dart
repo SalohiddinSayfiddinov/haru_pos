@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:haru_pos/features/auth/domain/entities/auth_entity.dart';
 import 'package:haru_pos/features/hall/domain/entities/table_entity.dart';
+import 'package:haru_pos/features/orders/data/models/order_status.dart';
 import 'package:haru_pos/features/orders/domain/entities/order_product_entity.dart';
 
 class OrderItemEntity extends Equatable {
@@ -46,6 +47,7 @@ class OrderEntity extends Equatable {
   final TableEntity? table;
   final UserEntity? user;
   final bool active;
+  final OrderStatus status;
   final List<OrderItemEntity> orderItems;
   final List<OrderRejectedSession> rejectedSessions;
   final DateTime createdAt;
@@ -57,6 +59,7 @@ class OrderEntity extends Equatable {
     this.table,
     required this.user,
     required this.active,
+    required this.status,
     required this.orderItems,
     required this.rejectedSessions,
     required this.createdAt,
@@ -69,7 +72,9 @@ class OrderEntity extends Equatable {
     fullPrice,
     table,
     user,
+    status,
     orderItems,
+    rejectedSessions,
     createdAt,
   ];
 }

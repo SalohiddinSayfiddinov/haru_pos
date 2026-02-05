@@ -1,6 +1,7 @@
 import 'package:haru_pos/features/auth/data/models/user_model.dart';
 import 'package:haru_pos/features/hall/data/models/table_model.dart';
 import 'package:haru_pos/features/orders/data/models/order_product_model.dart';
+import 'package:haru_pos/features/orders/data/models/order_status.dart';
 import 'package:haru_pos/features/orders/domain/entities/orders_entity.dart';
 
 class OrderItemModel extends OrderItemEntity {
@@ -69,6 +70,7 @@ class OrderModel extends OrderEntity {
     super.table,
     required super.user,
     required super.active,
+    required super.status,
     required super.orderItems,
     required super.rejectedSessions,
     required super.createdAt,
@@ -92,6 +94,10 @@ class OrderModel extends OrderEntity {
       table: json['table'] != null ? TableModel.fromJson(json['table']) : null,
       user: json['user'] != null ? UserModel.fromJson(json['user']) : null,
       active: json['active'] ?? false,
+      status: OrderStatus.values.firstWhere(
+        (e) => e.apiKey == json['status'],
+        orElse: () => OrderStatus.newOrder,
+      ),
       orderItems: orderItems,
       rejectedSessions: rejectedSessions,
       createdAt: json['created_at'] != null
@@ -140,6 +146,7 @@ class OrderModel extends OrderEntity {
       rejectedSessions: rejectedSessions,
       createdAt: createdAt,
       active: active,
+      status: status,
     );
   }
 }

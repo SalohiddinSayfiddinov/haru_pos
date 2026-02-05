@@ -6,6 +6,7 @@ import 'package:haru_pos/core/constants/app_colors.dart';
 import 'package:haru_pos/core/di/injection.dart';
 import 'package:haru_pos/core/utils/date_extensions.dart';
 import 'package:haru_pos/core/utils/extensions.dart';
+import 'package:haru_pos/core/utils/order_extensions.dart';
 import 'package:haru_pos/features/auth/domain/entities/auth_entity.dart';
 import 'package:haru_pos/features/orders/domain/entities/orders_entity.dart';
 import 'package:haru_pos/features/orders/presentation/bloc/orders_bloc.dart';
@@ -348,10 +349,14 @@ class _OrderCardState extends State<OrderCard> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Статус:',
+          'Статус',
           style: GoogleFonts.inter(color: const Color(0xFF797B7E)),
         ),
         const SizedBox(height: 5.0),
+        Text(
+          order.status.toLocalizedText('ru'),
+          style: GoogleFonts.inter(fontWeight: FontWeight.w500),
+        ),
       ],
     );
   }
