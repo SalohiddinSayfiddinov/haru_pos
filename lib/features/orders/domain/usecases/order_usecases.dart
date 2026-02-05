@@ -16,12 +16,14 @@ class GetOrdersUseCase {
     int? offset,
     String? startDt,
     String? endDt,
+    String? type,
   }) async {
     return await repository.getOrders(
       limit: limit,
       offset: offset,
       startDt: startDt,
       endDt: endDt,
+      type: type,
     );
   }
 }

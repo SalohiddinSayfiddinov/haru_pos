@@ -92,6 +92,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
       offset: event.offset,
       startDt: event.startDt?.toString(),
       endDt: event.endDt?.toString(),
+      type: event.type,
     );
 
     result.fold(
@@ -128,7 +129,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     if (event.loadMore) {
       emit(
         OrderLoading(
-          cartItems: state.cartItems,
+        cartItems: state.cartItems,
           orders: state.orders,
           hasReachedMax: state.hasReachedMax,
           isLoadMore: true,

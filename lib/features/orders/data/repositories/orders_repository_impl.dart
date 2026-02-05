@@ -20,6 +20,7 @@ class OrderRepositoryImpl implements OrderRepository {
     int? offset,
     String? startDt,
     String? endDt,
+    String? type,
   }) async {
     try {
       final orders = await remoteDataSource.getOrders(
@@ -27,6 +28,7 @@ class OrderRepositoryImpl implements OrderRepository {
         offset: offset,
         startDt: startDt,
         endDt: endDt,
+        type: type
       );
       return Right(orders.map((model) => model.toEntity()).toList());
     } on DioException catch (e) {

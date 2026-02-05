@@ -9,6 +9,7 @@ abstract class OrderRepository {
     int? offset,
     String? startDt,
     String? endDt,
+    String? type,
   });
 
   Future<Either<Failure, List<OrderEntity>>> getOrderHistory({

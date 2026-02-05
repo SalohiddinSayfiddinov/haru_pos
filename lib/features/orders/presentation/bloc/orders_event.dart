@@ -12,7 +12,7 @@ class LoadOrdersEvent extends OrderEvent {
   final int offset;
   final DateTime? startDt;
   final DateTime? endDt;
-  final String? status;
+  final String? type;
   final bool loadMore;
 
   const LoadOrdersEvent({
@@ -20,12 +20,12 @@ class LoadOrdersEvent extends OrderEvent {
     this.offset = 0,
     this.startDt,
     this.endDt,
-    this.status,
+    this.type,
     this.loadMore = false,
   });
 
   @override
-  List<Object?> get props => [limit, offset, startDt, endDt, status, loadMore];
+  List<Object?> get props => [limit, offset, startDt, endDt, type, loadMore];
 }
 
 class LoadOrdersHistoryEvent extends OrderEvent {

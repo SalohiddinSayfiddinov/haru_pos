@@ -329,7 +329,7 @@ class _OrderCardState extends State<OrderCard> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          order.table != null
+          order.type == 'dine_in'
               ? 'Стол - ${order.table!.tableNumber}'
               : 'На вынос',
           style: GoogleFonts.inter(color: const Color(0xFF797B7E)),

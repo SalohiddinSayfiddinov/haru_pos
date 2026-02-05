@@ -12,6 +12,7 @@ abstract class OrderRemoteDataSource {
     int? offset,
     String? startDt,
     String? endDt,
+    String? type,
   });
   Future<List<OrderModel>> getOrdersHistory({
     int? limit,
@@ -71,6 +72,7 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
     int? offset,
     String? startDt,
     String? endDt,
+    String? type,
   }) async {
     final Map<String, dynamic> queryParams = {};
 
@@ -78,6 +80,7 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
     if (offset != null) queryParams['offset'] = offset;
     if (startDt != null) queryParams['start_dt'] = startDt;
     if (endDt != null) queryParams['end_dt'] = endDt;
+    if (type != null) queryParams['order_types'] = [type];
 
     final response = await dio.get('/orders', queryParameters: queryParams);
 
@@ -103,7 +106,7 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
     if (offset != null) queryParams['offset'] = offset;
     if (startDt != null) queryParams['start_dt'] = startDt;
     if (endDt != null) queryParams['end_dt'] = endDt;
-    if (type != null) queryParams['order_types'] = type;
+    if (type != null) queryParams['order_types'] = [type];
 
     final response = await dio.get(
       '/orders/history',
