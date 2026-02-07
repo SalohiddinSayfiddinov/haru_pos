@@ -1,4 +1,4 @@
-import 'package:haru_pos/features/dashboard/data/models/dashboard_model.dart';
+ import 'package:haru_pos/features/dashboard/data/models/dashboard_model.dart';
 
 class MockData {
   static final profitData = ProfitData(

@@ -14,18 +14,20 @@ class CreateEmployeeEvent extends EmployeeEvent {
   final String username;
   final String password;
   final String role;
-  final XFile image;
+  final XFile? image;
+  final int limit;
 
   const CreateEmployeeEvent({
     required this.fullName,
     required this.username,
     required this.password,
     required this.role,
-    required this.image,
+    this.image,
+    required this.limit,
   });
 
   @override
-  List<Object> get props => [fullName, username, password, role, image];
+  List<Object> get props => [fullName, username, password, role, ?image, limit];
 }
 
 class UpdateEmployeeEvent extends EmployeeEvent {
@@ -35,6 +37,7 @@ class UpdateEmployeeEvent extends EmployeeEvent {
   final String password;
   final String role;
   final XFile? image;
+  final int limit;
 
   const UpdateEmployeeEvent({
     required this.id,
@@ -42,11 +45,20 @@ class UpdateEmployeeEvent extends EmployeeEvent {
     required this.username,
     required this.password,
     required this.role,
+    required this.limit,
     this.image,
   });
 
   @override
-  List<Object> get props => [id, fullName, username, password, role, ?image];
+  List<Object> get props => [
+    id,
+    fullName,
+    username,
+    password,
+    role,
+    limit,
+    ?image,
+  ];
 }
 
 class DeleteEmployeeEvent extends EmployeeEvent {

@@ -129,7 +129,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     if (event.loadMore) {
       emit(
         OrderLoading(
-        cartItems: state.cartItems,
+          cartItems: state.cartItems,
           orders: state.orders,
           hasReachedMax: state.hasReachedMax,
           isLoadMore: true,

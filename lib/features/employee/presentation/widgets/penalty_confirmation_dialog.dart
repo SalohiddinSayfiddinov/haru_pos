@@ -30,11 +30,10 @@ class _PenaltyConfirmationDialogState extends State<PenaltyConfirmationDialog> {
 
   void _onSave() {
     if (!_formKey.currentState!.validate()) return;
+    final limit = int.parse(_penaltyController.text.replaceAll(' ', ''));
+
     context.read<EmployeeBloc>().add(
-      UpdateLimitEvent(
-        userId: widget.employee.id,
-        limit: int.parse(_penaltyController.text),
-      ),
+      UpdateLimitEvent(userId: widget.employee.id, limit: limit),
     );
   }
 

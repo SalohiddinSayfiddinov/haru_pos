@@ -27,7 +27,8 @@ class CreateEmployeeUseCase {
     required String username,
     required String password,
     required String role,
-    required XFile image,
+    XFile? image,
+    required int limit,
   }) async {
     return await repository.createEmployee(
       fullName: fullName,
@@ -35,6 +36,7 @@ class CreateEmployeeUseCase {
       password: password,
       role: role,
       image: image,
+      limit: limit,
     );
   }
 }
@@ -52,6 +54,7 @@ class UpdateEmployeeUseCase {
     required String password,
     required String role,
     XFile? image,
+    required int limit,
   }) async {
     return await repository.updateEmployee(
       id: id,
@@ -60,6 +63,7 @@ class UpdateEmployeeUseCase {
       password: password,
       role: role,
       image: image,
+      limit: limit,
     );
   }
 }

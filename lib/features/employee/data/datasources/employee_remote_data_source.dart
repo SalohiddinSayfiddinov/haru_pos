@@ -12,7 +12,8 @@ abstract class EmployeeRemoteDataSource {
     required String username,
     required String password,
     required String role,
-    required XFile image,
+    XFile? image,
+    required int limit,
   });
   Future<EmployeeModel> updateEmployee({
     required int id,
@@ -20,6 +21,7 @@ abstract class EmployeeRemoteDataSource {
     required String username,
     required String password,
     required String role,
+    required int limit,
     XFile? image,
   });
   Future<void> deleteEmployee(int id);
@@ -51,15 +53,21 @@ class EmployeeRemoteDataSourceImpl implements EmployeeRemoteDataSource {
     required String username,
     required String password,
     required String role,
-    required XFile image,
+    XFile? image,
+    required int limit,
   }) async {
-    final bytes = await image.readAsBytes();
+    Uint8List? bytes;
+    if (image != null) {
+      bytes = await image.readAsBytes();
+    }
     final formData = FormData.fromMap({
       'full_name': fullName,
       'username': username,
       'password': password,
       'role': role,
-      'image': MultipartFile.fromBytes(bytes, filename: image.name),
+      'limit': limit,
+      if (bytes != null)
+        'image': MultipartFile.fromBytes(bytes, filename: image!.name),
     });
 
     final response = await dio.post('/staff/create', data: formData);
@@ -74,6 +82,7 @@ class EmployeeRemoteDataSourceImpl implements EmployeeRemoteDataSource {
     required String username,
     required String password,
     required String role,
+    required int limit,
     XFile? image,
   }) async {
     Uint8List? bytes;
@@ -85,6 +94,7 @@ class EmployeeRemoteDataSourceImpl implements EmployeeRemoteDataSource {
       'username': username,
       if (password.isNotEmpty) 'password': password,
       'role': role,
+      'limit': limit,
       if (bytes != null)
         'image': MultipartFile.fromBytes(bytes, filename: image!.name),
     });

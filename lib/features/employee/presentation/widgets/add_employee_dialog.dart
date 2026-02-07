@@ -27,6 +27,7 @@ class _AddEmployeeDialogState extends State<AddEmployeeDialog> {
   final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _penaltyController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String? _selectedRole;
   Uint8List? _webImage;
@@ -35,6 +36,8 @@ class _AddEmployeeDialogState extends State<AddEmployeeDialog> {
   @override
   void initState() {
     super.initState();
+    _penaltyController.text = "300 000";
+
     if (widget.isEdit) {
       _initializeEditData();
     }
@@ -45,6 +48,7 @@ class _AddEmployeeDialogState extends State<AddEmployeeDialog> {
     _fullNameController.text = employee.fullName;
     _usernameController.text = employee.username;
     _selectedRole = employee.role;
+    _penaltyController.text = employee.limit.toString();
   }
 
   @override
@@ -52,6 +56,7 @@ class _AddEmployeeDialogState extends State<AddEmployeeDialog> {
     _fullNameController.dispose();
     _usernameController.dispose();
     _passwordController.dispose();
+    _penaltyController.dispose();
     super.dispose();
   }
 
@@ -74,11 +79,6 @@ class _AddEmployeeDialogState extends State<AddEmployeeDialog> {
   void _onSave() {
     if (!_formKey.currentState!.validate()) return;
 
-    if (!widget.isEdit && _pickedFile == null) {
-      AppSnackbar.error(context, 'Выберите изображение');
-      return;
-    }
-
     if (_selectedRole == null) {
       AppSnackbar.error(context, 'Выберите должность');
       return;
@@ -92,18 +92,21 @@ class _AddEmployeeDialogState extends State<AddEmployeeDialog> {
   }
 
   void _createEmployee() {
+    final limit = int.parse(_penaltyController.text.replaceAll(' ', ''));
     context.read<EmployeeBloc>().add(
       CreateEmployeeEvent(
         fullName: _fullNameController.text.trim(),
         username: _usernameController.text.trim(),
         password: _passwordController.text.trim(),
         role: _selectedRole!,
-        image: _pickedFile!,
+        limit: limit,
+        image: _pickedFile,
       ),
     );
   }
 
   void _updateEmployee() {
+    final limit = int.parse(_penaltyController.text.replaceAll(' ', ''));
     context.read<EmployeeBloc>().add(
       UpdateEmployeeEvent(
         id: widget.employee!.id,
@@ -111,6 +114,7 @@ class _AddEmployeeDialogState extends State<AddEmployeeDialog> {
         username: _usernameController.text.trim(),
         password: _passwordController.text.trim(),
         role: _selectedRole!,
+        limit: limit,
         image: _pickedFile,
       ),
     );
@@ -179,6 +183,7 @@ class _AddEmployeeDialogState extends State<AddEmployeeDialog> {
                       fullNameController: _fullNameController,
                       usernameController: _usernameController,
                       passwordController: _passwordController,
+                      penaltyController: _penaltyController,
                       selectedRole: _selectedRole,
                       onRoleChanged: (role) {
                         setState(() {

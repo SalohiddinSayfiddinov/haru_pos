@@ -373,7 +373,13 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
         ),
       ),
       DataCell(_buildRowText(order.fullPrice.formatCurrencyUz())),
-      DataCell(_buildRowText(order.user?.fullName ?? 'Неизвестно')),
+      DataCell(
+        _buildRowText(
+          order.user!.fullName.isNotEmpty
+              ? order.user!.fullName
+              : order.user!.username,
+        ),
+      ),
       DataCell(_buildRowText(_mapOrderType(order.type))),
       DataCell(
         _buildRowText(DateFormat('dd.MM.yyyy HH:mm').format(order.createdAt)),

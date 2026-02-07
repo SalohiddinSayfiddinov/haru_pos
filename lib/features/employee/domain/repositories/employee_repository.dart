@@ -10,7 +10,8 @@ abstract class EmployeeRepository {
     required String username,
     required String password,
     required String role,
-    required XFile image,
+    XFile? image,
+    required int limit,
   });
   Future<Either<Failure, EmployeeEntity>> updateEmployee({
     required int id,
@@ -19,6 +20,7 @@ abstract class EmployeeRepository {
     required String password,
     required String role,
     XFile? image,
+    required int limit,
   });
   Future<Either<Failure, void>> deleteEmployee(int id);
   Future<Either<Failure, EmployeeEntity>> updateLimit({

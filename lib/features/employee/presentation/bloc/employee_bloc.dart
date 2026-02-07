@@ -58,6 +58,7 @@ class EmployeeBloc extends Bloc<EmployeeEvent, EmployeeState> {
       password: event.password,
       role: event.role,
       image: event.image,
+      limit: event.limit,
     );
 
     result.fold(
@@ -81,6 +82,7 @@ class EmployeeBloc extends Bloc<EmployeeEvent, EmployeeState> {
       password: event.password,
       role: event.role,
       image: event.image,
+      limit: event.limit,
     );
 
     result.fold(

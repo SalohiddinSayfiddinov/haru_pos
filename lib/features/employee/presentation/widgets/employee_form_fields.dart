@@ -11,6 +11,7 @@ class EmployeeFormFields extends StatelessWidget {
   final TextEditingController fullNameController;
   final TextEditingController usernameController;
   final TextEditingController passwordController;
+  final TextEditingController penaltyController;
   final String? selectedRole;
   final ValueChanged<String?> onRoleChanged;
   final bool isEdit;
@@ -21,6 +22,7 @@ class EmployeeFormFields extends StatelessWidget {
     required this.fullNameController,
     required this.usernameController,
     required this.passwordController,
+    required this.penaltyController,
     required this.selectedRole,
     required this.onRoleChanged,
     this.isEdit = false,
@@ -69,7 +71,6 @@ class EmployeeFormFields extends StatelessWidget {
               ),
             ),
             style: GoogleFonts.nunitoSans(
-              fontWeight: FontWeight.w600,
               color: const Color(0xFF646464),
               fontSize: 13.0,
             ),
@@ -95,6 +96,19 @@ class EmployeeFormFields extends StatelessWidget {
               fontSize: 13.0,
               color: const Color(0xFF7A7A7A),
             ),
+            textStyle: GoogleFonts.inter(fontSize: 13.0),
+            validator: Validators.simpleValidator,
+          ),
+          const SizedBox(height: 11.0),
+          AppTextField(
+            controller: penaltyController,
+            hintText: 'Лимит',
+            contentPadding: const EdgeInsets.all(16.0),
+            hintStyle: GoogleFonts.inter(
+              fontSize: 13.0,
+              color: const Color(0xFF7A7A7A),
+            ),
+            isNumber: true,
             textStyle: GoogleFonts.inter(fontSize: 13.0),
             validator: Validators.simpleValidator,
           ),

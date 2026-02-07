@@ -24,11 +24,37 @@ class _OrdersScreenState extends State<OrdersScreen> {
   DateTime? _startDate;
   DateTime? _endDate;
   String? _selectedType;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     context.read<OrderBloc>().add(const LoadOrdersEvent());
+    _scrollController.addListener(_onScroll);
+  }
+
+  void _checkIfNeedMoreData() {
+    if (_scrollController.hasClients &&
+        _scrollController.position.maxScrollExtent <= 0) {
+      _loadMoreOrders();
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_isBottom) _loadMoreOrders();
+  }
+
+  bool get _isBottom {
+    if (!_scrollController.hasClients) return false;
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final currentScroll = _scrollController.offset;
+    return currentScroll >= (maxScroll - 200);
   }
 
   void _refreshOrders() {
@@ -41,8 +67,13 @@ class _OrdersScreenState extends State<OrdersScreen> {
     );
   }
 
+  bool _isFetching = false;
+
   void _loadMoreOrders() {
-    final currentOrders = context.read<OrderBloc>().state.orders.length;
+    final state = context.read<OrderBloc>().state;
+    if (state.isLoadMore || state.hasReachedMax || _isFetching) return;
+    _isFetching = true;
+    final currentOrders = state.orders.length;
     context.read<OrderBloc>().add(
       LoadOrdersEvent(
         startDt: _startDate,
@@ -50,6 +81,96 @@ class _OrdersScreenState extends State<OrdersScreen> {
         type: _selectedType,
         offset: currentOrders,
         loadMore: true,
+      ),
+    );
+  }
+
+  void _clearDateRange() {
+    setState(() {
+      _startDate = null;
+      _endDate = null;
+    });
+    _refreshOrders();
+  }
+
+  void _onStatusSelected(String? status) {
+    setState(() {
+      _selectedType = status;
+    });
+    _refreshOrders();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocListener<OrderBloc, OrderState>(
+      listener: (context, state) {
+        if (state is OrderError && state.orders.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.message), backgroundColor: Colors.red),
+          );
+        }
+        if (state is OrdersLoaded) {
+          _isFetching = false;
+          if (!state.hasReachedMax) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              _checkIfNeedMoreData();
+            });
+          }
+        }
+      },
+      child: Stack(
+        children: [
+          SingleChildScrollView(
+            controller: _scrollController,
+            padding: const EdgeInsets.all(30.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _OrdersHeader(
+                  _startDate,
+                  _endDate,
+                  _selectedType,
+                  _selectDateRange,
+                  _clearDateRange,
+                  _onStatusSelected,
+                  _refreshOrders,
+                ),
+                const SizedBox(height: 30.0),
+
+                const SizedBox(height: 30.0),
+                OrdersGrid(
+                  onRefresh: _refreshOrders,
+                  onLoadMore: _loadMoreOrders,
+                  onUpdateOrder: (order) {
+                    _openDrawer(order);
+                  },
+                ),
+              ],
+            ),
+          ),
+          Positioned(
+            bottom: 30,
+            right: 30,
+            child: FloatingActionButton(
+              onPressed: () => context.go(AppPages.products),
+              backgroundColor: AppColors.primary,
+              shape: CircleBorder(),
+              child: Icon(Icons.add, color: Colors.white),
+            ),
+          ),
+          BlocConsumer<OrderBloc, OrderState>(
+            listener: (context, state) {
+              if (state is OrderError) {
+                CustomSnackBar.error(message: state.message);
+              } else if (state is OrderOperationSuccess) {
+                CustomSnackBar.success(message: state.message);
+              }
+            },
+            builder: (context, state) {
+              return SizedBox();
+            },
+          ),
+        ],
       ),
     );
   }
@@ -235,89 +356,6 @@ class _OrdersScreenState extends State<OrdersScreen> {
       });
       _refreshOrders();
     }
-  }
-
-  void _clearDateRange() {
-    setState(() {
-      _startDate = null;
-      _endDate = null;
-    });
-    _refreshOrders();
-  }
-
-  void _onStatusSelected(String? status) {
-    setState(() {
-      _selectedType = status;
-    });
-    _refreshOrders();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocListener<OrderBloc, OrderState>(
-      listener: (context, state) {
-        if (state is OrderError && state.orders.isEmpty) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message), backgroundColor: Colors.red),
-          );
-        }
-      },
-      child: Stack(
-        children: [
-          SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(30.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _OrdersHeader(
-                    _startDate,
-                    _endDate,
-                    _selectedType,
-                    _selectDateRange,
-                    _clearDateRange,
-                    _onStatusSelected,
-                    _refreshOrders,
-                  ),
-                  const SizedBox(height: 30.0),
-
-                  const SizedBox(height: 30.0),
-                  OrdersGrid(
-                    onRefresh: _refreshOrders,
-                    onLoadMore: _loadMoreOrders,
-                    onUpdateOrder: (order) {
-                      _openDrawer(order);
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: 30,
-            right: 30,
-            child: FloatingActionButton(
-              onPressed: () => context.go(AppPages.products),
-              backgroundColor: AppColors.primary,
-              shape: CircleBorder(),
-              child: Icon(Icons.add, color: Colors.white),
-            ),
-          ),
-          BlocConsumer<OrderBloc, OrderState>(
-            listener: (context, state) {
-              if (state is OrderError) {
-                CustomSnackBar.error(message: state.message);
-              } else if (state is OrderOperationSuccess) {
-                CustomSnackBar.error(message: state.message);
-              }
-            },
-            builder: (context, state) {
-              return SizedBox();
-            },
-          ),
-        ],
-      ),
-    );
   }
 }
 

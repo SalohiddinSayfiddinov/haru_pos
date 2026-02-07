@@ -33,7 +33,8 @@ class EmployeeRepositoryImpl implements EmployeeRepository {
     required String username,
     required String password,
     required String role,
-    required XFile image,
+    XFile? image,
+    required int limit,
   }) async {
     try {
       final employee = await remoteDataSource.createEmployee(
@@ -42,6 +43,7 @@ class EmployeeRepositoryImpl implements EmployeeRepository {
         password: password,
         role: role,
         image: image,
+        limit: limit,
       );
       return Right(employee.toEntity());
     } on DioException catch (e) {
@@ -59,6 +61,7 @@ class EmployeeRepositoryImpl implements EmployeeRepository {
     required String username,
     required String password,
     required String role,
+    required int limit,
     XFile? image,
   }) async {
     try {
@@ -69,6 +72,7 @@ class EmployeeRepositoryImpl implements EmployeeRepository {
         password: password,
         role: role,
         image: image,
+        limit: limit,
       );
       return Right(employee.toEntity());
     } on DioException catch (e) {

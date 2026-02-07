@@ -32,7 +32,6 @@ class OrdersGrid extends StatelessWidget {
 
         final orders = state.orders;
         final isLoadingMore = state is OrderLoading && state.isLoadMore;
-        final hasReachedMax = state.hasReachedMax;
 
         if (orders.isEmpty) {
           return _EmptyState(onRefresh: onRefresh);
@@ -60,14 +59,6 @@ class OrdersGrid extends StatelessWidget {
                 padding: EdgeInsets.all(20.0),
                 child: CircularProgressIndicator(),
               ),
-            // if (!hasReachedMax && !isLoadingMore)
-            //   Padding(
-            //     padding: const EdgeInsets.symmetric(vertical: 20.0),
-            //     child: PrimaryButton(
-            //       title: 'Загрузить еще',
-            //       onPressed: onLoadMore,
-            //     ),
-            //   ),
           ],
         );
       },
