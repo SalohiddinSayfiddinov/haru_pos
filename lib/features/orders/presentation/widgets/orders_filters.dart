@@ -7,6 +7,7 @@ import 'package:haru_pos/core/constants/app_colors.dart';
 import 'package:intl/intl.dart';
 
 class OrdersFilters extends StatelessWidget {
+  final bool isHistory;
   final DateTime? startDate;
   final DateTime? endDate;
   final String? selectedStatus;
@@ -17,6 +18,7 @@ class OrdersFilters extends StatelessWidget {
 
   const OrdersFilters({
     super.key,
+    required this.isHistory,
     required this.startDate,
     required this.endDate,
     required this.selectedStatus,
@@ -31,11 +33,12 @@ class OrdersFilters extends StatelessWidget {
     return Row(
       spacing: 15.0,
       children: [
-        _DateRangeFilter(
-          startDate: startDate,
-          endDate: endDate,
-          onPressed: onSelectDateRange,
-        ),
+        if (isHistory)
+          _DateRangeFilter(
+            startDate: startDate,
+            endDate: endDate,
+            onPressed: onSelectDateRange,
+          ),
         if (startDate != null && endDate != null)
           _ClearDateButton(onPressed: onClearDateRange),
         _StatusFilter(

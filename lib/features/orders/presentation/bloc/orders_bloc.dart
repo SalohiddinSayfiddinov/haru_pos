@@ -60,6 +60,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     on<SetOrderForEditing>(_onSetOrderForEditing);
     on<RejectOrderEvent>(_onRejectOrder);
     on<WatchOrdersEvent>(_onWatchOrders);
+    on<PrintBillEvent>(_onPrintBill);
   }
   StreamSubscription? _orderSubscription;
 
@@ -90,8 +91,8 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     final result = await getOrdersUseCase(
       limit: event.limit,
       offset: event.offset,
-      startDt: event.startDt?.toString(),
-      endDt: event.endDt?.toString(),
+      startDt: event.startDt,
+      endDt: event.endDt,
       type: event.type,
     );
 
@@ -126,31 +127,20 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     LoadOrdersHistoryEvent event,
     Emitter<OrderState> emit,
   ) async {
-    if (event.loadMore) {
-      emit(
-        OrderLoading(
-          cartItems: state.cartItems,
-          orders: state.orders,
-          hasReachedMax: state.hasReachedMax,
-          isLoadMore: true,
-        ),
-      );
-    } else {
-      emit(
-        OrderLoading(
-          cartItems: state.cartItems,
-          orders: const [],
-          hasReachedMax: false,
-          isLoadMore: false,
-        ),
-      );
-    }
+    emit(
+      OrderLoading(
+        cartItems: state.cartItems,
+        orders: const [],
+        hasReachedMax: false,
+        isLoadMore: false,
+      ),
+    );
 
     final result = await getOrdersHistoryUseCase(
       limit: event.limit,
       offset: event.offset,
-      startDt: event.startDt?.toString(),
-      endDt: event.endDt?.toString(),
+      startDt: event.startDt,
+      endDt: event.endDt,
       type: event.type,
     );
 
@@ -163,18 +153,19 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
           hasReachedMax: state.hasReachedMax,
         ),
       ),
-      (newOrders) {
-        final hasReachedMax = newOrders.length < event.limit;
+      (orders) {
+        final hasReachedMax = orders.result.length < event.limit;
 
-        final allOrders = event.loadMore
-            ? [...state.orders, ...newOrders]
-            : newOrders;
+        final int totalPages = (orders.total / event.limit).ceil();
+        final int currentPage = (event.offset / event.limit).floor() + 1;
 
         emit(
-          OrdersLoaded(
-            orders: allOrders,
+          OrdersHistoryLoaded(
+            orders: orders.result,
             cartItems: state.cartItems,
             hasReachedMax: hasReachedMax,
+            totalPages: totalPages,
+            currentPage: currentPage,
           ),
         );
       },
@@ -370,35 +361,20 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     );
   }
 
-  Future<void> _onCloseOrder(
-    CloseOrderEvent event,
+  Future<void> _onPrintBill(
+    PrintBillEvent event,
     Emitter<OrderState> emit,
   ) async {
     emit(OrderLoading(cartItems: state.cartItems, orders: state.orders));
     try {
       final printResult = await printerService.printOrderBill(event.order);
       if (printResult) {
-        final result = await closeOrderUseCase(event.order.id);
-        result.fold(
-          (failure) => emit(
-            OrderError(
-              message: _mapFailureToMessage(failure),
-              cartItems: state.cartItems,
-              orders: state.orders,
-            ),
+        emit(
+          OrderOperationSuccess(
+            message: 'Bill printed successfully',
+            cartItems: state.cartItems,
+            orders: state.orders,
           ),
-          (_) {
-            final updatedOrders = state.orders
-                .where((o) => o.id != event.order.id)
-                .toList();
-            emit(
-              OrderOperationSuccess(
-                message: 'Order closed successfully',
-                cartItems: state.cartItems,
-                orders: updatedOrders,
-              ),
-            );
-          },
         );
       } else {
         emit(
@@ -418,6 +394,35 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
         ),
       );
     }
+  }
+
+  Future<void> _onCloseOrder(
+    CloseOrderEvent event,
+    Emitter<OrderState> emit,
+  ) async {
+    emit(OrderLoading(cartItems: state.cartItems, orders: state.orders));
+    final result = await closeOrderUseCase(event.order.id);
+    result.fold(
+      (failure) => emit(
+        OrderError(
+          message: _mapFailureToMessage(failure),
+          cartItems: state.cartItems,
+          orders: state.orders,
+        ),
+      ),
+      (_) {
+        final updatedOrders = state.orders
+            .where((o) => o.id != event.order.id)
+            .toList();
+        emit(
+          OrderOperationSuccess(
+            message: 'Order closed successfully',
+            cartItems: state.cartItems,
+            orders: updatedOrders,
+          ),
+        );
+      },
+    );
   }
 
   Future<void> _onUpdateOrderItems(

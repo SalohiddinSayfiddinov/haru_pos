@@ -7,11 +7,14 @@ import 'package:haru_pos/core/di/injection.dart';
 import 'package:haru_pos/core/utils/date_extensions.dart';
 import 'package:haru_pos/core/utils/extensions.dart';
 import 'package:haru_pos/core/utils/order_extensions.dart';
+import 'package:haru_pos/core/widgets/app_buttons.dart';
+import 'package:haru_pos/core/widgets/app_snack_bar.dart';
 import 'package:haru_pos/features/auth/domain/entities/auth_entity.dart';
 import 'package:haru_pos/features/orders/domain/entities/orders_entity.dart';
 import 'package:haru_pos/features/orders/presentation/bloc/orders_bloc.dart';
 import 'package:haru_pos/features/orders/presentation/widgets/change_table_dialog.dart';
 import 'package:haru_pos/features/orders/presentation/widgets/close_order_dialog.dart';
+import 'package:haru_pos/features/orders/presentation/widgets/print_bill_dialog.dart';
 import 'package:haru_pos/features/orders/presentation/widgets/rejected_items_dialog.dart';
 import 'package:haru_pos/features/orders/presentation/widgets/remove_order_item_dialog.dart';
 
@@ -82,6 +85,20 @@ class _OrderCardState extends State<OrderCard> {
     }
   }
 
+  void _showPrintBillDialog(BuildContext context, OrderEntity order) async {
+    final result = await showDialog(
+      context: context,
+      builder: (context) => BlocProvider(
+        create: (context) => getIt<OrderBloc>(),
+        child: PrintBillDialog(order: order),
+      ),
+    );
+
+    if (result == true) {
+      AppSnackbar.success(context, 'Чек успешно напечатан');
+    }
+  }
+
   void _showRejectedItemsDialog(BuildContext context, OrderEntity order) async {
     showDialog(
       context: context,
@@ -112,7 +129,7 @@ class _OrderCardState extends State<OrderCard> {
         mainAxisSize: MainAxisSize.min,
         children: [
           _buildOrderCardHeader(order: widget.order),
-          const SizedBox(height: 4.0),
+          const Divider(height: 30.0),
           if (widget.order.rejectedSessions.isNotEmpty)
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -143,33 +160,6 @@ class _OrderCardState extends State<OrderCard> {
           ],
           const Divider(height: 30.0),
           _buildFooter(order: widget.order),
-          SizedBox(height: 10),
-          InkWell(
-            onTap: () {
-              _showCloseOrderDialog(context, widget.order);
-            },
-            child: Container(
-              height: 40.0,
-              decoration: BoxDecoration(
-                color: widget.order.active ? AppColors.primary : Colors.green,
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-              padding: const EdgeInsets.symmetric(
-                vertical: 7.0,
-                horizontal: 20.0,
-              ),
-              child: Center(
-                child: Text(
-                  widget.order.active ? 'Не оплачен' : 'Оплачен',
-                  style: GoogleFonts.montserrat(
-                    fontSize: 12.0,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-          ),
         ],
       ),
     );
@@ -315,11 +305,53 @@ class _OrderCardState extends State<OrderCard> {
   }
 
   Widget _buildFooter({required OrderEntity order}) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Column(
       children: [
-        _buildOrderInfo(order: order),
-        _buildStatus(order: order),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _buildOrderInfo(order: order),
+            _buildStatus(order: order),
+          ],
+        ),
+        SizedBox(height: 10),
+        Row(
+          spacing: 10,
+          children: [
+            Expanded(
+              child: PrimaryButton(
+                width: double.infinity,
+                backgroundColor: AppColors.textPrimary,
+                height: 35,
+                title: 'Печатать чек',
+                textStyle: GoogleFonts.montserrat(
+                  fontSize: 12.0,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+                onPressed: () => _showPrintBillDialog(context, order),
+              ),
+            ),
+            Expanded(
+              child: PrimaryButton(
+                width: double.infinity,
+                backgroundColor: widget.order.active
+                    ? AppColors.primary
+                    : Colors.green,
+                height: 35,
+                title: widget.order.active ? 'Закрыть заказ' : 'Оплачен',
+                textStyle: GoogleFonts.montserrat(
+                  fontSize: 12.0,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+                onPressed: () {
+                  _showCloseOrderDialog(context, widget.order);
+                },
+              ),
+            ),
+          ],
+        ),
       ],
     );
   }
@@ -377,24 +409,21 @@ class _UserAvatarState extends State<_UserAvatar> {
         ? widget.user.username
         : widget.user.fullName;
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 30.0),
-      child: Tooltip(
-        message: displayName,
-        waitDuration: const Duration(milliseconds: 500),
-        child: ClipOval(
-          child: CachedNetworkImage(
-            imageUrl: widget.user.image ?? '',
-            fit: BoxFit.cover,
-            width: 45,
-            height: 45,
-            errorWidget: (context, url, error) => CircleAvatar(
-              backgroundColor: AppColors.primary,
-              radius: 22,
-              child: Text(
-                widget.user.username[0].toUpperCase(),
-                style: TextStyle(fontSize: 20.0, color: Colors.white),
-              ),
+    return Tooltip(
+      message: displayName,
+      waitDuration: const Duration(milliseconds: 500),
+      child: ClipOval(
+        child: CachedNetworkImage(
+          imageUrl: widget.user.image ?? '',
+          fit: BoxFit.cover,
+          width: 45,
+          height: 45,
+          errorWidget: (context, url, error) => CircleAvatar(
+            backgroundColor: AppColors.primary,
+            radius: 22,
+            child: Text(
+              widget.user.username[0].toUpperCase(),
+              style: TextStyle(fontSize: 20.0, color: Colors.white),
             ),
           ),
         ),

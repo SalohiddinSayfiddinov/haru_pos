@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:haru_pos/core/entities/response_entity.dart';
 import 'package:haru_pos/core/errors/errors.dart';
 import 'package:haru_pos/core/errors/failures.dart';
 import 'package:haru_pos/features/orders/data/datasources/orders_remote_datasource.dart';
@@ -28,7 +29,7 @@ class OrderRepositoryImpl implements OrderRepository {
         offset: offset,
         startDt: startDt,
         endDt: endDt,
-        type: type
+        type: type,
       );
       return Right(orders.map((model) => model.toEntity()).toList());
     } on DioException catch (e) {
@@ -178,7 +179,7 @@ class OrderRepositoryImpl implements OrderRepository {
   }
 
   @override
-  Future<Either<Failure, List<OrderEntity>>> getOrderHistory({
+  Future<Either<Failure, ApiResponseEntity<OrderEntity>>> getOrderHistory({
     int? limit,
     int? offset,
     String? startDt,
@@ -186,20 +187,26 @@ class OrderRepositoryImpl implements OrderRepository {
     String? type,
   }) async {
     try {
-      final orders = await remoteDataSource.getOrdersHistory(
+      final responseModel = await remoteDataSource.getOrdersHistory(
         limit: limit,
         offset: offset,
         startDt: startDt,
         endDt: endDt,
         type: type,
       );
-      return Right(orders.map((model) => model.toEntity()).toList());
+      final entity = ApiResponseEntity<OrderEntity>(
+        total: responseModel.total,
+        hasMore: responseModel.hasMore,
+        offset: responseModel.offset,
+        limit: responseModel.limit,
+        result: responseModel.result.map((model) => model.toEntity()).toList(),
+      );
+
+      return Right(entity);
     } on DioException catch (e) {
       final errorMessage = handleDioError(e);
       return Left(ServerFailure(errorMessage));
     } catch (e, s) {
-      print(e);
-      print(s);
       return Left(ServerFailure('An unexpected error occurred'));
     }
   }

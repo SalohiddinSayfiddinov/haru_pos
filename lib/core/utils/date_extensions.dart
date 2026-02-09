@@ -64,6 +64,12 @@ extension FancyDate on DateTime {
   String get formattedTime {
     return "$hour:${minute.toString().padLeft(2, '0')}";
   }
+
+  String get formattedYearFirst {
+    final d = day.toString().padLeft(2, '0');
+    final m = month.toString().padLeft(2, '0');
+    return "$year-$m-$d";
+  }
 }
 
 extension WeekdayShort on int {

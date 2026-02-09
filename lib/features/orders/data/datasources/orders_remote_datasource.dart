@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:haru_pos/core/models/response_model.dart';
 import 'package:haru_pos/features/orders/data/models/orders_dto.dart';
 import 'package:haru_pos/features/orders/data/models/orders_model.dart';
 import 'package:injectable/injectable.dart';
@@ -14,7 +15,7 @@ abstract class OrderRemoteDataSource {
     String? endDt,
     String? type,
   });
-  Future<List<OrderModel>> getOrdersHistory({
+  Future<ApiResponseModel<OrderModel>> getOrdersHistory({
     int? limit,
     int? offset,
     String? startDt,
@@ -93,7 +94,7 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
   }
 
   @override
-  Future<List<OrderModel>> getOrdersHistory({
+  Future<ApiResponseModel<OrderModel>> getOrdersHistory({
     int? limit,
     int? offset,
     String? startDt,
@@ -112,13 +113,10 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
       '/orders/history',
       queryParameters: queryParams,
     );
-
-    if (response.data is List) {
-      return (response.data as List)
-          .map((json) => OrderModel.fromJson(json))
-          .toList();
-    }
-    throw Exception('Invalid response format');
+    return ApiResponseModel<OrderModel>.fromJson(
+      response.data,
+      (json) => OrderModel.fromJson(json),
+    );
   }
 
   @override

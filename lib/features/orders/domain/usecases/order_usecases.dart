@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:haru_pos/core/entities/response_entity.dart';
 import 'package:haru_pos/core/errors/failures.dart';
 import 'package:haru_pos/features/orders/data/models/orders_dto.dart';
 import 'package:haru_pos/features/orders/domain/entities/orders_entity.dart';
@@ -34,7 +35,7 @@ class GetOrderHistoryUseCase {
 
   GetOrderHistoryUseCase(this.repository);
 
-  Future<Either<Failure, List<OrderEntity>>> call({
+  Future<Either<Failure, ApiResponseEntity<OrderEntity>>> call({
     int? limit,
     int? offset,
     String? startDt,

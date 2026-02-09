@@ -10,8 +10,8 @@ abstract class OrderEvent extends Equatable {
 class LoadOrdersEvent extends OrderEvent {
   final int limit;
   final int offset;
-  final DateTime? startDt;
-  final DateTime? endDt;
+  final String? startDt;
+  final String? endDt;
   final String? type;
   final bool loadMore;
 
@@ -31,8 +31,8 @@ class LoadOrdersEvent extends OrderEvent {
 class LoadOrdersHistoryEvent extends OrderEvent {
   final int limit;
   final int offset;
-  final DateTime? startDt;
-  final DateTime? endDt;
+  final String? startDt;
+  final String? endDt;
   final String? status;
   final String? type;
   final bool loadMore;
@@ -96,6 +96,15 @@ class CloseOrderEvent extends OrderEvent {
   final OrderEntity order;
 
   const CloseOrderEvent(this.order);
+
+  @override
+  List<Object> get props => [order];
+}
+
+class PrintBillEvent extends OrderEvent {
+  final OrderEntity order;
+
+  const PrintBillEvent(this.order);
 
   @override
   List<Object> get props => [order];

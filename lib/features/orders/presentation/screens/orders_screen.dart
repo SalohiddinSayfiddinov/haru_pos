@@ -60,8 +60,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
   void _refreshOrders() {
     context.read<OrderBloc>().add(
       LoadOrdersEvent(
-        startDt: _startDate,
-        endDt: _endDate,
+        startDt: _startDate?.formattedYearFirst,
+        endDt: _endDate?.formattedYearFirst,
         type: _selectedType,
       ),
     );
@@ -76,8 +76,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
     final currentOrders = state.orders.length;
     context.read<OrderBloc>().add(
       LoadOrdersEvent(
-        startDt: _startDate,
-        endDt: _endDate,
+        startDt: _startDate?.formattedYearFirst,
+        endDt: _endDate?.formattedYearFirst,
         type: _selectedType,
         offset: currentOrders,
         loadMore: true,
@@ -388,6 +388,7 @@ class _OrdersHeader extends StatelessWidget {
         ),
         const Spacer(),
         OrdersFilters(
+          isHistory: false,
           startDate: _startDate,
           endDate: _endDate,
           selectedStatus: _selectedType,

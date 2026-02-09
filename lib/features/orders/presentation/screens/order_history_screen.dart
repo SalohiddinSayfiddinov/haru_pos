@@ -10,6 +10,7 @@ import 'package:haru_pos/features/orders/domain/entities/orders_entity.dart';
 import 'package:haru_pos/features/orders/presentation/bloc/orders_bloc.dart';
 import 'package:haru_pos/features/orders/presentation/widgets/orders_filters.dart';
 import 'package:intl/intl.dart';
+import 'package:number_pagination/number_pagination.dart';
 
 class OrderHistoryScreen extends StatefulWidget {
   const OrderHistoryScreen({super.key});
@@ -32,8 +33,8 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
   void _refreshOrders() {
     context.read<OrderBloc>().add(
       LoadOrdersHistoryEvent(
-        startDt: _startDate,
-        endDt: _endDate,
+        startDt: _startDate?.formattedYearFirst,
+        endDt: _endDate?.formattedYearFirst,
         type: _selectedType,
       ),
     );
@@ -270,6 +271,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                   ),
                   Spacer(),
                   OrdersFilters(
+                    isHistory: true,
                     startDate: _startDate,
                     endDate: _endDate,
                     selectedStatus: _selectedType,
@@ -287,48 +289,72 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                     return const Center(child: CircularProgressIndicator());
                   } else if (state is OrderError) {
                     return Center(child: Text(state.message));
-                  }
+                  } else if (state is OrdersHistoryLoaded) {
+                    final orders = state.orders;
 
-                  final orders = state.orders;
+                    if (orders.isEmpty) {
+                      return const Center(child: Text('История заказов пуста'));
+                    }
 
-                  if (orders.isEmpty) {
-                    return const Center(child: Text('История заказов пуста'));
-                  }
-
-                  return Card(
-                    margin: EdgeInsets.zero,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    color: Colors.white,
-                    child: DividerTheme(
-                      data: const DividerThemeData(
-                        thickness: 0,
-                        color: Colors.transparent,
-                      ),
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: DataTable(
-                          dividerThickness: 0,
-                          dataRowColor: WidgetStateProperty.all(Colors.white),
-                          columns: [
-                            _buildHeaderText('#'),
-                            _buildHeaderText('Наименование'),
-                            _buildHeaderText('Цена'),
-                            _buildHeaderText('Официант'),
-                            _buildHeaderText('Тип'),
-                            _buildHeaderText('Дата'),
-                          ],
-                          rows: [
-                            ...orders.map(
-                              (order) => DataRow(cells: _buildOrderRow(order)),
+                    return Column(
+                      children: [
+                        Card(
+                          margin: EdgeInsets.zero,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          color: Colors.white,
+                          child: DividerTheme(
+                            data: const DividerThemeData(
+                              thickness: 0,
+                              color: Colors.transparent,
                             ),
-                          ],
+                            child: SizedBox(
+                              width: double.infinity,
+                              child: DataTable(
+                                dividerThickness: 0,
+                                dataRowColor: WidgetStateProperty.all(
+                                  Colors.white,
+                                ),
+                                columns: [
+                                  _buildHeaderText('#'),
+                                  _buildHeaderText('Наименование'),
+                                  _buildHeaderText('Цена'),
+                                  _buildHeaderText('Официант'),
+                                  _buildHeaderText('Тип'),
+                                  _buildHeaderText('Дата'),
+                                ],
+                                rows: [
+                                  ...orders.map(
+                                    (order) =>
+                                        DataRow(cells: _buildOrderRow(order)),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  );
+                        const SizedBox(height: 20.0),
+                        NumberPagination(
+                          onPageChanged: (v) {
+                            context.read<OrderBloc>().add(
+                              LoadOrdersHistoryEvent(
+                                limit: 20,
+                                offset: (v - 1) * 20,
+                                startDt: _startDate?.formattedYearFirst,
+                                endDt: _endDate?.formattedYearFirst,
+                                type: _selectedType,
+                              ),
+                            );
+                          },
+                          totalPages: state.totalPages,
+                          currentPage: state.currentPage,
+                        ),
+                      ],
+                    );
+                  }
+                  return const SizedBox.shrink();
                 },
               ),
             ],
@@ -398,7 +424,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
     switch (type) {
       case 'dine_in':
         return 'В зале';
-      case 'take_away':
+      case 'takeaway':
         return 'С собой';
       case 'delivery':
         return 'Доставка';

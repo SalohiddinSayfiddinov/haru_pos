@@ -80,6 +80,18 @@ class OrdersLoaded extends OrderState {
   });
 }
 
+class OrdersHistoryLoaded extends OrderState {
+  final int totalPages;
+  final int currentPage;
+  const OrdersHistoryLoaded({
+    required super.orders,
+    required this.totalPages,
+    required this.currentPage,
+    super.cartItems,
+    super.hasReachedMax,
+  });
+}
+
 class CartUpdated extends OrderState {
   const CartUpdated({
     super.updatingOrder,
