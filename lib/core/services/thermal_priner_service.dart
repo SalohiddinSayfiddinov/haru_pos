@@ -10,7 +10,9 @@ import 'package:intl/intl.dart';
 class ThermalPrinterService {
   static const String printerIp = '192.168.0.8';
   static const int printerPort = 9100;
-  static const int timeout = 5; // seconds
+  static const int timeout = 5;
+  static const String _paymentQrPayload =
+      "00020101021140440012qr-online.uz01186qzCko8Ytzj6qf9RSj0202015204581253038605802UZ5911 HARU SUSHI6007ANDIJON80160012qr-online.uz6304492A";
 
   // ESC/POS Commands
   static final Uint8List _init = Uint8List.fromList([0x1B, 0x40]);
@@ -131,14 +133,90 @@ class ThermalPrinterService {
     buffer.add(_encode(_line(32)));
     buffer.add(_newLine);
     // Footer
+    buffer.add(_newLine);
     buffer.add(_alignCenter);
-    buffer.add(_encode('Tashrifingiz uchun rahmat!'));
+    buffer.add(_boldOn);
+    buffer.add(_encode('TO\'LOV UCHUN QR-KOD:'));
     buffer.add(_newLine);
-    buffer.add(_encode('Yana kelishingizni kutamiz'));
+    buffer.add(_boldOff);
+
+    // Generate and add QR
+    buffer.add(_generateQrData(_paymentQrPayload));
+
     buffer.add(_newLine);
+    buffer.add(_newLine);
+
     buffer.add(_cutPaper);
 
     return buffer.toBytes();
+  }
+
+  // QR Code Commands
+  static final Uint8List _qrModel = Uint8List.fromList([
+    0x1D,
+    0x28,
+    0x6B,
+    0x04,
+    0x00,
+    0x31,
+    0x41,
+    0x32,
+    0x00,
+  ]); // Model 2
+  static final Uint8List _qrSize = Uint8List.fromList([
+    0x1D,
+    0x28,
+    0x6B,
+    0x03,
+    0x00,
+    0x31,
+    0x43,
+    0x06,
+  ]); // Size (adjust 0x06 for 1-16)
+  static final Uint8List _qrError = Uint8List.fromList([
+    0x1D,
+    0x28,
+    0x6B,
+    0x03,
+    0x00,
+    0x31,
+    0x45,
+    0x31,
+  ]); // Error level (31=L, 32=M, 33=Q, 34=H)
+  static final Uint8List _qrPrint = Uint8List.fromList([
+    0x1D,
+    0x28,
+    0x6B,
+    0x03,
+    0x00,
+    0x31,
+    0x51,
+    0x30,
+  ]); // Print command
+  Uint8List _generateQrData(String text) {
+    final builder = BytesBuilder();
+    final content = Uint8List.fromList(text.codeUnits);
+
+    // Calculate length for the "Store Data" command
+    // The command header (0x31 0x50 0x30) is 3 bytes, plus the content length
+    final int length = content.length + 3;
+    final int pL = length % 256;
+    final int pH = length ~/ 256;
+
+    builder.add(_qrModel);
+    builder.add(_qrSize);
+    builder.add(_qrError);
+
+    // Store the data
+    builder.add(
+      Uint8List.fromList([0x1D, 0x28, 0x6B, pL, pH, 0x31, 0x50, 0x30]),
+    );
+    builder.add(content);
+
+    // Print the stored data
+    builder.add(_qrPrint);
+
+    return builder.toBytes();
   }
 
   /// Encode string to CP866
