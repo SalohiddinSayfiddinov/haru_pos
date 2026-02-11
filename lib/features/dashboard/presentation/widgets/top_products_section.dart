@@ -1,107 +1,81 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:haru_pos/core/constants/app_colors.dart';
-import 'package:haru_pos/features/dashboard/data/models/dashboard_model.dart';
+import 'package:haru_pos/features/dashboard/domain/entities/dashboard_entity.dart';
 import 'package:haru_pos/features/dashboard/presentation/widgets/dashboard_section_card.dart';
 
 class TopProductsSection extends StatelessWidget {
-  final List<Product> products;
+  final List<TopProductEntity> products;
 
   const TopProductsSection({super.key, required this.products});
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 275.0,
-      width: 780,
-      child: DashboardSectionCard(
-        title: 'Топ продукты',
-        padding: EdgeInsets.all(14.0),
-        children: [
-          const SizedBox(height: 19),
-          _buildTableHeader(),
-          ...List.generate(products.length, (index) {
-            final product = products[index];
-            return _buildProductRow(product, index);
-          }),
-        ],
-      ),
-    );
-  }
+    return Expanded(
+      child: SizedBox(
+        height: 255,
+        child: DashboardSectionCard(
+          title: 'Топ продукты',
+          padding: const EdgeInsets.all(14.0),
+          children: [
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: DividerTheme(
+                data: DividerThemeData(thickness: 0, color: Colors.transparent),
+                child: DataTable(
+                  dividerThickness: 0,
+                  dataRowColor: WidgetStateProperty.all(Colors.white),
+                  columnSpacing: 40,
+                  headingTextStyle: GoogleFonts.inter(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                    color: const Color(0xFF87888C),
+                  ),
+                  dataTextStyle: GoogleFonts.inter(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black,
+                  ),
+                  columns: const [
+                    DataColumn(label: Text('#')),
+                    DataColumn(label: Text('Название')),
+                    DataColumn(label: Text('Популярность')),
+                    DataColumn(label: Text('Продажа')),
+                  ],
+                  rows: List.generate(products.length, (index) {
+                    final product = products[index];
+                    final color = _setColor(index);
 
-  Widget _buildTableHeader() {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        SizedBox(width: 4.0),
-        SizedBox(width: 25, child: _buildHeaderText('#')),
-        SizedBox(width: 60.0),
-        SizedBox(width: 80, child: _buildHeaderText('Название')),
-        SizedBox(width: 130.0),
-        SizedBox(width: 250, child: _buildHeaderText('Популярность')),
-        SizedBox(width: 100.0),
-        SizedBox(width: 75, child: _buildHeaderText('Продажа')),
-      ],
-    );
-  }
-
-  Widget _buildHeaderText(String title) {
-    return Text(
-      title,
-      style: GoogleFonts.inter(
-        fontSize: 15.0,
-        fontWeight: FontWeight.w500,
-        color: Color(0xFF87888C),
-      ),
-    );
-  }
-
-  Widget _buildProductRow(Product product, int index) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        children: [
-          SizedBox(width: 4.0),
-          SizedBox(
-            width: 30,
-            child: Text(
-              product.rank.toString().padLeft(2, '0'),
-              style: GoogleFonts.inter(
-                fontSize: 13.0,
-                fontWeight: FontWeight.w500,
+                    return DataRow(
+                      cells: [
+                        DataCell(Text(product.id.toString().padLeft(2, '0'))),
+                        DataCell(Text(product.name)),
+                        DataCell(
+                          SizedBox(
+                            width: 200,
+                            child: LinearProgressIndicator(
+                              value: product.popularity / 100,
+                              borderRadius: BorderRadius.circular(4),
+                              color: color,
+                              backgroundColor: AppColors.background,
+                            ),
+                          ),
+                        ),
+                        DataCell(
+                          _buildSalesPercentage(
+                            product.salesPercent.toInt(),
+                            color,
+                          ),
+                        ),
+                      ],
+                    );
+                  }),
+                ),
               ),
             ),
-          ),
-          SizedBox(width: 60.0),
-          SizedBox(
-            width: 85,
-            child: Text(
-              product.name,
-              style: GoogleFonts.inter(
-                fontSize: 13.0,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-          SizedBox(width: 130.0),
-          SizedBox(
-            width: 250,
-            child: LinearProgressIndicator(
-              value: product.salesPercentage / 100,
-              borderRadius: BorderRadius.circular(4),
-              color: _setColor(index),
-              backgroundColor: AppColors.background,
-            ),
-          ),
-          SizedBox(width: 100.0),
-          SizedBox(
-            width: 75,
-            child: _buildSalerPercentage(
-              product.salesPercentage,
-              _setColor(index),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -109,40 +83,32 @@ class TopProductsSection extends StatelessWidget {
   Color _setColor(int index) {
     switch (index) {
       case 0:
-        return Color(0xFFFCB859);
+        return const Color(0xFFFCB859);
       case 1:
-        return Color(0xFFA9DFD8);
+        return const Color(0xFFA9DFD8);
       case 2:
-        return Color(0xFF28AEF3);
+        return const Color(0xFF28AEF3);
       case 3:
-        return Color(0xFFF2C8ED);
-
+        return const Color(0xFFF2C8ED);
       default:
-        return Color(0xFFFCB859);
+        return const Color(0xFFFCB859);
     }
   }
 
-  Widget _buildSalerPercentage(int salesPercentage, Color color) {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Container(
-        width: 38.0,
-        padding: EdgeInsets.symmetric(vertical: 5.0),
-        decoration: BoxDecoration(
-          color: color.withValues(alpha: .12),
-          borderRadius: BorderRadius.circular(4.0),
-          border: Border.all(color: color),
-        ),
-        child: Center(
-          child: Text(
-            '$salesPercentage%',
-            style: GoogleFonts.inter(
-              color: color,
-              fontSize: 10.0,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ),
+  Widget _buildSalesPercentage(int percent, Color color) {
+    return Container(
+      width: 55,
+      height: 38,
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: .12),
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: color),
+      ),
+      alignment: Alignment.center,
+      child: Text(
+        '$percent%',
+        style: GoogleFonts.inter(color: color, fontWeight: FontWeight.w500),
       ),
     );
   }

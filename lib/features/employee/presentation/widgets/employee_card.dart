@@ -110,10 +110,11 @@ class EmployeeCard extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.only(right: 15.0),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: employee.limits.map((e) {
                   return Text.rich(
                     TextSpan(
-                      text: '- ${e.money.formatCurrency()} ',
+                      text: '- ${e.money.formatCurrency()}  ',
                       style: GoogleFonts.inter(
                         fontSize: 14.0,
                         fontWeight: FontWeight.w500,
@@ -135,32 +136,6 @@ class EmployeeCard extends StatelessWidget {
               ),
             ),
           ),
-          // Row(
-          //   mainAxisSize: MainAxisSize.min,
-          //   children: [
-          //     PrimaryButton(
-          //       onPressed: onDelete,
-          //       height: 30.0,
-          //       title: 'Удалить',
-          //       textStyle: GoogleFonts.montserrat(
-          //         fontSize: 12.0,
-          //         fontWeight: FontWeight.w600,
-          //         color: Colors.white,
-          //       ),
-          //     ),
-          //     const SizedBox(width: 20.0),
-          //     PrimaryButton(
-          //       onPressed: onEdit,
-          //       height: 30.0,
-          //       title: 'Изменить',
-          //       textStyle: GoogleFonts.montserrat(
-          //         fontSize: 12.0,
-          //         fontWeight: FontWeight.w600,
-          //         color: Colors.white,
-          //       ),
-          //     ),
-          //   ],
-          // ),
         ],
       ),
     );

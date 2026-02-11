@@ -36,6 +36,16 @@ import 'package:haru_pos/features/categories/domain/usecases/category_usecases.d
     as _i802;
 import 'package:haru_pos/features/categories/presentation/bloc/categories_bloc.dart'
     as _i1045;
+import 'package:haru_pos/features/dashboard/data/datasources/dashboard_remote_data_source.dart'
+    as _i987;
+import 'package:haru_pos/features/dashboard/data/repositories/dashboard_repository_impl.dart'
+    as _i186;
+import 'package:haru_pos/features/dashboard/domain/repositories/dashboard_repository.dart'
+    as _i713;
+import 'package:haru_pos/features/dashboard/domain/usecases/dashboard_usecases.dart'
+    as _i879;
+import 'package:haru_pos/features/dashboard/presentation/bloc/dashboard_bloc.dart'
+    as _i138;
 import 'package:haru_pos/features/employee/data/datasources/employee_remote_data_source.dart'
     as _i181;
 import 'package:haru_pos/features/employee/data/repository/employee_repository_impl.dart'
@@ -102,6 +112,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i471.TokenService>(
       () => _i471.TokenServiceImpl(gh<_i460.SharedPreferences>()),
     );
+    gh.lazySingleton<_i987.DashboardRemoteDataSource>(
+      () => _i987.DashboardRemoteDataSourceImpl(gh<_i361.Dio>()),
+    );
     gh.lazySingleton<_i652.OrderRemoteDataSource>(
       () => _i652.OrderRemoteDataSourceImpl(dio: gh<_i361.Dio>()),
     );
@@ -160,6 +173,11 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i256.ProductRemoteDataSource>(
       () => _i256.ProductRemoteDataSourceImpl(dio: gh<_i361.Dio>()),
     );
+    gh.lazySingleton<_i713.DashboardRepository>(
+      () => _i186.DashboardRepositoryImpl(
+        remoteDataSource: gh<_i987.DashboardRemoteDataSource>(),
+      ),
+    );
     gh.lazySingleton<_i758.TableRepository>(
       () => _i1061.TableRepositoryImpl(
         remoteDataSource: gh<_i431.TableRemoteDataSource>(),
@@ -187,6 +205,15 @@ extension GetItInjectableX on _i174.GetIt {
         remoteDataSource: gh<_i107.AuthRemoteDataSource>(),
         tokenService: gh<_i471.TokenService>(),
       ),
+    );
+    gh.factory<_i138.DashboardBloc>(
+      () => _i138.DashboardBloc(
+        dashboardRepository: gh<_i713.DashboardRepository>(),
+        employeeRepository: gh<_i222.EmployeeRepository>(),
+      ),
+    );
+    gh.factory<_i879.GetDashboardDataUseCase>(
+      () => _i879.GetDashboardDataUseCase(gh<_i713.DashboardRepository>()),
     );
     gh.factory<_i1045.CategoryBloc>(
       () => _i1045.CategoryBloc(

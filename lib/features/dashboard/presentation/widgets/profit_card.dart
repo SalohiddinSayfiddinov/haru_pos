@@ -4,11 +4,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:haru_pos/core/assets/app_icons.dart';
 import 'package:haru_pos/core/constants/app_colors.dart';
 import 'package:haru_pos/core/utils/extensions.dart';
-import 'package:haru_pos/features/dashboard/data/models/dashboard_model.dart';
+import 'package:haru_pos/features/dashboard/domain/entities/dashboard_entity.dart';
 import 'package:haru_pos/features/dashboard/presentation/widgets/dashboard_section_card.dart';
 
 class ProfitCard extends StatefulWidget {
-  final ProfitData profitData;
+  final ProfitEntity profitData;
 
   const ProfitCard({super.key, required this.profitData});
 
@@ -18,6 +18,7 @@ class ProfitCard extends StatefulWidget {
 
 class _ProfitCardState extends State<ProfitCard> {
   final List<_ProfitData> _profitData = [];
+
   @override
   void initState() {
     super.initState();
@@ -25,93 +26,128 @@ class _ProfitCardState extends State<ProfitCard> {
       _ProfitData(
         icon: AppIcons.day,
         title: 'Прибыль за день',
-        amount: widget.profitData.dailyProfit,
-        growth: widget.profitData.monthlyGrowth,
+        amount: widget.profitData.day.money,
+        growth: widget.profitData.day.percentage,
+        growthTitle: 'Со вчера',
       ),
       _ProfitData(
         icon: AppIcons.week,
         title: 'Прибыль за неделю',
-        amount: widget.profitData.weeklyProfit,
-        growth: widget.profitData.monthlyGrowth,
+        amount: widget.profitData.week.money,
+        growth: widget.profitData.week.percentage,
+        growthTitle: 'С прошлой недели',
       ),
       _ProfitData(
         icon: AppIcons.month,
         title: 'Прибыль за месяц',
-        amount: widget.profitData.monthlyProfit,
-        growth: widget.profitData.monthlyGrowth,
+        amount: widget.profitData.month.money,
+        growth: widget.profitData.month.percentage,
+        growthTitle: 'С прошлого месяца',
       ),
       _ProfitData(
         icon: AppIcons.year,
         title: 'Общий прибыль',
-        amount: widget.profitData.totalProfit,
-        growth: widget.profitData.monthlyGrowth,
+        amount: widget.profitData.year.money,
+        growth: widget.profitData.year.percentage,
+        growthTitle: 'С прошлого года',
       ),
     ]);
   }
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 255.0,
-      // width: 780,
-      child: DashboardSectionCard(
-        title: 'Статистика оборота',
-        padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 14.0),
-        children: [
-          SizedBox(height: 5.0),
-          Text(
-            'Прибыль',
-            style: GoogleFonts.inter(
-              fontWeight: FontWeight.w500,
-              color: Color(0xFFA0A0A0),
-            ),
-          ),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            spacing: 20.0,
-            children: _profitData.map((e) {
-              return _buildProfitItem(e);
-            }).toList(),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildProfitItem(_ProfitData data) {
-    return Card(
-      margin: EdgeInsets.zero,
-      elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-      color: Color(0xFFF5F5F5),
-      child: Padding(
-        padding: const EdgeInsets.all(14.0).copyWith(top: 16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    return Expanded(
+      child: SizedBox(
+        child: DashboardSectionCard(
+          title: 'Статистика оборота',
+          padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 14.0),
           children: [
-            SvgPicture.asset(data.icon),
-            SizedBox(height: 13.0),
+            SizedBox(height: 5.0),
             Text(
-              data.amount.formatCurrency(),
+              'Прибыль',
               style: GoogleFonts.inter(
-                fontSize: setSize(data.amount),
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFFA0A0A0),
               ),
             ),
-            SizedBox(height: 3.0),
-            Text(data.title, style: GoogleFonts.inter(fontSize: 10.0)),
-            SizedBox(height: 16.0),
-            _buildGrowthIndicator(data.growth),
+            const SizedBox(height: 20),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                if (constraints.maxWidth < 850) {
+                  return Column(
+                    spacing: 20.0,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        spacing: 20.0,
+                        children: [
+                          _buildProfitItem(_profitData[0]),
+                          _buildProfitItem(_profitData[1]),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        spacing: 20.0,
+                        children: [
+                          _buildProfitItem(_profitData[2]),
+                          _buildProfitItem(_profitData[3]),
+                        ],
+                      ),
+                    ],
+                  );
+                }
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  spacing: 20.0,
+                  children: _profitData
+                      .map((e) => _buildProfitItem(e))
+                      .toList(),
+                );
+              },
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildGrowthIndicator(double growth) {
-    if (growth >= 0) {
-      Row(
+  Widget _buildProfitItem(_ProfitData data) {
+    return Expanded(
+      child: Card(
+        margin: EdgeInsets.zero,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        color: Color(0xFFF5F5F5),
+        child: Padding(
+          padding: const EdgeInsets.all(14.0).copyWith(top: 16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SvgPicture.asset(data.icon),
+              SizedBox(height: 13.0),
+              Text(
+                data.amount.formatCurrency(),
+                style: GoogleFonts.inter(
+                  fontSize: setSize(data.amount),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              SizedBox(height: 3.0),
+              Text(data.title, style: GoogleFonts.inter(fontSize: 10.0)),
+              SizedBox(height: 16.0),
+              _buildGrowthIndicator(data.growth, data.growthTitle),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGrowthIndicator(double growth, String title) {
+    if (growth <= 0) {
+      return Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(Icons.arrow_downward, size: 10.0, color: AppColors.error),
@@ -119,7 +155,7 @@ class _ProfitCardState extends State<ProfitCard> {
             "$growth%",
             style: GoogleFonts.inter(fontSize: 10.0, color: AppColors.error),
           ),
-          Text(" с прошлого месяца", style: GoogleFonts.inter(fontSize: 10.0)),
+          Text(" $title", style: GoogleFonts.inter(fontSize: 10.0)),
         ],
       );
     }
@@ -131,12 +167,12 @@ class _ProfitCardState extends State<ProfitCard> {
           "$growth%",
           style: GoogleFonts.inter(fontSize: 10.0, color: Color(0xFF1BB90C)),
         ),
-        Text(" с прошлого месяца", style: GoogleFonts.inter(fontSize: 10.0)),
+        Text(" $title", style: GoogleFonts.inter(fontSize: 10.0)),
       ],
     );
   }
 
-  double setSize(double value) {
+  double setSize(int value) {
     if (value < 10000000) {
       return 16.0;
     } else if (value >= 10000000) {
@@ -150,13 +186,15 @@ class _ProfitCardState extends State<ProfitCard> {
 class _ProfitData {
   final String icon;
   final String title;
-  final double amount;
+  final int amount;
   final double growth;
+  final String growthTitle;
 
   _ProfitData({
     required this.icon,
     required this.title,
     required this.amount,
     required this.growth,
+    required this.growthTitle,
   });
 }

@@ -1,82 +1,134 @@
-class Employee {
-  final String name;
-  final String position;
+import '../../domain/entities/dashboard_entity.dart';
 
-  Employee({required this.name, required this.position});
+class DashboardModel extends DashboardEntity {
+  const DashboardModel({
+    required super.profit,
+    required super.topProducts,
+    required super.averageCheck,
+  });
+
+  factory DashboardModel.fromJson(Map<String, dynamic> json) {
+    return DashboardModel(
+      profit: ProfitModel.fromJson(json['profit'] ?? {}),
+      topProducts: json['top_products'] != null
+          ? List<TopProductModel>.from(
+              json['top_products'].map((x) => TopProductModel.fromJson(x)),
+            )
+          : [],
+      averageCheck: AverageCheckModel.fromJson(json['average_check'] ?? {}),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'profit': (profit as ProfitModel).toJson(),
+      'top_products': topProducts
+          .map((e) => (e as TopProductModel).toJson())
+          .toList(),
+      'average_check': (averageCheck as AverageCheckModel).toJson(),
+    };
+  }
+
+  DashboardEntity toEntity() {
+    return DashboardEntity(
+      profit: profit,
+      topProducts: topProducts,
+      averageCheck: averageCheck,
+    );
+  }
 }
 
-class Product {
-  final int rank;
-  final String name;
-  final int popularity;
-  final int salesPercentage;
-
-  Product({
-    required this.rank,
-    required this.name,
-    required this.popularity,
-    required this.salesPercentage,
+class ProfitModel extends ProfitEntity {
+  const ProfitModel({
+    required super.day,
+    required super.week,
+    required super.month,
+    required super.year,
+    required super.total,
   });
+
+  factory ProfitModel.fromJson(Map<String, dynamic> json) {
+    return ProfitModel(
+      day: ProfitPeriodModel.fromJson(json['day'] ?? {}),
+      week: ProfitPeriodModel.fromJson(json['week'] ?? {}),
+      month: ProfitPeriodModel.fromJson(json['month'] ?? {}),
+      year: ProfitPeriodModel.fromJson(json['year'] ?? {}),
+      total: ProfitPeriodModel.fromJson(json['total'] ?? {}),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'day': (day as ProfitPeriodModel).toJson(),
+      'week': (week as ProfitPeriodModel).toJson(),
+      'month': (month as ProfitPeriodModel).toJson(),
+      'year': (year as ProfitPeriodModel).toJson(),
+      'total': (total as ProfitPeriodModel).toJson(),
+    };
+  }
 }
 
-class Order {
-  final int tableNumber;
-  final String items;
-  final String price;
-  final String waiter;
-  final OrderStatus status;
-
-  Order({
-    required this.tableNumber,
-    required this.items,
-    required this.price,
-    required this.waiter,
-    required this.status,
+class ProfitPeriodModel extends ProfitPeriodEntity {
+  const ProfitPeriodModel({
+    required super.money,
+    required super.status,
+    required super.percentage,
   });
+
+  factory ProfitPeriodModel.fromJson(Map<String, dynamic> json) {
+    return ProfitPeriodModel(
+      money: json['money'] ?? 0,
+      status: json['status'] ?? false,
+      percentage: json['percentage']?.toDouble() ?? 0.0,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {'money': money, 'status': status, 'percentage': percentage};
+  }
 }
 
-enum OrderStatus { notPaid, empty, free }
-
-class ProfitData {
-  final double dailyProfit;
-  final double weeklyProfit;
-  final double monthlyProfit;
-  final double totalProfit;
-  final double monthlyGrowth;
-  final double yearlyGrowth;
-
-  ProfitData({
-    required this.dailyProfit,
-    required this.weeklyProfit,
-    required this.monthlyProfit,
-    required this.totalProfit,
-    required this.monthlyGrowth,
-    required this.yearlyGrowth,
+class TopProductModel extends TopProductEntity {
+  const TopProductModel({
+    required super.id,
+    required super.name,
+    required super.soldCount,
+    required super.popularity,
+    required super.salesPercent,
   });
+
+  factory TopProductModel.fromJson(Map<String, dynamic> json) {
+    return TopProductModel(
+      id: json['id'] ?? 0,
+      name: json['name'] ?? '',
+      soldCount: json['sold_count'] ?? 0,
+      popularity: (json['popularity'] ?? 0).toDouble(),
+      salesPercent: (json['sales_percent'] ?? 0).toDouble(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'sold_count': soldCount,
+      'popularity': popularity,
+      'sales_percent': salesPercent,
+    };
+  }
 }
 
-class AverageBillData {
-  final List<BillDataPoint> dailyData;
-  final double currentAverage;
-  final double previousAverage;
-  final double growthPercentage;
+class AverageCheckModel extends AverageCheckEntity {
+  const AverageCheckModel({required super.thisMonth, required super.lastMonth});
 
-  AverageBillData({
-    required this.dailyData,
-    required this.currentAverage,
-    required this.previousAverage,
-    required this.growthPercentage,
-  });
-}
+  factory AverageCheckModel.fromJson(Map<String, dynamic> json) {
+    return AverageCheckModel(
+      thisMonth: (json['this_month'] ?? 0).toDouble(),
+      lastMonth: (json['last_month'] ?? 0).toDouble(),
+    );
+  }
 
-class BillDataPoint {
-  final String day;
-  final double amount;
-  final double previousAmount;
-
-  BillDataPoint({
-    required this.day,
-    required this.amount,
-    required this.previousAmount,
-  });
+  Map<String, dynamic> toJson() {
+    return {'this_month': thisMonth, 'last_month': lastMonth};
+  }
 }
