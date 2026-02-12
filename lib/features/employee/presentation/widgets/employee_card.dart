@@ -116,7 +116,7 @@ class EmployeeCard extends StatelessWidget {
                     TextSpan(
                       text: '- ${e.money.formatCurrency()}  ',
                       style: GoogleFonts.inter(
-                        fontSize: 14.0,
+                        fontSize: 14.0,  
                         fontWeight: FontWeight.w500,
                         color: const Color(0xFFFF5144),
                       ),

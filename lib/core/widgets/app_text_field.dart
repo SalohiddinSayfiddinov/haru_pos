@@ -21,7 +21,9 @@ class AppTextField extends StatefulWidget {
   final TextStyle? hintStyle;
   final EdgeInsets? contentPadding;
   final bool? autofocus;
-
+  final TextInputAction? textInputAction;
+  final void Function(String)? onFieldSubmitted;
+  final FocusNode? focusNode;
   const AppTextField({
     super.key,
     required this.controller,
@@ -41,6 +43,9 @@ class AppTextField extends StatefulWidget {
     this.hintStyle,
     this.contentPadding,
     this.autofocus,
+    this.textInputAction,
+    this.onFieldSubmitted,
+    this.focusNode,
   });
 
   @override
@@ -70,6 +75,9 @@ class _AppTextFieldState extends State<AppTextField> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return TextFormField(
+      focusNode: widget.focusNode,
+      textInputAction: widget.textInputAction,
+      onFieldSubmitted: widget.onFieldSubmitted,
       onTapOutside: (_) => FocusScope.of(context).unfocus(),
       onChanged: widget.onChanged,
       controller: widget.controller,
@@ -131,6 +139,10 @@ class _AppTextFieldState extends State<AppTextField> {
             widget.suffixIcon ??
             (widget.obscureText
                 ? IconButton(
+                    focusNode: FocusNode(
+                      skipTraversal: true,
+                      canRequestFocus: false,
+                    ),
                     icon: Icon(
                       _isObscured
                           ? Icons.visibility_off_outlined

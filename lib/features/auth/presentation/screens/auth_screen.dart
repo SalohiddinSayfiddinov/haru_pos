@@ -23,11 +23,27 @@ class _AuthScreenState extends State<AuthScreen> {
   final TextEditingController _loginController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  final FocusNode _firstFocus = FocusNode();
+  final FocusNode _secondFocus = FocusNode();
+
   @override
   void dispose() {
     super.dispose();
     _loginController.dispose();
     _passwordController.dispose();
+    _firstFocus.dispose();
+    _secondFocus.dispose();
+  }
+
+  void _login() {
+    if (_formKey.currentState?.validate() ?? false) {
+      context.read<AuthBloc>().add(
+        LoginEvent(
+          username: _loginController.text,
+          password: _passwordController.text,
+        ),
+      );
+    }
   }
 
   @override
@@ -65,16 +81,26 @@ class _AuthScreenState extends State<AuthScreen> {
                       ),
                       SizedBox(height: 64),
                       AppTextField(
+                        focusNode: _firstFocus,
                         controller: _loginController,
                         hintText: 'Введите логин',
                         validator: Validators.simpleValidator,
+                        textInputAction: TextInputAction.next,
+                        onFieldSubmitted: (_) {
+                          FocusScope.of(context).requestFocus(_secondFocus);
+                        },
                       ),
                       SizedBox(height: 20.0),
                       AppTextField(
+                        focusNode: _secondFocus,
                         controller: _passwordController,
                         hintText: 'Введите пароль',
                         obscureText: true,
                         validator: Validators.simpleValidator,
+                        textInputAction: TextInputAction.done,
+                        onFieldSubmitted: (_) {
+                          _login();
+                        },
                       ),
                       SizedBox(height: 50.0),
                       BlocConsumer<AuthBloc, AuthState>(
@@ -87,20 +113,11 @@ class _AuthScreenState extends State<AuthScreen> {
                         },
                         builder: (context, state) {
                           final isLoading = state is AuthLoading;
-                          return PrimaryButton(
+                          return PrimaryButton( 
                             width: double.infinity,
                             title: 'Войти',
                             isLoading: isLoading,
-                            onPressed: () {
-                              if (_formKey.currentState?.validate() ?? false) {
-                                context.read<AuthBloc>().add(
-                                  LoginEvent(
-                                    username: _loginController.text,
-                                    password: _passwordController.text,
-                                  ),
-                                );
-                              }
-                            },
+                            onPressed: _login,
                           );
                         },
                       ),
