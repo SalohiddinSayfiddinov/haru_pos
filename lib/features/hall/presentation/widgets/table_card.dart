@@ -1,4 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:haru_pos/core/constants/app_colors.dart';
@@ -35,7 +37,9 @@ class TableCard extends StatelessWidget {
             mainAxisAlignment: .spaceBetween,
             children: [
               Text(
-                'Стол ${table.tableNumber}',
+                LocaleKeys.hall_table_card_title.tr(
+                  args: [table.tableNumber.toString()],
+                ),
                 style: GoogleFonts.inter(
                   fontSize: 18.0,
                   fontWeight: FontWeight.w600,
@@ -53,7 +57,7 @@ class TableCard extends StatelessWidget {
                         const Icon(Icons.edit, size: 18),
                         const SizedBox(width: 8),
                         Text(
-                          'Изменить',
+                          LocaleKeys.hall_edit.tr(),
                           style: GoogleFonts.inter(fontSize: 14),
                         ),
                       ],
@@ -66,7 +70,7 @@ class TableCard extends StatelessWidget {
                         const Icon(Icons.delete, size: 18, color: Colors.red),
                         const SizedBox(width: 8),
                         Text(
-                          'Удалить',
+                          LocaleKeys.hall_delete.tr(),
                           style: GoogleFonts.inter(
                             fontSize: 14,
                             color: Colors.red,
@@ -92,7 +96,7 @@ class TableCard extends StatelessWidget {
           SizedBox(height: 15.0),
           if (table.tableBooks.isNotEmpty)
             Text(
-              'Забронирован',
+              LocaleKeys.hall_reserved.tr(),
               style: GoogleFonts.inter(fontWeight: FontWeight.w600),
             ),
           SizedBox(height: 5),
@@ -105,7 +109,7 @@ class TableCard extends StatelessWidget {
                   crossAxisAlignment: .start,
                   children: [
                     Text(
-                      '${item.dateAndTime.toRuFancy()}, ${item.fullName}\n${item.phoneNumber}',
+                      '${item.dateAndTime.toFancy()}, ${item.fullName}\n${item.phoneNumber}',
                     ),
                     if (table.tableBooks.indexOf(item) !=
                         table.tableBooks.length - 1)
@@ -159,7 +163,9 @@ class TableCard extends StatelessWidget {
           ),
         ),
         child: Text(
-          table.status ? 'Освободить' : 'Занять',
+          table.status
+              ? LocaleKeys.hall_free_table.tr()
+              : LocaleKeys.hall_occupy_table.tr(),
           style: GoogleFonts.inter(fontSize: 12.0, fontWeight: FontWeight.w600),
         ),
       ),

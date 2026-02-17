@@ -1,4 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:haru_pos/core/constants/app_colors.dart';
@@ -22,13 +24,15 @@ class DeleteProductDialog extends StatelessWidget {
       create: (context) => getIt<ProductBloc>(),
       child: AlertDialog(
         backgroundColor: Colors.white,
-        title: const Text('Удалить продукт?'),
-        content: Text('Вы уверены, что хотите удалить продукт "$productName"?'),
+        title: Text(LocaleKeys.products_delete_dialog_title.tr()),
+        content: Text(
+          LocaleKeys.products_delete_confirmation.tr(args: [productName]),
+        ),
         actions: [
           TextButton(
             onPressed: () => context.pop(),
             style: TextButton.styleFrom(foregroundColor: Colors.blue),
-            child: const Text('Отмена'),
+            child: Text(LocaleKeys.products_cancel.tr()),
           ),
           BlocConsumer<ProductBloc, ProductState>(
             listener: (context, state) {
@@ -49,7 +53,9 @@ class DeleteProductDialog extends StatelessWidget {
                       },
                 style: TextButton.styleFrom(foregroundColor: AppColors.error),
                 child: Text(
-                  state is ProductLoading ? 'Удаление...' : 'Удалить',
+                  state is ProductLoading
+                      ? LocaleKeys.products_deleting.tr()
+                      : LocaleKeys.products_delete.tr(),
                 ),
               );
             },

@@ -1,4 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:haru_pos/core/di/injection.dart';
@@ -20,6 +22,19 @@ class _HallScreenState extends State<HallScreen> {
   void initState() {
     super.initState();
     context.read<TableBloc>().add(LoadTablesEvent());
+  }
+
+  Locale? _lastLocale;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final currentLocale = context.locale;
+
+    if (_lastLocale != currentLocale) {
+      _lastLocale = currentLocale;
+    }
   }
 
   void _showAddTableDialog() async {
@@ -55,7 +70,7 @@ class _HallScreenState extends State<HallScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Зал',
+                    LocaleKeys.hall_title.tr(),
                     style: GoogleFonts.inter(
                       fontSize: 25.0,
                       fontWeight: FontWeight.w600,
@@ -68,7 +83,7 @@ class _HallScreenState extends State<HallScreen> {
                       fontWeight: FontWeight.w600,
                       color: Colors.white,
                     ),
-                    title: 'Добавить стол',
+                    title: LocaleKeys.hall_add_table_button.tr(),
                     onPressed: _showAddTableDialog,
                   ),
                 ],
@@ -117,12 +132,12 @@ class _HallScreenState extends State<HallScreen> {
               child: Column(
                 children: [
                   Text(
-                    'Столы не найдены',
+                    LocaleKeys.hall_no_tables.tr(),
                     style: GoogleFonts.inter(fontSize: 16.0),
                   ),
                   const SizedBox(height: 10.0),
                   PrimaryButton(
-                    title: 'Добавить стол',
+                    title: LocaleKeys.hall_add_table_button.tr(),
                     onPressed: _showAddTableDialog,
                   ),
                 ],

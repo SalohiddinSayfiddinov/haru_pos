@@ -58,6 +58,7 @@ dependencies:
   intl: ^0.20.2
   web_socket_channel: ^3.0.3
   number_pagination: ^1.1.6
+  easy_localization: ^3.0.7
 
 
 dev_dependencies:
@@ -89,6 +90,7 @@ flutter:
     - assets/images/
     - assets/icons/
     - assets/fonts/
+    - assets/translations/
   
 
   # An image asset can refer to one or more resolution-specific "variants", see

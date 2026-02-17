@@ -1,5 +1,7 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
 import 'package:haru_pos/core/widgets/app_text_field.dart';
 import 'package:haru_pos/features/products/presentation/widgets/status_dropdown.dart';
 
@@ -23,7 +25,7 @@ class ProductStatusSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Статус продукта:',
+          LocaleKeys.products_product_status_label.tr(),
           style: GoogleFonts.montserrat(
             fontSize: 12.0,
             fontWeight: FontWeight.w500,
@@ -41,7 +43,7 @@ class ProductStatusSection extends StatelessWidget {
               const SizedBox(height: 15.0),
               AppTextField(
                 controller: commentController,
-                hintText: 'Коментарий',
+                hintText: LocaleKeys.products_comment_hint.tr(),
                 maxLines: 4,
                 hintStyle: GoogleFonts.montserrat(
                   fontSize: 12.0,

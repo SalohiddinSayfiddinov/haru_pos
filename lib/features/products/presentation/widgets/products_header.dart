@@ -1,5 +1,7 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
 import 'package:haru_pos/core/widgets/app_buttons.dart';
 import 'package:haru_pos/core/widgets/app_search_field.dart';
 
@@ -21,7 +23,7 @@ class ProductsHeader extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          'Продукты',
+          LocaleKeys.products_title.tr(),
           style: GoogleFonts.inter(fontSize: 25.0, fontWeight: FontWeight.w600),
         ),
         SizedBox(
@@ -39,7 +41,7 @@ class ProductsHeader extends StatelessWidget {
             fontWeight: FontWeight.w600,
             color: Colors.white,
           ),
-          title: 'Добавить продукт',
+          title: LocaleKeys.products_add_button.tr(),
           onPressed: onAddProduct,
         ),
       ],

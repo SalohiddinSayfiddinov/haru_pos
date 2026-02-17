@@ -1,5 +1,7 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:haru_pos/core/constants/app_colors.dart';
 import 'package:haru_pos/features/categories/presentation/bloc/categories_bloc.dart';
@@ -30,14 +32,16 @@ class CategoryFilter extends StatelessWidget {
               itemBuilder: (context, index) {
                 if (index == 0) {
                   return CategoryFilterItem(
-                    title: 'Все',
+                    title: LocaleKeys.products_all_categories.tr(),
                     isSelected: selectedCategoryId == null,
                     onTap: () => onCategorySelected(null),
                   );
                 }
                 final category = categories[index - 1];
                 return CategoryFilterItem(
-                  title: category.nameRu,
+                  title: context.locale.languageCode == 'ru'
+                      ? category.nameRu
+                      : category.nameUz,
                   isSelected: selectedCategoryId == category.id,
                   onTap: () => onCategorySelected(category.id),
                 );

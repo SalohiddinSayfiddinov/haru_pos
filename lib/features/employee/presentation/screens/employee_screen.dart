@@ -10,6 +10,8 @@ import 'package:haru_pos/features/employee/presentation/widgets/add_employee_dia
 import 'package:haru_pos/features/employee/presentation/widgets/delete_employee_dialog.dart';
 import 'package:haru_pos/features/employee/presentation/widgets/employee_card.dart';
 import 'package:haru_pos/features/employee/presentation/widgets/penalty_confirmation_dialog.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
 
 class EmployeeScreen extends StatefulWidget {
   const EmployeeScreen({super.key});
@@ -23,6 +25,19 @@ class _EmployeeScreenState extends State<EmployeeScreen> {
   void initState() {
     super.initState();
     context.read<EmployeeBloc>().add(LoadEmployeesEvent());
+  }
+
+  Locale? _lastLocale;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final currentLocale = context.locale;
+
+    if (_lastLocale != currentLocale) {
+      _lastLocale = currentLocale;
+    }
   }
 
   void _showAddEmployeeDialog() async {
@@ -100,7 +115,7 @@ class _EmployeeScreenState extends State<EmployeeScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Сотрудники',
+                      LocaleKeys.employee_title.tr(),
                       style: GoogleFonts.inter(
                         fontSize: 25.0,
                         fontWeight: FontWeight.w600,
@@ -113,7 +128,7 @@ class _EmployeeScreenState extends State<EmployeeScreen> {
                         fontWeight: FontWeight.w600,
                         color: Colors.white,
                       ),
-                      title: 'Добавить сотрудника',
+                      title: LocaleKeys.employee_add_button.tr(),
                       onPressed: _showAddEmployeeDialog,
                     ),
                   ],
@@ -140,12 +155,12 @@ class _EmployeeScreenState extends State<EmployeeScreen> {
             child: Column(
               children: [
                 Text(
-                  'Ошибка загрузки сотрудников',
+                  LocaleKeys.employee_load_error.tr(),
                   style: GoogleFonts.inter(fontSize: 16.0, color: Colors.red),
                 ),
                 const SizedBox(height: 10.0),
                 PrimaryButton(
-                  title: 'Попробовать снова',
+                  title: LocaleKeys.employee_retry.tr(),
                   onPressed: () {
                     context.read<EmployeeBloc>().add(LoadEmployeesEvent());
                   },
@@ -163,12 +178,12 @@ class _EmployeeScreenState extends State<EmployeeScreen> {
               child: Column(
                 children: [
                   Text(
-                    'Сотрудники не найдены',
+                    LocaleKeys.employee_no_employees.tr(),
                     style: GoogleFonts.inter(fontSize: 16.0),
                   ),
                   const SizedBox(height: 10.0),
                   PrimaryButton(
-                    title: 'Добавить сотрудника',
+                    title: LocaleKeys.employee_add_button.tr(),
                     onPressed: _showAddEmployeeDialog,
                   ),
                 ],

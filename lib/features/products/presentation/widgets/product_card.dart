@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:haru_pos/core/constants/app_colors.dart';
@@ -45,7 +46,9 @@ class ProductCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        product.nameRu,
+                        context.locale.languageCode == 'ru'
+                            ? product.nameRu
+                            : product.nameUz,
                         style: GoogleFonts.inter(
                           fontSize: 18.0,
                           fontWeight: FontWeight.w500,
@@ -54,7 +57,7 @@ class ProductCard extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                       Text(
-                        product.price.formatCurrency(),
+                        product.price.formatCurrency(context),
                         style: GoogleFonts.inter(
                           fontSize: 18.0,
                           fontWeight: FontWeight.w500,

@@ -9,6 +9,7 @@ import 'package:haru_pos/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:haru_pos/features/auth/presentation/screens/auth_screen.dart';
 import 'package:haru_pos/features/categories/presentation/bloc/categories_bloc.dart';
 import 'package:haru_pos/features/categories/presentation/screens/categories_screen.dart';
+import 'package:haru_pos/features/dashboard/presentation/bloc/dashboard_bloc.dart';
 import 'package:haru_pos/features/dashboard/presentation/screens/dashboard_screen.dart';
 import 'package:haru_pos/features/employee/presentation/bloc/employee_bloc.dart';
 import 'package:haru_pos/features/employee/presentation/screens/employee_screen.dart';
@@ -66,8 +67,12 @@ class AppRouter {
         routes: [
           GoRoute(
             path: AppPages.dashboard,
-            pageBuilder: (context, state) =>
-                const NoTransitionPage(child: DashboardScreen()),
+            pageBuilder: (context, state) => NoTransitionPage(
+              child: BlocProvider(
+                create: (context) => getIt<DashboardBloc>(),
+                child: DashboardScreen(),
+              ),
+            ),
           ),
           GoRoute(
             path: AppPages.categories,

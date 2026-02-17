@@ -1,6 +1,8 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
 import 'package:haru_pos/core/widgets/app_buttons.dart';
 import 'package:haru_pos/core/widgets/app_snack_bar.dart';
 import 'package:haru_pos/features/categories/presentation/bloc/categories_bloc.dart';
@@ -22,6 +24,19 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   void initState() {
     super.initState();
     context.read<CategoryBloc>().add(LoadCategoriesEvent());
+  }
+
+  Locale? _lastLocale;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final currentLocale = context.locale;
+
+    if (_lastLocale != currentLocale) {
+      _lastLocale = currentLocale;
+    }
   }
 
   void _showAddCategoryDialog() async {
@@ -79,7 +94,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Категории',
+                      LocaleKeys.categories_title.tr(),
                       style: GoogleFonts.inter(
                         fontSize: 25.0,
                         fontWeight: FontWeight.w600,
@@ -93,7 +108,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                         fontWeight: FontWeight.w600,
                         color: Colors.white,
                       ),
-                      title: 'Добавить категорию',
+                      title: LocaleKeys.categories_add_button.tr(),
                       onPressed: _showAddCategoryDialog,
                     ),
                   ],
@@ -119,7 +134,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              'Ошибка загрузки категорий',
+                              LocaleKeys.categories_load_error.tr(),
                               style: GoogleFonts.inter(
                                 fontSize: 16.0,
                                 color: Colors.red,
@@ -127,7 +142,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                             ),
                             const SizedBox(height: 10.0),
                             PrimaryButton(
-                              title: 'Попробовать снова',
+                              title: LocaleKeys.categories_retry.tr(),
                               onPressed: () {
                                 context.read<CategoryBloc>().add(
                                   LoadCategoriesEvent(),

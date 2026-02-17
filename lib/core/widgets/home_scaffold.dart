@@ -1,9 +1,11 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:haru_pos/core/assets/app_icons.dart';
 import 'package:haru_pos/core/assets/app_images.dart';
 import 'package:haru_pos/core/constants/app_colors.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
 import 'package:haru_pos/core/widgets/app_header.dart';
 import 'package:haru_pos/core/routes/app_pages.dart';
 
@@ -31,22 +33,34 @@ class _HomeScaffoldState extends State<HomeScaffold> {
     }
   }
 
-  final List<_Helper> pages = [
+  List<_Helper> get pages => [
     _Helper(
-      name: "Главный панель",
+      name: LocaleKeys.home_dashboard.tr(),
       path: AppPages.dashboard,
       icon: AppIcons.main,
     ),
     _Helper(
-      name: "Категории",
+      name: LocaleKeys.home_categories.tr(),
       path: AppPages.categories,
       icon: AppIcons.categories,
     ),
-    _Helper(name: "Продукты", path: AppPages.products, icon: AppIcons.products),
-    _Helper(name: "Зал", path: AppPages.hall, icon: AppIcons.hall),
-    _Helper(name: "Заказы", path: AppPages.orders, icon: AppIcons.orders),
     _Helper(
-      name: "Сотрудники",
+      name: LocaleKeys.home_products.tr(),
+      path: AppPages.products,
+      icon: AppIcons.products,
+    ),
+    _Helper(
+      name: LocaleKeys.home_hall.tr(),
+      path: AppPages.hall,
+      icon: AppIcons.hall,
+    ),
+    _Helper(
+      name: LocaleKeys.home_orders.tr(),
+      path: AppPages.orders,
+      icon: AppIcons.orders,
+    ),
+    _Helper(
+      name: LocaleKeys.home_employees.tr(),
       path: AppPages.employees,
       icon: AppIcons.employees,
     ),

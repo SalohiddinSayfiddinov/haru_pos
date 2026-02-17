@@ -1,6 +1,8 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:haru_pos/core/constants/app_colors.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
 import 'package:haru_pos/features/dashboard/domain/entities/dashboard_entity.dart';
 import 'package:haru_pos/features/dashboard/presentation/widgets/dashboard_section_card.dart';
 
@@ -15,7 +17,7 @@ class TopProductsSection extends StatelessWidget {
       child: SizedBox(
         height: 255,
         child: DashboardSectionCard(
-          title: 'Топ продукты',
+          title: LocaleKeys.dashboard_top_products.tr(),
           padding: const EdgeInsets.all(14.0),
           children: [
             const SizedBox(height: 12),
@@ -37,11 +39,15 @@ class TopProductsSection extends StatelessWidget {
                     fontWeight: FontWeight.w500,
                     color: Colors.black,
                   ),
-                  columns: const [
-                    DataColumn(label: Text('#')),
-                    DataColumn(label: Text('Название')),
-                    DataColumn(label: Text('Популярность')),
-                    DataColumn(label: Text('Продажа')),
+                  columns: [
+                    DataColumn(label: Text(LocaleKeys.dashboard_rank.tr())),
+                    DataColumn(
+                      label: Text(LocaleKeys.dashboard_product_name.tr()),
+                    ),
+                    DataColumn(
+                      label: Text(LocaleKeys.dashboard_popularity.tr()),
+                    ),
+                    DataColumn(label: Text(LocaleKeys.dashboard_sales.tr())),
                   ],
                   rows: List.generate(products.length, (index) {
                     final product = products[index];

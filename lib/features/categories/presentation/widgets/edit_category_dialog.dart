@@ -1,9 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:haru_pos/core/di/injection.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
 import 'package:haru_pos/core/widgets/app_buttons.dart';
 import 'package:haru_pos/core/widgets/app_snack_bar.dart';
 import 'package:haru_pos/core/widgets/app_text_field.dart';
@@ -73,7 +75,7 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Изменить категорию',
+                      LocaleKeys.categories_edit_dialog_title.tr(),
                       style: GoogleFonts.inter(
                         fontSize: 20.0,
                         fontWeight: FontWeight.bold,
@@ -89,7 +91,7 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
                 const SizedBox(height: 20.0),
                 AppTextField(
                   controller: ruNameController,
-                  hintText: 'Наименование на русском',
+                  hintText: LocaleKeys.categories_name_ru_hint.tr(),
                   contentPadding: const EdgeInsets.all(16.0),
                   hintStyle: GoogleFonts.inter(
                     fontSize: 13.0,
@@ -100,7 +102,7 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
                 const SizedBox(height: 8.0),
                 AppTextField(
                   controller: uzNameController,
-                  hintText: 'Наименование на узбекском',
+                  hintText: LocaleKeys.categories_name_uz_hint.tr(),
                   contentPadding: const EdgeInsets.all(16.0),
                   hintStyle: GoogleFonts.inter(
                     fontSize: 13.0,
@@ -115,7 +117,7 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
                       Column(
                         children: [
                           Text(
-                            'Текущее изображение',
+                            LocaleKeys.categories_current_image.tr(),
                             style: GoogleFonts.inter(fontSize: 12.0),
                           ),
                           const SizedBox(height: 5.0),
@@ -142,7 +144,7 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
                       Column(
                         children: [
                           Text(
-                            'Новое изображение',
+                            LocaleKeys.categories_new_image.tr(),
                             style: GoogleFonts.inter(fontSize: 12.0),
                           ),
                           const SizedBox(height: 5.0),
@@ -170,8 +172,8 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
                     ),
                     child: Text(
                       _pickedFile == null
-                          ? 'Изменить изображение'
-                          : 'Выбрать другое изображение',
+                          ? LocaleKeys.categories_change_image.tr()
+                          : LocaleKeys.categories_select_another_image.tr(),
                       style: GoogleFonts.inter(
                         fontSize: 13.0,
                         fontWeight: FontWeight.w500,
@@ -195,7 +197,9 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
             builder: (context, state) {
               return PrimaryButton(
                 height: 30.0,
-                title: state is CategoryLoading ? 'Сохранение...' : 'Сохранить',
+                title: state is CategoryLoading
+                    ? LocaleKeys.categories_saving.tr()
+                    : LocaleKeys.categories_save.tr(),
                 textStyle: GoogleFonts.inter(
                   fontSize: 12.0,
                   fontWeight: FontWeight.w600,
@@ -206,7 +210,10 @@ class _EditCategoryDialogState extends State<EditCategoryDialog> {
                     : () {
                         if (ruNameController.text.trim().isEmpty ||
                             uzNameController.text.trim().isEmpty) {
-                          AppSnackbar.error(context, 'Заполните все поля');
+                          AppSnackbar.error(
+                            context,
+                            LocaleKeys.categories_fill_all_fields.tr(),
+                          );
                           return;
                         }
 

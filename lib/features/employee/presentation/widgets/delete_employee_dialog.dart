@@ -6,6 +6,8 @@ import 'package:haru_pos/core/constants/app_colors.dart';
 import 'package:haru_pos/core/di/injection.dart';
 import 'package:haru_pos/core/widgets/app_snack_bar.dart';
 import 'package:haru_pos/features/employee/presentation/bloc/employee_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
 
 class DeleteEmployeeDialog extends StatelessWidget {
   final int employeeId;
@@ -24,11 +26,11 @@ class DeleteEmployeeDialog extends StatelessWidget {
       child: AlertDialog(
         backgroundColor: Colors.white,
         title: Text(
-          'Удалить сотрудника?',
+          LocaleKeys.employee_delete_dialog_title.tr(),
           style: GoogleFonts.inter(fontSize: 18.0, fontWeight: FontWeight.w600),
         ),
         content: Text(
-          'Вы уверены, что хотите удалить сотрудника "$employeeName"?',
+          LocaleKeys.employee_delete_confirmation.tr(args: [employeeName]),
           style: GoogleFonts.inter(
             fontSize: 14.0,
             color: const Color(0xFF6B7280),
@@ -38,7 +40,7 @@ class DeleteEmployeeDialog extends StatelessWidget {
           TextButton(
             onPressed: () => context.pop(),
             style: TextButton.styleFrom(foregroundColor: Colors.blue),
-            child: const Text('Отмена'),
+            child: Text(LocaleKeys.employee_cancel.tr()),
           ),
           BlocConsumer<EmployeeBloc, EmployeeState>(
             listener: (context, state) {
@@ -59,7 +61,9 @@ class DeleteEmployeeDialog extends StatelessWidget {
                       },
                 style: TextButton.styleFrom(foregroundColor: AppColors.error),
                 child: Text(
-                  state is EmployeeLoading ? 'Удаление...' : 'Удалить',
+                  state is EmployeeLoading
+                      ? LocaleKeys.employee_deleting.tr()
+                      : LocaleKeys.employee_delete.tr(),
                   style: GoogleFonts.inter(
                     fontSize: 14.0,
                     fontWeight: FontWeight.w600,

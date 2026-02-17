@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:haru_pos/core/utils/extensions.dart';
 import 'package:haru_pos/features/employee/domain/entities/employee_entity.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
 
 class EmployeeCard extends StatelessWidget {
   final EmployeeEntity employee;
@@ -78,11 +80,17 @@ class EmployeeCard extends StatelessWidget {
                 icon: const Icon(Icons.more_vert),
                 color: Colors.white,
                 itemBuilder: (context) => [
-                  const PopupMenuItem(value: 'edit', child: Text('Изменить')),
-                  const PopupMenuItem(value: 'delete', child: Text('Удалить')),
-                  const PopupMenuItem(
+                  PopupMenuItem(
+                    value: 'edit',
+                    child: Text(LocaleKeys.employee_edit_popup.tr()),
+                  ),
+                  PopupMenuItem(
+                    value: 'delete',
+                    child: Text(LocaleKeys.employee_delete_popup.tr()),
+                  ),
+                  PopupMenuItem(
                     value: 'penalty',
-                    child: Text('Оштрафовать'),
+                    child: Text(LocaleKeys.employee_penalty_popup.tr()),
                   ),
                 ],
                 onSelected: (value) {
@@ -99,7 +107,7 @@ class EmployeeCard extends StatelessWidget {
           ),
           const SizedBox(height: 10.0),
           Text(
-            "Лимит: ${employee.limit.formatCurrency()}",
+            "${LocaleKeys.employee_limit_label.tr()} ${employee.limit.formatCurrency(context)}",
             style: GoogleFonts.inter(
               fontSize: 14.0,
               fontWeight: FontWeight.w500,
@@ -114,9 +122,9 @@ class EmployeeCard extends StatelessWidget {
                 children: employee.limits.map((e) {
                   return Text.rich(
                     TextSpan(
-                      text: '- ${e.money.formatCurrency()}  ',
+                      text: '- ${e.money.formatCurrency(context)}  ',
                       style: GoogleFonts.inter(
-                        fontSize: 14.0,  
+                        fontSize: 14.0,
                         fontWeight: FontWeight.w500,
                         color: const Color(0xFFFF5144),
                       ),

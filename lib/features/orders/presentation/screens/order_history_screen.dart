@@ -141,7 +141,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
             },
         weekdayLabelBuilder: ({isScrollViewTopHeader, required weekday}) {
           return Text(
-            weekday.ruShortWeekday,
+            weekday.localizedShortWeekday,
             textAlign: .center,
             style: GoogleFonts.nunitoSans(
               color: Color(0xFF202224),
@@ -398,7 +398,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
           ),
         ),
       ),
-      DataCell(_buildRowText(order.fullPrice.formatCurrencyUz())),
+      DataCell(_buildRowText(order.fullPrice.formatCurrency(context))),
       DataCell(
         _buildRowText(
           order.user!.fullName.isNotEmpty

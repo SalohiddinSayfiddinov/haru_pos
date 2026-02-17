@@ -1,4 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:haru_pos/core/widgets/app_buttons.dart';
 import 'package:haru_pos/core/widgets/app_text_field.dart';
@@ -28,7 +30,7 @@ class _PasswordConfirmDialogState extends State<PasswordConfirmDialog> {
     return AlertDialog(
       backgroundColor: Colors.white,
       title: Text(
-        'Введите пароль',
+        LocaleKeys.products_password_title.tr(),
         style: GoogleFonts.inter(fontSize: 18.0, fontWeight: FontWeight.w600),
       ),
       content: Column(
@@ -36,7 +38,7 @@ class _PasswordConfirmDialogState extends State<PasswordConfirmDialog> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Введите пароль для подтверждения',
+            LocaleKeys.products_password_confirmation_message.tr(),
             style: GoogleFonts.inter(
               fontSize: 14.0,
               color: const Color(0xFF6B7280),
@@ -45,7 +47,7 @@ class _PasswordConfirmDialogState extends State<PasswordConfirmDialog> {
           const SizedBox(height: 15),
           AppTextField(
             controller: _passwordController,
-            hintText: 'Пароль',
+            hintText: LocaleKeys.products_password_hint.tr(),
             obscureText: true,
             hintStyle: GoogleFonts.inter(
               fontSize: 16,
@@ -61,7 +63,7 @@ class _PasswordConfirmDialogState extends State<PasswordConfirmDialog> {
               TextButton(
                 onPressed: () => Navigator.pop(context),
                 child: Text(
-                  'Отмена',
+                  LocaleKeys.products_cancel.tr(),
                   style: GoogleFonts.inter(
                     fontSize: 14.0,
                     fontWeight: FontWeight.w600,
@@ -72,7 +74,7 @@ class _PasswordConfirmDialogState extends State<PasswordConfirmDialog> {
               const SizedBox(width: 10),
               PrimaryButton(
                 height: 40,
-                title: 'Подтвердить',
+                title: LocaleKeys.products_confirm.tr(),
                 textStyle: GoogleFonts.inter(
                   fontSize: 14.0,
                   fontWeight: FontWeight.w600,

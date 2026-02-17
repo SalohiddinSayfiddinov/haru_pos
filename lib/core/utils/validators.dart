@@ -1,3 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
+
 abstract class Validators {
   static String? validatePhone(String? value) {
     if (value == null || value.trim().isEmpty) {
@@ -31,7 +34,7 @@ abstract class Validators {
 
   static String? simpleValidator(String? value) {
     if (value == null || value.isEmpty) {
-      return "Iltimos to'ldiring";
+      return LocaleKeys.validation_required_field.tr();
     }
 
     return null;

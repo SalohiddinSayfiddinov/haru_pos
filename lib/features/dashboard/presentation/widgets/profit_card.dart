@@ -1,8 +1,10 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:haru_pos/core/assets/app_icons.dart';
 import 'package:haru_pos/core/constants/app_colors.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
 import 'package:haru_pos/core/utils/extensions.dart';
 import 'package:haru_pos/features/dashboard/domain/entities/dashboard_entity.dart';
 import 'package:haru_pos/features/dashboard/presentation/widgets/dashboard_section_card.dart';
@@ -25,31 +27,31 @@ class _ProfitCardState extends State<ProfitCard> {
     _profitData.addAll([
       _ProfitData(
         icon: AppIcons.day,
-        title: 'Прибыль за день',
+        title: LocaleKeys.dashboard_profit_day.tr(),
         amount: widget.profitData.day.money,
         growth: widget.profitData.day.percentage,
-        growthTitle: 'Со вчера',
+        growthTitle: LocaleKeys.dashboard_since_yesterday.tr(),
       ),
       _ProfitData(
         icon: AppIcons.week,
-        title: 'Прибыль за неделю',
+        title: LocaleKeys.dashboard_profit_week.tr(),
         amount: widget.profitData.week.money,
         growth: widget.profitData.week.percentage,
-        growthTitle: 'С прошлой недели',
+        growthTitle: LocaleKeys.dashboard_since_last_week.tr(),
       ),
       _ProfitData(
         icon: AppIcons.month,
-        title: 'Прибыль за месяц',
+        title: LocaleKeys.dashboard_profit_month.tr(),
         amount: widget.profitData.month.money,
         growth: widget.profitData.month.percentage,
-        growthTitle: 'С прошлого месяца',
+        growthTitle: LocaleKeys.dashboard_since_last_month.tr(),
       ),
       _ProfitData(
         icon: AppIcons.year,
-        title: 'Общий прибыль',
+        title: LocaleKeys.dashboard_profit_total.tr(),
         amount: widget.profitData.year.money,
         growth: widget.profitData.year.percentage,
-        growthTitle: 'С прошлого года',
+        growthTitle: LocaleKeys.dashboard_since_last_year.tr(),
       ),
     ]);
   }
@@ -59,12 +61,12 @@ class _ProfitCardState extends State<ProfitCard> {
     return Expanded(
       child: SizedBox(
         child: DashboardSectionCard(
-          title: 'Статистика оборота',
+          title: LocaleKeys.dashboard_turnover_stats.tr(),
           padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 14.0),
           children: [
             SizedBox(height: 5.0),
             Text(
-              'Прибыль',
+              LocaleKeys.dashboard_profit.tr(),
               style: GoogleFonts.inter(
                 fontWeight: FontWeight.w500,
                 color: Color(0xFFA0A0A0),
@@ -128,7 +130,7 @@ class _ProfitCardState extends State<ProfitCard> {
               SvgPicture.asset(data.icon),
               SizedBox(height: 13.0),
               Text(
-                data.amount.formatCurrency(),
+                data.amount.formatCurrency(context),
                 style: GoogleFonts.inter(
                   fontSize: setSize(data.amount),
                   fontWeight: FontWeight.w600,

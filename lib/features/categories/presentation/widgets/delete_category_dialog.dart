@@ -1,8 +1,10 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:haru_pos/core/constants/app_colors.dart';
 import 'package:haru_pos/core/di/injection.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
 import 'package:haru_pos/core/widgets/app_snack_bar.dart';
 import 'package:haru_pos/features/categories/presentation/bloc/categories_bloc.dart';
 
@@ -22,15 +24,15 @@ class DeleteCategoryDialog extends StatelessWidget {
       create: (context) => getIt<CategoryBloc>(),
       child: AlertDialog(
         backgroundColor: Colors.white,
-        title: const Text('Удалить категорию?'),
+        title: Text(LocaleKeys.categories_delete_dialog_title.tr()),
         content: Text(
-          'Вы уверены, что хотите удалить категорию "$categoryName"?',
+          LocaleKeys.categories_delete_confirmation.tr(args: [categoryName]),
         ),
         actions: [
           TextButton(
             onPressed: () => context.pop(),
             style: TextButton.styleFrom(foregroundColor: Colors.blue),
-            child: const Text('Отмена'),
+            child: Text(LocaleKeys.categories_cancel.tr()),
           ),
           BlocConsumer<CategoryBloc, CategoryState>(
             listener: (context, state) {
@@ -51,7 +53,9 @@ class DeleteCategoryDialog extends StatelessWidget {
                       },
                 style: TextButton.styleFrom(foregroundColor: AppColors.error),
                 child: Text(
-                  state is CategoryLoading ? 'Удаление...' : 'Удалить',
+                  state is CategoryLoading
+                      ? LocaleKeys.categories_deleting.tr()
+                      : LocaleKeys.categories_delete.tr(),
                 ),
               );
             },

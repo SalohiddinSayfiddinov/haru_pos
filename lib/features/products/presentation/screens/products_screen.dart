@@ -1,9 +1,11 @@
 import 'dart:async';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
 import 'package:haru_pos/core/routes/app_pages.dart';
 import 'package:haru_pos/features/categories/domain/entities/categories_entity.dart';
 import 'package:haru_pos/features/categories/presentation/bloc/categories_bloc.dart';
@@ -39,6 +41,19 @@ class _ProductsScreenState extends State<ProductsScreen> {
     super.initState();
     _initializeData();
     _setupSearchListener();
+  }
+
+  Locale? _lastLocale;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final currentLocale = context.locale;
+
+    if (_lastLocale != currentLocale) {
+      _lastLocale = currentLocale;
+    }
   }
 
   void _initializeData() {
@@ -225,15 +240,17 @@ class _ProductsScreenState extends State<ProductsScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: Colors.white,
-        title: Text("Printerda xatolik"),
+        title: Text(LocaleKeys.products_printer_error_title.tr()),
         content: Text(
-          "Buyurtma #${order.id} yaratildi, lekin oshxonaga bormadi.\n\n$errorMessage",
+          LocaleKeys.products_printer_error_message.tr(
+            args: [order.id.toString(), errorMessage],
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => context.pop(),
             child: Text(
-              'Отмена',
+              LocaleKeys.products_cancel.tr(),
               style: GoogleFonts.inter(
                 fontSize: 14.0,
                 color: const Color(0xFF6B7280),
@@ -248,7 +265,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
             child: Text(
-              'Chek chiqarish',
+              LocaleKeys.products_print_receipt.tr(),
               style: GoogleFonts.inter(
                 fontSize: 14.0,
                 fontWeight: FontWeight.w600,

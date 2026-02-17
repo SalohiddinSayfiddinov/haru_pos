@@ -33,7 +33,7 @@ class PrintBillDialog extends StatelessWidget {
           ),
           SizedBox(height: 5),
           Text(
-            'Сумма: ${order.fullPrice.formatCurrency()}',
+            'Сумма: ${order.fullPrice.formatCurrency(context)}',
             style: GoogleFonts.inter(
               fontSize: 14.0,
               fontWeight: FontWeight.w600,

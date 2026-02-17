@@ -1,8 +1,10 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:haru_pos/core/assets/app_images.dart';
 import 'package:haru_pos/core/constants/app_colors.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
 import 'package:haru_pos/core/routes/app_pages.dart';
 import 'package:haru_pos/core/utils/validators.dart';
 import 'package:haru_pos/core/widgets/app_buttons.dart';
@@ -62,13 +64,13 @@ class _AuthScreenState extends State<AuthScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Row(
+                      Row(
                         children: [
                           Expanded(
                             child: Align(
                               alignment: Alignment.centerLeft,
                               child: Text(
-                                "Добро пожаловать",
+                                LocaleKeys.auth_welcome.tr(),
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 40.0,
@@ -83,18 +85,18 @@ class _AuthScreenState extends State<AuthScreen> {
                       AppTextField(
                         focusNode: _firstFocus,
                         controller: _loginController,
-                        hintText: 'Введите логин',
+                        hintText: LocaleKeys.auth_login_hint.tr(),
                         validator: Validators.simpleValidator,
                         textInputAction: TextInputAction.next,
                         onFieldSubmitted: (_) {
                           FocusScope.of(context).requestFocus(_secondFocus);
                         },
-                      ),
+                      ),  
                       SizedBox(height: 20.0),
                       AppTextField(
                         focusNode: _secondFocus,
                         controller: _passwordController,
-                        hintText: 'Введите пароль',
+                        hintText: LocaleKeys.auth_password_hint.tr(),
                         obscureText: true,
                         validator: Validators.simpleValidator,
                         textInputAction: TextInputAction.done,
@@ -113,9 +115,9 @@ class _AuthScreenState extends State<AuthScreen> {
                         },
                         builder: (context, state) {
                           final isLoading = state is AuthLoading;
-                          return PrimaryButton( 
+                          return PrimaryButton(
                             width: double.infinity,
-                            title: 'Войти',
+                            title: LocaleKeys.auth_login_button.tr(),
                             isLoading: isLoading,
                             onPressed: _login,
                           );

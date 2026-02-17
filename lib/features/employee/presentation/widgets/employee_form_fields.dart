@@ -5,6 +5,8 @@ import 'package:haru_pos/core/constants/app_colors.dart';
 import 'package:haru_pos/core/utils/extensions.dart';
 import 'package:haru_pos/core/utils/validators.dart';
 import 'package:haru_pos/core/widgets/app_text_field.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
 
 class EmployeeFormFields extends StatelessWidget {
   final GlobalKey<FormState> formKey;
@@ -38,7 +40,7 @@ class EmployeeFormFields extends StatelessWidget {
         children: [
           AppTextField(
             controller: fullNameController,
-            hintText: 'Напишите ФИО сотрудника',
+            hintText: LocaleKeys.employee_full_name_hint.tr(),
             contentPadding: const EdgeInsets.all(16.0),
             hintStyle: GoogleFonts.inter(
               fontSize: 13.0,
@@ -64,7 +66,7 @@ class EmployeeFormFields extends StatelessWidget {
             }).toList(),
             value: selectedRole,
             hint: Text(
-              'Выберите должность',
+              LocaleKeys.employee_select_role_error.tr(),
               style: GoogleFonts.inter(
                 fontSize: 13.0,
                 color: const Color(0xFF7A7A7A),
@@ -90,7 +92,7 @@ class EmployeeFormFields extends StatelessWidget {
           const SizedBox(height: 11.0),
           AppTextField(
             controller: usernameController,
-            hintText: 'Придумайте логин',
+            hintText: LocaleKeys.employee_login_hint.tr(),
             contentPadding: const EdgeInsets.all(16.0),
             hintStyle: GoogleFonts.inter(
               fontSize: 13.0,
@@ -102,7 +104,7 @@ class EmployeeFormFields extends StatelessWidget {
           const SizedBox(height: 11.0),
           AppTextField(
             controller: penaltyController,
-            hintText: 'Лимит',
+            hintText: LocaleKeys.employee_limit_hint.tr(),
             contentPadding: const EdgeInsets.all(16.0),
             hintStyle: GoogleFonts.inter(
               fontSize: 13.0,
@@ -116,8 +118,8 @@ class EmployeeFormFields extends StatelessWidget {
           AppTextField(
             controller: passwordController,
             hintText: isEdit
-                ? 'Новый пароль (оставьте пустым чтобы не менять)'
-                : 'Придумайте пароль',
+                ? LocaleKeys.employee_new_password_hint.tr()
+                : LocaleKeys.employee_password_hint.tr(),
             contentPadding: const EdgeInsets.all(16.0),
             hintStyle: GoogleFonts.inter(
               fontSize: 13.0,

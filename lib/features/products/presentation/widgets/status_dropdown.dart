@@ -1,5 +1,7 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:haru_pos/core/constants/app_colors.dart';
 
@@ -33,7 +35,7 @@ class StatusDropdown extends StatelessWidget {
       ),
       decoration: _buildInputDecoration(),
       hint: Text(
-        'Выберите статус',
+        LocaleKeys.products_select_status.tr(),
         style: GoogleFonts.montserrat(
           fontSize: 12.0,
           fontWeight: FontWeight.w500,

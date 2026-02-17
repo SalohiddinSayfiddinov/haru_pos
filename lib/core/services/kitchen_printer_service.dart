@@ -16,7 +16,6 @@ class KitchenPrinterService {
   // ESC/POS Commands
   static final Uint8List _init = Uint8List.fromList([0x1B, 0x40]);
   static final Uint8List _setCP866 = Uint8List.fromList([0x1B, 0x74, 0x11]);
-  static final Uint8List _alignCenter = Uint8List.fromList([0x1B, 0x61, 0x01]);
   static final Uint8List _alignLeft = Uint8List.fromList([0x1B, 0x61, 0x00]);
 
   // Font Sizes

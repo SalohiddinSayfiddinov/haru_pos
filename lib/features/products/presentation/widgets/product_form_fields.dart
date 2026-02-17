@@ -1,5 +1,7 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
 import 'package:haru_pos/core/utils/validators.dart';
 import 'package:haru_pos/core/widgets/app_text_field.dart';
 import 'package:haru_pos/features/categories/domain/entities/categories_entity.dart';
@@ -52,7 +54,7 @@ class ProductFormFields extends StatelessWidget {
             onChanged: onCategoryChanged,
             validator: (value) {
               if (value == null) {
-                return 'Выберите категорию';
+                return LocaleKeys.products_select_category_error.tr();
               }
               return null;
             },
@@ -60,19 +62,19 @@ class ProductFormFields extends StatelessWidget {
           const SizedBox(height: 15.0),
           _buildTextField(
             controller: nameUzController,
-            hintText: 'Введите название продукта на узбекском',
+            hintText: LocaleKeys.products_name_uz_hint.tr(),
             validator: Validators.simpleValidator,
           ),
           const SizedBox(height: 15.0),
           _buildTextField(
             controller: nameRuController,
-            hintText: 'Введите название продукта на русском',
+            hintText: LocaleKeys.products_name_ru_hint.tr(),
             validator: Validators.simpleValidator,
           ),
           const SizedBox(height: 15.0),
           _buildTextField(
             controller: priceController,
-            hintText: 'Укажите стоимость продукта',
+            hintText: LocaleKeys.products_price_hint.tr(),
             keyboardType: TextInputType.number,
             isNumber: true,
             validator: Validators.simpleValidator,
@@ -80,13 +82,13 @@ class ProductFormFields extends StatelessWidget {
           const SizedBox(height: 15.0),
           _buildTextField(
             controller: descUzController,
-            hintText: 'Описание на узбекском',
+            hintText: LocaleKeys.products_description_uz_hint.tr(),
             maxLines: 4,
           ),
           const SizedBox(height: 15.0),
           _buildTextField(
             controller: descRuController,
-            hintText: 'Описание на русском',
+            hintText: LocaleKeys.products_description_ru_hint.tr(),
             maxLines: 4,
           ),
           if (isEdit &&

@@ -11,6 +11,8 @@ import 'package:haru_pos/features/employee/presentation/bloc/employee_bloc.dart'
 import 'package:image_picker/image_picker.dart';
 
 import 'employee_form_fields.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
 
 class AddEmployeeDialog extends StatefulWidget {
   final EmployeeEntity? employee;
@@ -80,7 +82,7 @@ class _AddEmployeeDialogState extends State<AddEmployeeDialog> {
     if (!_formKey.currentState!.validate()) return;
 
     if (_selectedRole == null) {
-      AppSnackbar.error(context, 'Выберите должность');
+      AppSnackbar.error(context, LocaleKeys.employee_select_role_error.tr());
       return;
     }
 
@@ -137,8 +139,8 @@ class _AddEmployeeDialogState extends State<AddEmployeeDialog> {
                 children: [
                   Text(
                     widget.isEdit
-                        ? 'Изменить сотрудника'
-                        : 'Добавить сотрудника',
+                        ? LocaleKeys.employee_edit_dialog_title.tr()
+                        : LocaleKeys.employee_add_dialog_title.tr(),
                     style: GoogleFonts.inter(
                       fontSize: 20.0,
                       fontWeight: FontWeight.bold,
@@ -212,7 +214,9 @@ class _AddEmployeeDialogState extends State<AddEmployeeDialog> {
           builder: (context, state) {
             return PrimaryButton(
               height: 30.0,
-              title: state is EmployeeLoading ? 'Сохранение...' : 'Сохранить',
+              title: state is EmployeeLoading
+                  ? LocaleKeys.employee_saving.tr()
+                  : LocaleKeys.employee_save.tr(),
               textStyle: GoogleFonts.inter(
                 fontSize: 12.0,
                 fontWeight: FontWeight.w600,

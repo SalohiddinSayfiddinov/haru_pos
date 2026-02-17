@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:dotted_border/dotted_border.dart';
@@ -77,8 +79,10 @@ class _AddPhotoDropTargetState extends State<AddPhotoDropTarget> {
             // Show error for non-image files
             if (mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Пожалуйста, выберите файл изображения'),
+                SnackBar(
+                  content: Text(
+                    LocaleKeys.products_select_image_file_error.tr(),
+                  ),
                   backgroundColor: Colors.red,
                 ),
               );
@@ -163,7 +167,7 @@ class _AddPhotoDropTargetState extends State<AddPhotoDropTarget> {
               padding: const EdgeInsets.all(8),
               constraints: const BoxConstraints(),
               color: Colors.black87,
-              tooltip: 'Изменить изображение',
+              tooltip: LocaleKeys.products_change_image.tr(),
             ),
           ),
         ),
@@ -182,7 +186,9 @@ class _AddPhotoDropTargetState extends State<AddPhotoDropTarget> {
         ),
         const SizedBox(height: 5.0),
         Text(
-          isDragging ? 'Отпустите файл' : 'Добавить фото',
+          isDragging
+              ? LocaleKeys.products_drop_file.tr()
+              : LocaleKeys.products_add_photo.tr(),
           style: GoogleFonts.montserrat(
             fontSize: 15.0,
             color: isDragging ? Colors.blue : const Color(0xFF0D0D0D),
@@ -192,7 +198,7 @@ class _AddPhotoDropTargetState extends State<AddPhotoDropTarget> {
         if (!isDragging) ...[
           const SizedBox(height: 10),
           Text(
-            'или перетащите файл сюда',
+            LocaleKeys.products_drag_file_here.tr(),
             style: GoogleFonts.montserrat(fontSize: 12.0, color: Colors.grey),
           ),
         ],

@@ -1,5 +1,7 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
 import 'package:haru_pos/core/utils/extensions.dart';
 import 'package:haru_pos/features/dashboard/domain/entities/dashboard_entity.dart';
 import 'package:haru_pos/features/dashboard/presentation/widgets/dashboard_section_card.dart';
@@ -15,13 +17,13 @@ class AverageBillSection extends StatelessWidget {
       height: 255.0,
       width: 270.0,
       child: DashboardSectionCard(
-        title: 'Средний чек',
+        title: LocaleKeys.dashboard_average_check.tr(),
         padding: EdgeInsets.all(14.0),
         children: [
           // const SizedBox(height: 16),
           // SizedBox(height: 150, child: LineChart(_buildChartData())),
           // const SizedBox(height: 8),
-          _buildChartLegend(),
+          _buildChartLegend(context),
         ],
       ),
     );
@@ -65,7 +67,7 @@ class AverageBillSection extends StatelessWidget {
   //           ),
   //         ),
   //       ),
-
+  //
   //       LineChartBarData(
   //         spots: _generateSpots(false),
   //         color: Color(0xFFF2C8ED),
@@ -119,7 +121,7 @@ class AverageBillSection extends StatelessWidget {
   //   return (maxValue * 1.2).roundToDouble();
   // }
 
-  Widget _buildChartLegend() {
+  Widget _buildChartLegend(BuildContext context) {
     return Expanded(
       child: Column(
         spacing: 16,
@@ -128,22 +130,24 @@ class AverageBillSection extends StatelessWidget {
         children: [
           const SizedBox(height: 16),
           _buildLegendItem(
-            'В прошлом месяце',
+            LocaleKeys.dashboard_last_month.tr(),
             averageBillData.lastMonth,
             Color(0xFFA9DFD8),
+            context
           ),
           const SizedBox(width: 16),
           _buildLegendItem(
-            'В этом месяце',
+            LocaleKeys.dashboard_this_month.tr(),
             averageBillData.thisMonth,
             Color(0xFFF2C8ED),
+            context
           ),
         ],
       ),
     );
   }
 
-  Widget _buildLegendItem(String text, double value, Color color) {
+  Widget _buildLegendItem(String text, double value, Color color, BuildContext context) {
     return Column(
       spacing: 4.0,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -163,7 +167,7 @@ class AverageBillSection extends StatelessWidget {
           ],
         ),
         Text(
-          value.formatCurrency(),
+          value.formatCurrency(context),
           style: GoogleFonts.inter(fontSize: 16.0, fontWeight: FontWeight.w500),
         ),
       ],

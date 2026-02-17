@@ -1,16 +1,19 @@
 import 'package:haru_pos/features/orders/data/models/order_status.dart';
 
+import 'package:easy_localization/easy_localization.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
+
 extension OrderStatusExtension on OrderStatus {
   String toLocalizedText(String languageCode) {
     switch (this) {
       case OrderStatus.newOrder:
-        return languageCode == 'uz' ? 'Yangi' : 'Новый';
+        return LocaleKeys.orders_status_new.tr();
       case OrderStatus.cooking:
-        return languageCode == 'uz' ? 'Tayyorlanmoqda' : 'Готовится';
+        return LocaleKeys.orders_status_cooking.tr();
       case OrderStatus.done:
-        return languageCode == 'uz' ? 'Tayyor' : 'Готово';
+        return LocaleKeys.orders_status_done.tr();
       case OrderStatus.pickUp:
-        return languageCode == 'uz' ? 'Olib ketildi' : 'Подано';
+        return LocaleKeys.orders_status_pickup.tr();
     }
   }
 }

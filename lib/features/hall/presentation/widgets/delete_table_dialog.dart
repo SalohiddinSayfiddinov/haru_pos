@@ -1,4 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:haru_pos/core/di/injection.dart';
@@ -22,11 +24,13 @@ class DeleteTableDialog extends StatelessWidget {
       child: AlertDialog(
         backgroundColor: Colors.white,
         title: Text(
-          'Удалить стол?',
+          LocaleKeys.hall_delete_table_title.tr(),
           style: GoogleFonts.inter(fontSize: 18.0, fontWeight: FontWeight.w600),
         ),
         content: Text(
-          'Вы уверены, что хотите удалить стол №$tableNumber?',
+          LocaleKeys.hall_delete_table_confirmation.tr(
+            args: [tableNumber.toString()],
+          ),
           style: GoogleFonts.inter(
             fontSize: 14.0,
             color: const Color(0xFF6B7280),
@@ -36,7 +40,7 @@ class DeleteTableDialog extends StatelessWidget {
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text(
-              'Отмена',
+              LocaleKeys.hall_cancel.tr(),
               style: GoogleFonts.inter(
                 fontSize: 14.0,
                 color: const Color(0xFF6B7280),
@@ -62,7 +66,9 @@ class DeleteTableDialog extends StatelessWidget {
                       },
                 style: TextButton.styleFrom(foregroundColor: Colors.red),
                 child: Text(
-                  state is TableLoading ? 'Удаление...' : 'Удалить',
+                  state is TableLoading
+                      ? LocaleKeys.hall_deleting.tr()
+                      : LocaleKeys.hall_delete.tr(),
                   style: GoogleFonts.inter(
                     fontSize: 14.0,
                     fontWeight: FontWeight.w600,

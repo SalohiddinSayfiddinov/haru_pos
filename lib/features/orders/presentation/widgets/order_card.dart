@@ -261,7 +261,7 @@ class _OrderCardState extends State<OrderCard> {
                 style: GoogleFonts.inter(color: const Color(0xFF797B7E)),
               ),
               Text(
-                item.product.price.formatCurrency(),
+                item.product.price.formatCurrency(context),
                 style: GoogleFonts.inter(),
               ),
             ],
@@ -369,7 +369,7 @@ class _OrderCardState extends State<OrderCard> {
 
         const SizedBox(height: 10.0),
         Text(
-          'Итого - ${order.fullPrice.formatCurrency()}',
+          'Итого - ${order.fullPrice.formatCurrency(context)}',
           style: GoogleFonts.inter(color: const Color(0xFF797B7E)),
         ),
       ],

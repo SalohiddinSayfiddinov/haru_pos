@@ -1,6 +1,8 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:haru_pos/core/constants/app_colors.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
 
 class SearchField extends StatelessWidget {
   final Function(String query)? onSearch;
@@ -26,7 +28,7 @@ class SearchField extends StatelessWidget {
         ),
         cursorColor: Colors.black,
         decoration: InputDecoration(
-          hintText: 'Найти',
+          hintText: LocaleKeys.products_search.tr(),
 
           contentPadding: EdgeInsets.symmetric(
             horizontal: 16.5,

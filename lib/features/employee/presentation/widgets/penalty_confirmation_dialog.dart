@@ -7,6 +7,8 @@ import 'package:haru_pos/core/widgets/app_snack_bar.dart';
 import 'package:haru_pos/core/widgets/app_text_field.dart';
 import 'package:haru_pos/features/employee/domain/entities/employee_entity.dart';
 import 'package:haru_pos/features/employee/presentation/bloc/employee_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
 
 class PenaltyConfirmationDialog extends StatefulWidget {
   final EmployeeEntity employee;
@@ -53,7 +55,7 @@ class _PenaltyConfirmationDialogState extends State<PenaltyConfirmationDialog> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Оштрафовать сотрудника',
+                    LocaleKeys.employee_penalty_dialog_title.tr(),
                     style: GoogleFonts.inter(
                       fontSize: 18.0,
                       fontWeight: FontWeight.w700,
@@ -71,7 +73,7 @@ class _PenaltyConfirmationDialogState extends State<PenaltyConfirmationDialog> {
                 key: _formKey,
                 child: AppTextField(
                   controller: _penaltyController,
-                  hintText: 'Введите сумму штрафа',
+                  hintText: LocaleKeys.employee_penalty_amount_hint.tr(),
                   isNumber: true,
                   contentPadding: const EdgeInsets.all(16.0),
                   hintStyle: GoogleFonts.inter(
@@ -98,7 +100,9 @@ class _PenaltyConfirmationDialogState extends State<PenaltyConfirmationDialog> {
           builder: (context, state) {
             return PrimaryButton(
               height: 30.0,
-              title: state is EmployeeLoading ? 'Сохранение...' : 'Сохранить',
+              title: state is EmployeeLoading
+                  ? LocaleKeys.employee_saving.tr()
+                  : LocaleKeys.employee_save.tr(),
               textStyle: GoogleFonts.inter(
                 fontSize: 12.0,
                 fontWeight: FontWeight.w600,

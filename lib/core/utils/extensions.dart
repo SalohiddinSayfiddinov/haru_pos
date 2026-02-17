@@ -1,18 +1,26 @@
-extension FormatExtension on num {
-  String formatCurrency() {
-    final amountStr = toString().replaceAllMapped(
-      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-      (Match m) => '${m[1]} ',
-    );
-    return '$amountStr сум';
-  }
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
 
-  String formatCurrencyUz() {
-    final amountStr = toString().replaceAllMapped(
-      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-      (Match m) => '${m[1]} ',
-    );
-    return '$amountStr so\'m';
+extension CurrencyFormat on num {
+  String formatCurrency([BuildContext? context]) {
+    final NumberFormat format;
+    if (context != null) {
+      final locale = context.locale.languageCode;
+
+      format = NumberFormat.currency(
+        locale: locale == 'ru' ? 'ru_RU' : 'uz_UZ',
+        symbol: locale == 'ru' ? 'сум' : "so'm",
+        decimalDigits: 0,
+      );
+    } else {
+      format = NumberFormat.currency(
+        locale: 'ru_RU',
+        symbol: 'сум',
+        decimalDigits: 0,
+      );
+    }
+    return format.format(this);
   }
 }
 
@@ -25,9 +33,9 @@ extension StatusToBoolExtension on String {
 extension StatusToStringExtension on bool {
   String statusToString() {
     if (this) {
-      return 'Есть в наличии';
+      return LocaleKeys.common_status_in_stock.tr();
     } else {
-      return 'Нет в наличии';
+      return LocaleKeys.common_status_out_of_stock.tr();
     }
   }
 }
@@ -36,84 +44,66 @@ extension RoleToString on String {
   String roleToString() {
     switch (this) {
       case 'ADMIN':
-        return 'Админ';
+        return LocaleKeys.common_roles_admin.tr();
       case 'CASHIER':
-        return 'Кассир';
+        return LocaleKeys.common_roles_cashier.tr();
       case 'WAITER':
-        return 'Официант';
+        return LocaleKeys.common_roles_waiter.tr();
       default:
-        return 'Админ';
+        return LocaleKeys.common_roles_admin.tr();
     }
   }
 }
 
 extension StringToRole on String {
   String toRole() {
-    switch (this) {
-      case 'Админ':
-        return 'ADMIN';
-      case 'Кассир':
-        return 'CASHIER';
-      case 'Официант':
-        return 'WAITER';
-      default:
-        return 'ADMIN';
-    }
+    if (this == LocaleKeys.common_roles_admin.tr()) return 'ADMIN';
+    if (this == LocaleKeys.common_roles_cashier.tr()) return 'CASHIER';
+    if (this == LocaleKeys.common_roles_waiter.tr()) return 'WAITER';
+    return 'ADMIN';
   }
 }
 
 extension TypeToString on String {
-  String typeToUz() {
+  String typeToLocalized() {
     switch (this) {
       case 'dine_in':
-        return 'Restoranda';
+        return LocaleKeys.common_order_types_dine_in.tr();
       case 'takeaway':
-        return 'Olib ketish';
+        return LocaleKeys.common_order_types_takeaway.tr();
       case 'delivery':
-        return 'Yetkazib berish';
+        return LocaleKeys.common_order_types_delivery.tr();
       default:
-        return 'Nomalum';
+        return LocaleKeys.common_order_types_unknown.tr();
     }
   }
 
-  String typeToRu() {
-    switch (this) {
-      case 'dine_in':
-        return 'В ресторане';
-      case 'takeaway':
-        return 'С собой';
-      case 'delivery':
-        return 'Доставка';
-      default:
-        return 'Не опознано';
-    }
-  }
+  // Keeping legacy methods for compatibility but redirecting to localized version
+  String typeToUz() => typeToLocalized();
+  String typeToRu() => typeToLocalized();
 }
 
 extension FaultToString on String {
-  String faultToRu() {
+  String faultToLocalized() {
     switch (this) {
       case 'customer':
-        return 'Клиент';
+        return LocaleKeys.common_faults_customer.tr();
       case 'kitchen':
-        return 'Кухня';
+        return LocaleKeys.common_faults_kitchen.tr();
       case 'staff':
-        return 'Сотрудник';
+        return LocaleKeys.common_faults_staff.tr();
       default:
-        return 'Не опознано';
+        return LocaleKeys.common_faults_unknown.tr();
     }
   }
 
-  String faultToUz() {
-    switch (this) {
-      case 'customer':
-        return 'Mijoz';
-      case 'kitchen':
-        return 'Oshxona';
-      case 'staff':
-        return 'Ishchilar';
-      default:
-        return 'Nomalum';
-    }
+  String faultToRu() => faultToLocalized();
+  String faultToUz() => faultToLocalized();
+}
+
+extension CapitalizeExtension on String {
+  String capitalize() {
+    if (isEmpty) return this;
+    return "${this[0].toUpperCase()}${substring(1)}";
   }
 }

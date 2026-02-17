@@ -1,4 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:haru_pos/core/utils/validators.dart';
@@ -68,7 +70,9 @@ class _AddTableDialogState extends State<ReserveTableDialog> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Стол ${widget.table.tableNumber}',
+                  LocaleKeys.hall_table_card_title.tr(
+                    args: [widget.table.tableNumber.toString()],
+                  ),
                   style: GoogleFonts.nunitoSans(
                     fontSize: 20.0,
                     fontWeight: FontWeight.bold,
@@ -88,7 +92,7 @@ class _AddTableDialogState extends State<ReserveTableDialog> {
                 children: [
                   AppTextField(
                     controller: _nameController,
-                    hintText: 'Введите имя клиента',
+                    hintText: LocaleKeys.hall_client_name_hint.tr(),
                     contentPadding: const EdgeInsets.all(16.0),
                     hintStyle: GoogleFonts.inter(
                       fontSize: 13.0,
@@ -104,7 +108,7 @@ class _AddTableDialogState extends State<ReserveTableDialog> {
                   ),
                   AppTextField(
                     controller: _phoneController,
-                    hintText: 'Введите номер телефона клиента',
+                    hintText: LocaleKeys.hall_client_phone_hint.tr(),
                     contentPadding: const EdgeInsets.all(16.0),
                     isPhone: true,
                     hintStyle: GoogleFonts.inter(
@@ -161,7 +165,9 @@ class _AddTableDialogState extends State<ReserveTableDialog> {
           builder: (context, state) {
             return PrimaryButton(
               height: 30.0,
-              title: state is TableLoading ? 'Бронирование...' : 'Бронировать',
+              title: state is TableLoading
+                  ? LocaleKeys.hall_reserving.tr()
+                  : LocaleKeys.hall_reserve.tr(),
               textStyle: GoogleFonts.inter(
                 fontSize: 12.0,
                 fontWeight: FontWeight.w600,

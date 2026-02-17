@@ -5,6 +5,8 @@ import 'package:haru_pos/core/widgets/app_buttons.dart';
 import 'package:haru_pos/features/orders/domain/entities/orders_entity.dart';
 import 'package:haru_pos/features/orders/presentation/bloc/orders_bloc.dart';
 import 'package:haru_pos/features/orders/presentation/widgets/order_card.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
 
 class OrdersGrid extends StatelessWidget {
   final VoidCallback onRefresh;
@@ -93,11 +95,14 @@ class _ErrorState extends StatelessWidget {
         child: Column(
           children: [
             Text(
-              'Ошибка загрузки заказов',
+              LocaleKeys.orders_load_error.tr(),
               style: GoogleFonts.inter(fontSize: 16.0, color: Colors.red),
             ),
             const SizedBox(height: 15.0),
-            PrimaryButton(title: 'Попробовать снова', onPressed: onRetry),
+            PrimaryButton(
+              title: LocaleKeys.orders_retry.tr(),
+              onPressed: onRetry,
+            ),
           ],
         ),
       ),
@@ -124,7 +129,7 @@ class _EmptyState extends StatelessWidget {
             ),
             const SizedBox(height: 16.0),
             Text(
-              'Заказы не найдены',
+              LocaleKeys.orders_no_orders.tr(),
               style: GoogleFonts.inter(
                 fontSize: 16.0,
                 color: Colors.grey.shade600,
@@ -132,14 +137,17 @@ class _EmptyState extends StatelessWidget {
             ),
             const SizedBox(height: 8.0),
             Text(
-              'Попробуйте изменить фильтры',
+              LocaleKeys.orders_change_filters_hint.tr(),
               style: GoogleFonts.inter(
                 fontSize: 14.0,
                 color: Colors.grey.shade500,
               ),
             ),
             const SizedBox(height: 20.0),
-            PrimaryButton(title: 'Обновить', onPressed: onRefresh),
+            PrimaryButton(
+              title: LocaleKeys.orders_refresh.tr(),
+              onPressed: onRefresh,
+            ),
           ],
         ),
       ),

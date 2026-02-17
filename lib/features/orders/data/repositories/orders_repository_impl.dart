@@ -206,7 +206,7 @@ class OrderRepositoryImpl implements OrderRepository {
     } on DioException catch (e) {
       final errorMessage = handleDioError(e);
       return Left(ServerFailure(errorMessage));
-    } catch (e, s) {
+    } catch (e) {
       return Left(ServerFailure('An unexpected error occurred'));
     }
   }

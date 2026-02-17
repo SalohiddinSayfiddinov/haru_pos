@@ -4,6 +4,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:haru_pos/core/assets/app_icons.dart';
 import 'package:haru_pos/core/constants/app_colors.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
 import 'package:haru_pos/core/utils/date_extensions.dart';
 
 class TableDatePicker extends StatelessWidget {
@@ -106,7 +108,7 @@ class TableDatePicker extends StatelessWidget {
                 },
             weekdayLabelBuilder: ({isScrollViewTopHeader, required weekday}) {
               return Text(
-                weekday.ruShortWeekday,
+                weekday.localizedShortWeekday,
                 textAlign: .center,
                 style: GoogleFonts.nunitoSans(
                   color: Color(0xFF202224),
@@ -125,7 +127,7 @@ class TableDatePicker extends StatelessWidget {
               alignment: .center,
               padding: EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
-                'Применить',
+                LocaleKeys.orders_apply.tr(),
                 style: GoogleFonts.inter(
                   fontSize: 12.0,
                   fontWeight: FontWeight.w600,
@@ -134,7 +136,7 @@ class TableDatePicker extends StatelessWidget {
               ),
             ),
             cancelButton: Text(
-              'Отменить',
+              LocaleKeys.orders_cancel.tr(),
               style: GoogleFonts.inter(
                 fontSize: 12.0,
                 fontWeight: FontWeight.w600,
@@ -197,7 +199,7 @@ class TableDatePicker extends StatelessWidget {
           mainAxisAlignment: .spaceBetween,
           children: [
             Text(
-              selectedDate.toRuFancy(),
+              selectedDate.toFancy(),
               style: GoogleFonts.inter(
                 fontSize: 13.0,
                 fontWeight: FontWeight.w500,

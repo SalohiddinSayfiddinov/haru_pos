@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
 import 'package:haru_pos/features/categories/domain/entities/categories_entity.dart';
 
 class CategoryCard extends StatelessWidget {
@@ -48,8 +50,14 @@ class CategoryCard extends StatelessWidget {
                 color: Colors.white,
                 icon: const Icon(Icons.more_vert, color: Colors.white),
                 itemBuilder: (context) => [
-                  const PopupMenuItem(value: 'edit', child: Text('Изменить')),
-                  const PopupMenuItem(value: 'delete', child: Text('Удалить')),
+                  PopupMenuItem(
+                    value: 'edit',
+                    child: Text(LocaleKeys.categories_popup_edit.tr()),
+                  ),
+                  PopupMenuItem(
+                    value: 'delete',
+                    child: Text(LocaleKeys.categories_popup_delete.tr()),
+                  ),
                 ],
                 onSelected: (value) {
                   if (value == 'edit') {
@@ -64,7 +72,9 @@ class CategoryCard extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.only(left: 13.0, bottom: 9.0),
                   child: Text(
-                    category.nameRu,
+                    context.locale.languageCode == 'ru'
+                        ? category.nameRu
+                        : category.nameUz,
                     style: GoogleFonts.inter(
                       fontSize: 15.0,
                       fontWeight: FontWeight.w500,

@@ -12,6 +12,8 @@ import 'package:haru_pos/features/orders/presentation/bloc/orders_bloc.dart';
 import 'package:haru_pos/features/orders/presentation/widgets/orders_filters.dart';
 import 'package:haru_pos/features/orders/presentation/widgets/orders_grid.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
 
 class OrdersScreen extends StatefulWidget {
   const OrdersScreen({super.key});
@@ -31,6 +33,19 @@ class _OrdersScreenState extends State<OrdersScreen> {
     super.initState();
     context.read<OrderBloc>().add(const LoadOrdersEvent());
     _scrollController.addListener(_onScroll);
+  }
+
+  Locale? _lastLocale;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final currentLocale = context.locale;
+
+    if (_lastLocale != currentLocale) {
+      _lastLocale = currentLocale;
+    }
   }
 
   void _checkIfNeedMoreData() {
@@ -268,7 +283,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
             },
         weekdayLabelBuilder: ({isScrollViewTopHeader, required weekday}) {
           return Text(
-            weekday.ruShortWeekday,
+            weekday.localizedShortWeekday,
             textAlign: .center,
             style: GoogleFonts.nunitoSans(
               color: Color(0xFF202224),
@@ -383,7 +398,7 @@ class _OrdersHeader extends StatelessWidget {
     return Row(
       children: [
         Text(
-          'Заказы',
+          LocaleKeys.orders_title.tr(),
           style: GoogleFonts.inter(fontSize: 25.0, fontWeight: FontWeight.w600),
         ),
         const Spacer(),
@@ -405,7 +420,7 @@ class _OrdersHeader extends StatelessWidget {
             fontWeight: FontWeight.w600,
             color: Colors.white,
           ),
-          title: 'История заказов',
+          title: LocaleKeys.orders_history.tr(),
           onPressed: () => context.push(AppPages.orderHistory),
         ),
       ],

@@ -1,7 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:haru_pos/core/constants/app_colors.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
 import 'package:haru_pos/core/utils/extensions.dart';
 import 'package:haru_pos/features/dashboard/presentation/widgets/dashboard_section_card.dart';
 import 'package:haru_pos/features/employee/domain/entities/employee_entity.dart';
@@ -17,7 +19,7 @@ class EmployeesSection extends StatelessWidget {
       width: 270.0,
       height: 255.0,
       child: DashboardSectionCard(
-        title: 'Сотрудники',
+        title: LocaleKeys.dashboard_employees.tr(),
         padding: const EdgeInsets.all(14.0),
         children: [
           const SizedBox(height: 14),

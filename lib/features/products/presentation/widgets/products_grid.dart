@@ -1,6 +1,8 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
 import 'package:haru_pos/core/widgets/app_buttons.dart';
 import 'package:haru_pos/features/products/domain/entities/product_entity.dart';
 import 'package:haru_pos/features/products/presentation/bloc/product_bloc.dart';
@@ -33,11 +35,14 @@ class ProductsGrid extends StatelessWidget {
             child: Column(
               children: [
                 Text(
-                  'Ошибка загрузки продуктов',
+                  LocaleKeys.products_load_error.tr(),
                   style: GoogleFonts.inter(fontSize: 16.0, color: Colors.red),
                 ),
                 const SizedBox(height: 10.0),
-                PrimaryButton(title: 'Попробовать снова', onPressed: onRefresh),
+                PrimaryButton(
+                  title: LocaleKeys.products_retry.tr(),
+                  onPressed: onRefresh,
+                ),
               ],
             ),
           );
@@ -52,11 +57,14 @@ class ProductsGrid extends StatelessWidget {
             child: Column(
               children: [
                 Text(
-                  'Продукты не найдены',
+                  LocaleKeys.products_no_products_found.tr(),
                   style: GoogleFonts.inter(fontSize: 16.0),
                 ),
                 const SizedBox(height: 10.0),
-                PrimaryButton(title: 'Обновить', onPressed: onRefresh),
+                PrimaryButton(
+                  title: LocaleKeys.products_refresh.tr(),
+                  onPressed: onRefresh,
+                ),
               ],
             ),
           );
@@ -84,7 +92,7 @@ class ProductsGrid extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: PrimaryButton(
-                  title: 'Загрузить еще',
+                  title: LocaleKeys.products_load_more.tr(),
                   onPressed: onLoadMore,
                 ),
               ),

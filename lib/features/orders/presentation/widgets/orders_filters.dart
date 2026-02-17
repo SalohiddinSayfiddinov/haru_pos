@@ -1,10 +1,11 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:haru_pos/core/assets/app_icons.dart';
 import 'package:haru_pos/core/constants/app_colors.dart';
-import 'package:intl/intl.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
 
 class OrdersFilters extends StatelessWidget {
   final bool isHistory;
@@ -133,7 +134,7 @@ class _StatusFilter extends StatelessWidget {
           ),
         ),
         hint: Text(
-          'Все заказы',
+          LocaleKeys.common_order_types_all.tr(),
           style: GoogleFonts.inter(
             fontSize: 12.0,
             fontWeight: FontWeight.w500,
@@ -144,7 +145,7 @@ class _StatusFilter extends StatelessWidget {
           DropdownMenuItem<String>(
             value: null,
             child: Text(
-              'Все заказы',
+              LocaleKeys.common_order_types_all.tr(),
               style: GoogleFonts.inter(
                 fontSize: 12.0,
                 fontWeight: FontWeight.w500,
@@ -155,7 +156,7 @@ class _StatusFilter extends StatelessWidget {
           DropdownMenuItem<String>(
             value: 'dine_in',
             child: Text(
-              'В ресторане',
+              LocaleKeys.common_order_types_dine_in.tr(),
               style: GoogleFonts.inter(
                 fontSize: 12.0,
                 fontWeight: FontWeight.w500,
@@ -166,7 +167,7 @@ class _StatusFilter extends StatelessWidget {
           DropdownMenuItem<String>(
             value: 'delivery',
             child: Text(
-              'Доставка',
+              LocaleKeys.common_order_types_delivery.tr(),
               style: GoogleFonts.inter(
                 fontSize: 12.0,
                 fontWeight: FontWeight.w500,
@@ -177,7 +178,7 @@ class _StatusFilter extends StatelessWidget {
           DropdownMenuItem<String>(
             value: 'takeaway',
             child: Text(
-              'С собой',
+              LocaleKeys.common_order_types_takeaway.tr(),
               style: GoogleFonts.inter(
                 fontSize: 12.0,
                 fontWeight: FontWeight.w500,

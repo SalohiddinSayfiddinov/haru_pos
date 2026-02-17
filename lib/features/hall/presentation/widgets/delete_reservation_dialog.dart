@@ -1,4 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:haru_pos/core/di/injection.dart';
@@ -17,7 +19,7 @@ class DeleteReservationDialog extends StatelessWidget {
       child: AlertDialog(
         backgroundColor: Colors.white,
         title: Text(
-          'Отменить брон?',
+          LocaleKeys.hall_cancel_reservation_title.tr(),
           style: GoogleFonts.inter(fontSize: 18.0, fontWeight: FontWeight.w600),
         ),
 
@@ -25,7 +27,7 @@ class DeleteReservationDialog extends StatelessWidget {
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text(
-              'Нет',
+              LocaleKeys.hall_no.tr(),
               style: GoogleFonts.inter(
                 fontSize: 14.0,
                 color: const Color(0xFF6B7280),
@@ -51,7 +53,9 @@ class DeleteReservationDialog extends StatelessWidget {
                       },
                 style: TextButton.styleFrom(foregroundColor: Colors.red),
                 child: Text(
-                  state is TableLoading ? 'Отменение...' : 'Да',
+                  state is TableLoading
+                      ? LocaleKeys.hall_canceling.tr()
+                      : LocaleKeys.hall_yes.tr(),
                   style: GoogleFonts.inter(
                     fontSize: 14.0,
                     fontWeight: FontWeight.w600,

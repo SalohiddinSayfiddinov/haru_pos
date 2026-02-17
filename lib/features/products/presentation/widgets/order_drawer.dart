@@ -1,8 +1,10 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:haru_pos/core/assets/app_images.dart';
+
 import 'package:haru_pos/core/constants/app_colors.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
 import 'package:haru_pos/core/utils/extensions.dart';
 import 'package:haru_pos/core/widgets/app_snack_bar.dart';
 import 'package:haru_pos/core/widgets/app_text_field.dart';
@@ -40,7 +42,7 @@ class _OrderDrawerState extends State<OrderDrawer> {
     int? tableNumber = int.tryParse(_tableController.text.replaceAll(' ', ''));
 
     if (getOrderType == 'dine_in' && tableNumber == null) {
-      AppSnackbar.error(context, 'Выберите стол для заказа');
+      AppSnackbar.error(context, LocaleKeys.orders_select_table_error.tr());
       return;
     }
 
@@ -124,7 +126,7 @@ class _OrderDrawerState extends State<OrderDrawer> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Список',
+          LocaleKeys.orders_list.tr(),
           style: GoogleFonts.inter(fontSize: 23.0, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 35.0),
@@ -197,7 +199,7 @@ class _OrderDrawerState extends State<OrderDrawer> {
                 ),
                 AppTextField(
                   controller: _getCommentController(item.productId),
-                  hintText: 'Комментарий',
+                  hintText: LocaleKeys.orders_comment_hint.tr(),
                   contentPadding: const EdgeInsets.all(16.0),
                   hintStyle: GoogleFonts.inter(
                     fontSize: 13.0,
@@ -220,24 +222,28 @@ class _OrderDrawerState extends State<OrderDrawer> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Вид заказа',
+          LocaleKeys.orders_order_type.tr(),
           style: GoogleFonts.inter(fontSize: 20.0, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 25.0),
         Row(
           children: [
             Expanded(
-              child: _buildOrderTypeButton('Собой', () {
-                if (_selectedOrderType != 0) {
-                  setState(() {
-                    _selectedOrderType = 0;
-                  });
-                }
-              }, isSelected: _selectedOrderType == 0),
+              child: _buildOrderTypeButton(
+                LocaleKeys.orders_takeaway.tr(),
+                () {
+                  if (_selectedOrderType != 0) {
+                    setState(() {
+                      _selectedOrderType = 0;
+                    });
+                  }
+                },
+                isSelected: _selectedOrderType == 0,
+              ),
             ),
             const SizedBox(width: 40),
             Expanded(
-              child: _buildOrderTypeButton('В зале', () {
+              child: _buildOrderTypeButton(LocaleKeys.orders_dine_in.tr(), () {
                 if (_selectedOrderType != 1) {
                   setState(() {
                     _selectedOrderType = 1;
@@ -252,7 +258,7 @@ class _OrderDrawerState extends State<OrderDrawer> {
           AppTextField(
             controller: _tableController,
             isNumber: true,
-            hintText: 'Введите номер стола',
+            hintText: LocaleKeys.orders_enter_table_number.tr(),
             hintStyle: GoogleFonts.inter(
               fontSize: 16,
               fontWeight: FontWeight.w500,
@@ -300,82 +306,18 @@ class _OrderDrawerState extends State<OrderDrawer> {
     );
   }
 
-  Widget _buildPaymentMethodsSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Способ оплаты',
-          style: GoogleFonts.inter(fontSize: 20.0, fontWeight: FontWeight.w600),
-        ),
-        const SizedBox(height: 15),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: _paymentMethods
-              .map((method) => _buildPaymentMethodChip(method))
-              .toList(),
-        ),
-      ],
-    );
-  }
-
-  String _selectedMethod = 'Click';
-
-  Widget _buildPaymentMethodChip(String method) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        RadioGroup<String>(
-          groupValue: _selectedMethod,
-          onChanged: (String? value) {
-            setState(() {
-              _selectedMethod = value ?? 'Click';
-            });
-          },
-          child: SizedBox(
-            height: 50,
-            width: 150,
-            child: Row(
-              children: <Widget>[
-                Radio<String>(
-                  value: method,
-                  fillColor: WidgetStateProperty.resolveWith(
-                    (states) => AppColors.primary,
-                  ),
-                ),
-                SizedBox(width: 10.0),
-                method == _paymentMethods[3] || method == _paymentMethods[4]
-                    ? Text(
-                        method,
-                        style: GoogleFonts.inter(
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      )
-                    : Image(
-                        image: AssetImage(AppImages.click),
-                        height: 59,
-                        width: 100,
-                      ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildTotalSection() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          'Итого:',
+          LocaleKeys.orders_total.tr(),
           style: GoogleFonts.inter(fontSize: 18.0, fontWeight: FontWeight.w600),
         ),
         Text(
-          context.read<OrderBloc>().state.cartTotalPrice.formatCurrency(),
+          context.read<OrderBloc>().state.cartTotalPrice.formatCurrency(
+            context,
+          ),
           style: GoogleFonts.inter(fontSize: 18.0, fontWeight: FontWeight.w600),
         ),
       ],
@@ -386,7 +328,7 @@ class _OrderDrawerState extends State<OrderDrawer> {
     return Row(
       children: [
         Expanded(
-          child: _buildOrderTypeButton('Отменить', () {
+          child: _buildOrderTypeButton(LocaleKeys.orders_cancel_order.tr(), () {
             context.read<OrderBloc>().add(ClearCartEvent());
           }, isSelected: false),
         ),
@@ -404,7 +346,7 @@ class _OrderDrawerState extends State<OrderDrawer> {
               child: state is OrderLoading
                   ? CircularProgressIndicator.adaptive()
                   : _buildOrderTypeButton(
-                      'Подтвердить',
+                      LocaleKeys.orders_confirm_order.tr(),
                       _onCheckout,
                       isSelected: true,
                     ),
@@ -414,12 +356,4 @@ class _OrderDrawerState extends State<OrderDrawer> {
       ],
     );
   }
-
-  final List<String> _paymentMethods = [
-    'Click',
-    'PayMe',
-    'Uzum',
-    'Наличными',
-    'Терминал',
-  ];
 }

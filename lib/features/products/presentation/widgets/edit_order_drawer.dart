@@ -1,4 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -128,7 +130,7 @@ class _EditOrderDrawerState extends State<EditOrderDrawer> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Список',
+          LocaleKeys.orders_list.tr(),
           style: GoogleFonts.inter(fontSize: 23.0, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 35.0),
@@ -207,7 +209,7 @@ class _EditOrderDrawerState extends State<EditOrderDrawer> {
                 ),
                 AppTextField(
                   controller: _controllers[item.productId],
-                  hintText: 'Комментарий',
+                  hintText: LocaleKeys.orders_comment_hint.tr(),
                   contentPadding: const EdgeInsets.all(16.0),
                   hintStyle: GoogleFonts.inter(
                     fontSize: 13.0,
@@ -258,11 +260,13 @@ class _EditOrderDrawerState extends State<EditOrderDrawer> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          'Итого:',
+          LocaleKeys.orders_total.tr(),
           style: GoogleFonts.inter(fontSize: 18.0, fontWeight: FontWeight.w600),
         ),
         Text(
-          context.read<OrderBloc>().state.cartTotalPrice.formatCurrency(),
+          context.read<OrderBloc>().state.cartTotalPrice.formatCurrency(
+            context,
+          ),
           style: GoogleFonts.inter(fontSize: 18.0, fontWeight: FontWeight.w600),
         ),
       ],
@@ -273,7 +277,7 @@ class _EditOrderDrawerState extends State<EditOrderDrawer> {
     return Row(
       children: [
         Expanded(
-          child: _buildOrderTypeButton('Отменить', () {
+          child: _buildOrderTypeButton(LocaleKeys.orders_cancel_order.tr(), () {
             context.read<OrderBloc>().add(ClearCartEvent());
             context.go(AppPages.orders);
           }, isSelected: false),
@@ -293,7 +297,7 @@ class _EditOrderDrawerState extends State<EditOrderDrawer> {
               child: state is OrderLoading
                   ? CircularProgressIndicator.adaptive()
                   : _buildOrderTypeButton(
-                      'Подтвердить',
+                      LocaleKeys.orders_confirm_order.tr(),
                       _onCheckout,
                       isSelected: true,
                     ),

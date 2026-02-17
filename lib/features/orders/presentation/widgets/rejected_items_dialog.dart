@@ -97,7 +97,7 @@ class _RejectedItemsDialogState extends State<RejectedItemsDialog> {
                 overflow: TextOverflow.ellipsis,
               ),
               Text(
-                (item.product.price * item.amount).formatCurrency(),
+                (item.product.price * item.amount).formatCurrency(context),
                 style: GoogleFonts.inter(
                   fontSize: 14.0,
                   color: AppColors.hintColor,
