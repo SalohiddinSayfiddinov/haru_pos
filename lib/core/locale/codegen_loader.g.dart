@@ -44,6 +44,8 @@ class CodegenLoader extends AssetLoader{
     "select_period": "Выбрать период"
   },
   "common": {
+    "count": "Ед {}",
+    "loading": "Загрузка...",
     "status": {
       "in_stock": "Есть в наличии",
       "out_of_stock": "Нет в наличии"
@@ -216,7 +218,45 @@ class CodegenLoader extends AssetLoader{
     "status_new": "Новый",
     "status_cooking": "Готовится",
     "status_done": "Готово",
-    "status_pickup": "Подано"
+    "status_pickup": "Подано",
+    "change_table": "Пересадить",
+    "remove_item": "Отказ блюд",
+    "add_items": "Добавить блюда",
+    "delete_order": "Удалить заказ",
+    "order_number": "Заказ #{}",
+    "status_label": "Статус",
+    "table_label": "Стол - {}",
+    "takeaway_label": "На вынос",
+    "total_label": "Итого - {}",
+    "unit_label": "Ед: {}",
+    "show_more": "+ еще {} товаров",
+    "show_less": "Скрыть",
+    "print_bill_button": "Печатать чек",
+    "close_order_button": "Закрыть заказ",
+    "paid_button": "Оплачен",
+    "rejected_button": "Отказано",
+    "bill_printed_success": "Чек успешно напечатан",
+    "close_order_dialog_title": "Закрыть заказ?",
+    "close_order_dialog_content": "Вы уверены, что хотите закрыть заказ №{}?",
+    "amount_label": "Сумма: {}",
+    "confirm": "Потдвердить",
+    "confirming": "Потдверждение...",
+    "delete_order_dialog_title": "Удалить заказ?",
+    "delete_order_dialog_content": "Вы уверены, что хотите удалить заказ №{}?",
+    "print_bill_dialog_title": "Печать чек?",
+    "print_bill_dialog_content": "Вы уверены, что хотите напечатать чек заказа №{}?",
+    "print": "Печать",
+    "rejected_items_title": "Отказанные блюда",
+    "rejection_reason": "Причина отказа",
+    "rejection_comment": "Комментарий",
+    "remove_item_title": "Отказ блюд",
+    "dishes_label": "Блюда",
+    "remove_item_comment": "Комментарий",
+    "numbers_only": "Только числа",
+    "change_table_dialog_title": "Пересадить",
+    "table_number_hint": "Номер стола",
+    "table_number_must_be_number": "Номер стола должен быть числом",
+    "password_hint": "Пароль"
   },
   "employee": {
     "title": "Сотрудники",
@@ -245,6 +285,17 @@ class CodegenLoader extends AssetLoader{
     "limit_label": "Лимит:",
     "penalty_dialog_title": "Оштрафовать сотрудника",
     "penalty_amount_hint": "Введите сумму штрафа"
+  },
+  "order_history": {
+    "title": "История заказов",
+    "empty": "История заказов пуста",
+    "headers": {
+      "name": "Наименование",
+      "price": "Цена",
+      "waiter": "Официант",
+      "type": "Тип",
+      "date": "Дата"
+    }
   }
 };
 static const Map<String,dynamic> _uz = {
@@ -277,6 +328,8 @@ static const Map<String,dynamic> _uz = {
     "select_period": "Davrni tanlang"
   },
   "common": {
+    "count": "{} ta",
+    "loading": "Yuklanmoqda...",
     "status": {
       "in_stock": "Mavjud",
       "out_of_stock": "Mavjud emas"
@@ -449,7 +502,45 @@ static const Map<String,dynamic> _uz = {
     "status_new": "Yangi",
     "status_cooking": "Tayyorlanmoqda",
     "status_done": "Tayyor",
-    "status_pickup": "Olib ketildi"
+    "status_pickup": "Olib ketildi",
+    "change_table": "Stolni o'zgartirish",
+    "remove_item": "Ovqatni qaytarish",
+    "add_items": "Ovqat qo'shish",
+    "delete_order": "Buyurtmani o'chirish",
+    "order_number": "Buyurtma #{}",
+    "status_label": "Holat",
+    "table_label": "Stol - {}",
+    "takeaway_label": "Olib ketish",
+    "total_label": "Jami - {}",
+    "unit_label": "Dona: {}",
+    "show_more": "+ yana {} ta ovqat",
+    "show_less": "Yashirish",
+    "print_bill_button": "Chek chiqarish",
+    "close_order_button": "Buyurtmani yopish",
+    "paid_button": "To'langan",
+    "rejected_button": "Rad etilgan",
+    "bill_printed_success": "Chek muvaffaqiyatli chiqarildi",
+    "close_order_dialog_title": "Buyurtmani yopish?",
+    "close_order_dialog_content": "Haqiqatan ham №{} buyurtmani yopmoqchimisiz?",
+    "amount_label": "Summa: {}",
+    "confirm": "Tasdiqlash",
+    "confirming": "Tasdiqlanmoqda...",
+    "delete_order_dialog_title": "Buyurtmani o'chirish?",
+    "delete_order_dialog_content": "Haqiqatan ham №{} buyurtmani o'chirmoqchimisiz?",
+    "print_bill_dialog_title": "Chek chiqarish?",
+    "print_bill_dialog_content": "Haqiqatan ham №{} buyurtma chekini chiqarmoqchimisiz?",
+    "print": "Chiqarish",
+    "rejected_items_title": "Rad etilgan taomlar",
+    "rejection_reason": "Rad etish sababi",
+    "rejection_comment": "Izoh",
+    "remove_item_title": "Ovqatni qaytarish",
+    "dishes_label": "Taomlar",
+    "remove_item_comment": "Izoh",
+    "numbers_only": "Faqat raqamlar",
+    "change_table_dialog_title": "Stolni o'zgartirish",
+    "table_number_hint": "Stol raqami",
+    "table_number_must_be_number": "Stol raqami son bo'lishi kerak",
+    "password_hint": "Parol"
   },
   "employee": {
     "title": "Xodimlar",
@@ -478,6 +569,17 @@ static const Map<String,dynamic> _uz = {
     "limit_label": "Limit:",
     "penalty_dialog_title": "Xodimni jarimaga tortish",
     "penalty_amount_hint": "Jarima miqdorini kiriting"
+  },
+  "order_history": {
+    "title": "Buyurtmalar tarixi",
+    "empty": "Buyurtmalar topilmadi",
+    "headers": {
+      "name": "Nomi",
+      "price": "Narxi",
+      "waiter": "Ofitsiant",
+      "type": "Turi",
+      "date": "Sana"
+    }
   }
 };
 static const Map<String, Map<String,dynamic>> mapLocales = {"ru": _ru, "uz": _uz};

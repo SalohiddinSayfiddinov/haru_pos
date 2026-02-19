@@ -42,6 +42,7 @@ class OrderRejectedSession extends Equatable {
 
 class OrderEntity extends Equatable {
   final int id;
+  final String orderNumber;
   final String type;
   final int fullPrice;
   final TableEntity? table;
@@ -54,6 +55,7 @@ class OrderEntity extends Equatable {
 
   const OrderEntity({
     required this.id,
+    required this.orderNumber,
     required this.type,
     required this.fullPrice,
     this.table,
@@ -68,6 +70,7 @@ class OrderEntity extends Equatable {
   @override
   List<Object?> get props => [
     id,
+    orderNumber,
     type,
     fullPrice,
     table,

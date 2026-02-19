@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:haru_pos/core/utils/extensions.dart';
 import 'package:haru_pos/core/widgets/app_buttons.dart';
 import 'package:haru_pos/core/widgets/app_snack_bar.dart';
 import 'package:haru_pos/features/orders/domain/entities/orders_entity.dart';
@@ -9,17 +8,17 @@ import 'package:haru_pos/features/orders/presentation/bloc/orders_bloc.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:haru_pos/core/locale/locale_keys.g.dart';
 
-class PrintBillDialog extends StatelessWidget {
+class DeleteOrderDialog extends StatelessWidget {
   final OrderEntity order;
 
-  const PrintBillDialog({super.key, required this.order});
+  const DeleteOrderDialog({super.key, required this.order});
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       backgroundColor: Colors.white,
       title: Text(
-        LocaleKeys.orders_print_bill_dialog_title.tr(),
+        LocaleKeys.orders_delete_order_dialog_title.tr(),
         style: GoogleFonts.inter(fontSize: 18.0, fontWeight: FontWeight.w600),
       ),
       content: Column(
@@ -27,22 +26,11 @@ class PrintBillDialog extends StatelessWidget {
         crossAxisAlignment: .start,
         children: [
           Text(
-            LocaleKeys.orders_print_bill_dialog_content.tr(
-              args: [order.orderNumber],
+            LocaleKeys.orders_delete_order_dialog_content.tr(
+              args: [order.orderNumber.toString()],
             ),
             style: GoogleFonts.inter(
               fontSize: 14.0,
-              color: const Color(0xFF6B7280),
-            ),
-          ),
-          SizedBox(height: 5),
-          Text(
-            LocaleKeys.orders_amount_label.tr(
-              args: [order.fullPrice.formatCurrency(context)],
-            ),
-            style: GoogleFonts.inter(
-              fontSize: 14.0,
-              fontWeight: FontWeight.w600,
               color: const Color(0xFF6B7280),
             ),
           ),
@@ -61,7 +49,6 @@ class PrintBillDialog extends StatelessWidget {
                 },
                 builder: (context, state) {
                   return PrimaryButton(
-                    width: 200,
                     height: 40,
                     backgroundColor: Colors.green,
                     textStyle: GoogleFonts.inter(
@@ -70,9 +57,11 @@ class PrintBillDialog extends StatelessWidget {
                       color: Colors.white,
                     ),
                     onPressed: () {
-                      context.read<OrderBloc>().add(PrintBillEvent(order));
+                      context.read<OrderBloc>().add(DeleteOrderEvent(order.id));
                     },
-                    title: LocaleKeys.orders_print.tr(),
+                    title: state is OrderLoading
+                        ? LocaleKeys.orders_confirming.tr()
+                        : LocaleKeys.orders_confirm.tr(),
                     isLoading: state is OrderLoading,
                   );
                 },

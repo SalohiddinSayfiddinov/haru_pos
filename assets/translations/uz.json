@@ -28,6 +28,8 @@
         "select_period": "Davrni tanlang"
     },
     "common": {
+        "count": "{} ta",
+        "loading": "Yuklanmoqda...",
         "status": {
             "in_stock": "Mavjud",
             "out_of_stock": "Mavjud emas"
@@ -200,7 +202,45 @@
         "status_new": "Yangi",
         "status_cooking": "Tayyorlanmoqda",
         "status_done": "Tayyor",
-        "status_pickup": "Olib ketildi"
+        "status_pickup": "Olib ketildi",
+        "change_table": "Stolni o'zgartirish",
+        "remove_item": "Ovqatni qaytarish",
+        "add_items": "Ovqat qo'shish",
+        "delete_order": "Buyurtmani o'chirish",
+        "order_number": "Buyurtma #{}",
+        "status_label": "Holat",
+        "table_label": "Stol - {}",
+        "takeaway_label": "Olib ketish",
+        "total_label": "Jami - {}",
+        "unit_label": "Dona: {}",
+        "show_more": "+ yana {} ta ovqat",
+        "show_less": "Yashirish",
+        "print_bill_button": "Chek chiqarish",
+        "close_order_button": "Buyurtmani yopish",
+        "paid_button": "To'langan",
+        "rejected_button": "Rad etilgan",
+        "bill_printed_success": "Chek muvaffaqiyatli chiqarildi",
+        "close_order_dialog_title": "Buyurtmani yopish?",
+        "close_order_dialog_content": "Haqiqatan ham №{} buyurtmani yopmoqchimisiz?",
+        "amount_label": "Summa: {}",
+        "confirm": "Tasdiqlash",
+        "confirming": "Tasdiqlanmoqda...",
+        "delete_order_dialog_title": "Buyurtmani o'chirish?",
+        "delete_order_dialog_content": "Haqiqatan ham №{} buyurtmani o'chirmoqchimisiz?",
+        "print_bill_dialog_title": "Chek chiqarish?",
+        "print_bill_dialog_content": "Haqiqatan ham №{} buyurtma chekini chiqarmoqchimisiz?",
+        "print": "Chiqarish",
+        "rejected_items_title": "Rad etilgan taomlar",
+        "rejection_reason": "Rad etish sababi",
+        "rejection_comment": "Izoh",
+        "remove_item_title": "Ovqatni qaytarish",
+        "dishes_label": "Taomlar",
+        "remove_item_comment": "Izoh",
+        "numbers_only": "Faqat raqamlar",
+        "change_table_dialog_title": "Stolni o'zgartirish",
+        "table_number_hint": "Stol raqami",
+        "table_number_must_be_number": "Stol raqami son bo'lishi kerak",
+        "password_hint": "Parol"
     },
     "employee": {
         "title": "Xodimlar",
@@ -229,5 +269,16 @@
         "limit_label": "Limit:",
         "penalty_dialog_title": "Xodimni jarimaga tortish",
         "penalty_amount_hint": "Jarima miqdorini kiriting"
+    },
+    "order_history": {
+        "title": "Buyurtmalar tarixi",
+        "empty": "Buyurtmalar topilmadi",
+        "headers": {
+            "name": "Nomi",
+            "price": "Narxi",
+            "waiter": "Ofitsiant",
+            "type": "Turi",
+            "date": "Sana"
+        }
     }
 }

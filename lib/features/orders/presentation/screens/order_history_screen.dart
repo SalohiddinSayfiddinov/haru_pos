@@ -1,15 +1,16 @@
 import 'package:calendar_date_picker2/calendar_date_picker2.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:haru_pos/core/constants/app_colors.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
 import 'package:haru_pos/core/utils/date_extensions.dart';
 import 'package:haru_pos/core/utils/extensions.dart';
 import 'package:haru_pos/features/orders/domain/entities/orders_entity.dart';
 import 'package:haru_pos/features/orders/presentation/bloc/orders_bloc.dart';
 import 'package:haru_pos/features/orders/presentation/widgets/orders_filters.dart';
-import 'package:intl/intl.dart';
 import 'package:number_pagination/number_pagination.dart';
 
 class OrderHistoryScreen extends StatefulWidget {
@@ -161,7 +162,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
           alignment: .center,
           padding: EdgeInsets.symmetric(horizontal: 16.0),
           child: Text(
-            'Применить',
+            LocaleKeys.orders_apply.tr(),
             style: GoogleFonts.inter(
               fontSize: 12.0,
               fontWeight: FontWeight.w600,
@@ -170,7 +171,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
           ),
         ),
         cancelButton: Text(
-          'Отменить',
+          LocaleKeys.orders_cancel.tr(),
           style: GoogleFonts.inter(
             fontSize: 12.0,
             fontWeight: FontWeight.w600,
@@ -263,7 +264,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                     icon: const Icon(Icons.arrow_back_ios),
                   ),
                   Text(
-                    'История заказов',
+                    LocaleKeys.order_history_title.tr(),
                     style: GoogleFonts.inter(
                       fontSize: 25.0,
                       fontWeight: FontWeight.w600,
@@ -293,7 +294,9 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                     final orders = state.orders;
 
                     if (orders.isEmpty) {
-                      return const Center(child: Text('История заказов пуста'));
+                      return Center(
+                        child: Text(LocaleKeys.order_history_empty.tr()),
+                      );
                     }
 
                     return Column(
@@ -319,11 +322,22 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                                 ),
                                 columns: [
                                   _buildHeaderText('#'),
-                                  _buildHeaderText('Наименование'),
-                                  _buildHeaderText('Цена'),
-                                  _buildHeaderText('Официант'),
-                                  _buildHeaderText('Тип'),
-                                  _buildHeaderText('Дата'),
+                                  _buildHeaderText(
+                                    LocaleKeys.order_history_headers_name.tr(),
+                                  ),
+                                  _buildHeaderText(
+                                    LocaleKeys.order_history_headers_price.tr(),
+                                  ),
+                                  _buildHeaderText(
+                                    LocaleKeys.order_history_headers_waiter
+                                        .tr(),
+                                  ),
+                                  _buildHeaderText(
+                                    LocaleKeys.order_history_headers_type.tr(),
+                                  ),
+                                  _buildHeaderText(
+                                    LocaleKeys.order_history_headers_date.tr(),
+                                  ),
                                 ],
                                 rows: [
                                   ...orders.map(
@@ -379,7 +393,11 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
 
   List<DataCell> _buildOrderRow(OrderEntity order) {
     final productsName = order.orderItems
-        .map((e) => e.product.nameRu)
+        .map(
+          (e) => context.locale.languageCode == 'ru'
+              ? e.product.nameRu
+              : e.product.nameUz,
+        )
         .join(', ');
 
     return [
@@ -423,11 +441,11 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
   String _mapOrderType(String type) {
     switch (type) {
       case 'dine_in':
-        return 'В зале';
+        return LocaleKeys.common_order_types_dine_in.tr();
       case 'takeaway':
-        return 'С собой';
+        return LocaleKeys.common_order_types_takeaway.tr();
       case 'delivery':
-        return 'Доставка';
+        return LocaleKeys.common_order_types_delivery.tr();
       default:
         return type;
     }

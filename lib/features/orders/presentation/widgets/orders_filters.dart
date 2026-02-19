@@ -74,7 +74,7 @@ class _DateRangeFilter extends StatelessWidget {
             ? (endDate != null
                   ? '${DateFormat('dd.MM.yyyy').format(startDate!)} - ${DateFormat('dd.MM.yyyy').format(endDate!)}'
                   : DateFormat('dd.MM.yyyy').format(startDate!))
-            : 'Выбрать период',
+            : LocaleKeys.date_select_period.tr(),
         style: GoogleFonts.inter(fontSize: 13.0),
       ),
       style: OutlinedButton.styleFrom(
@@ -97,7 +97,7 @@ class _ClearDateButton extends StatelessWidget {
     return IconButton(
       onPressed: onPressed,
       icon: const Icon(Icons.close, size: 18.0),
-      tooltip: 'Очистить фильтр',
+      tooltip: LocaleKeys.orders_clear_filter.tr(),
       style: IconButton.styleFrom(
         backgroundColor: Colors.red.withValues(alpha: .1),
         foregroundColor: Colors.red,

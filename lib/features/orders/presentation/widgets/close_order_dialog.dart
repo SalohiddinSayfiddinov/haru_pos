@@ -6,6 +6,8 @@ import 'package:haru_pos/core/widgets/app_buttons.dart';
 import 'package:haru_pos/core/widgets/app_snack_bar.dart';
 import 'package:haru_pos/features/orders/domain/entities/orders_entity.dart';
 import 'package:haru_pos/features/orders/presentation/bloc/orders_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
 
 class CloseOrderDialog extends StatelessWidget {
   final OrderEntity order;
@@ -17,7 +19,7 @@ class CloseOrderDialog extends StatelessWidget {
     return AlertDialog(
       backgroundColor: Colors.white,
       title: Text(
-        'Закрыть заказ?',
+        LocaleKeys.orders_close_order_dialog_title.tr(),
         style: GoogleFonts.inter(fontSize: 18.0, fontWeight: FontWeight.w600),
       ),
       content: Column(
@@ -25,7 +27,9 @@ class CloseOrderDialog extends StatelessWidget {
         crossAxisAlignment: .start,
         children: [
           Text(
-            'Вы уверены, что хотите закрыть заказ №${order.id}?',
+            LocaleKeys.orders_close_order_dialog_content.tr(
+              args: [order.orderNumber],
+            ),
             style: GoogleFonts.inter(
               fontSize: 14.0,
               color: const Color(0xFF6B7280),
@@ -33,7 +37,9 @@ class CloseOrderDialog extends StatelessWidget {
           ),
           SizedBox(height: 5),
           Text(
-            'Сумма: ${order.fullPrice.formatCurrency(context)}',
+            LocaleKeys.orders_amount_label.tr(
+              args: [order.fullPrice.formatCurrency(context)],
+            ),
             style: GoogleFonts.inter(
               fontSize: 14.0,
               fontWeight: FontWeight.w600,
@@ -66,8 +72,8 @@ class CloseOrderDialog extends StatelessWidget {
                       context.read<OrderBloc>().add(CloseOrderEvent(order));
                     },
                     title: state is OrderLoading
-                        ? 'Потдверждение...'
-                        : 'Потдвердить',
+                        ? LocaleKeys.orders_confirming.tr()
+                        : LocaleKeys.orders_confirm.tr(),
                     isLoading: state is OrderLoading,
                   );
                 },
@@ -79,7 +85,7 @@ class CloseOrderDialog extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                   color: Colors.white,
                 ),
-                title: 'Отменить',
+                title: LocaleKeys.orders_cancel.tr(),
                 onPressed: () => Navigator.pop(context),
               ),
             ],

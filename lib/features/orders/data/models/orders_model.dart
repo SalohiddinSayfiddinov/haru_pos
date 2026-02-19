@@ -65,6 +65,7 @@ class RejectedSessionModel extends OrderRejectedSession {
 class OrderModel extends OrderEntity {
   const OrderModel({
     required super.id,
+    required super.orderNumber,
     required super.type,
     required super.fullPrice,
     super.table,
@@ -89,6 +90,7 @@ class OrderModel extends OrderEntity {
         [];
     return OrderModel(
       id: json['id'] ?? 0,
+      orderNumber: json['order_number'] ?? '',
       type: json['type'] ?? 'dine_in',
       fullPrice: json['full_price'] ?? 0,
       table: json['table'] != null ? TableModel.fromJson(json['table']) : null,
@@ -138,6 +140,7 @@ class OrderModel extends OrderEntity {
   OrderEntity toEntity() {
     return OrderEntity(
       id: id,
+      orderNumber: orderNumber,
       type: type,
       fullPrice: fullPrice,
       table: table,

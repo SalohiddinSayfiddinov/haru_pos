@@ -1,5 +1,7 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:haru_pos/core/constants/app_colors.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
 
 class PrimaryButton extends StatelessWidget {
   final String title;
@@ -38,18 +40,16 @@ class PrimaryButton extends StatelessWidget {
           elevation: 0,
         ),
         onPressed: isLoading ? null : onPressed,
-        child: isLoading
-            ? CircularProgressIndicator.adaptive()
-            : Text(
-                title,
-                style:
-                    textStyle ??
-                    TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.w600,
-                      color: foregroundColor,
-                    ),
+        child: Text(
+          isLoading ? LocaleKeys.common_loading.tr() : title,
+          style:
+              textStyle ??
+              TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w600,
+                color: foregroundColor,
               ),
+        ),
       ),
     );
   }

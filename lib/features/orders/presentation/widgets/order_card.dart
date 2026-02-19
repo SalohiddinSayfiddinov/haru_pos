@@ -1,9 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:haru_pos/core/constants/app_colors.dart';
 import 'package:haru_pos/core/di/injection.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
 import 'package:haru_pos/core/utils/date_extensions.dart';
 import 'package:haru_pos/core/utils/extensions.dart';
 import 'package:haru_pos/core/utils/order_extensions.dart';
@@ -14,6 +16,7 @@ import 'package:haru_pos/features/orders/domain/entities/orders_entity.dart';
 import 'package:haru_pos/features/orders/presentation/bloc/orders_bloc.dart';
 import 'package:haru_pos/features/orders/presentation/widgets/change_table_dialog.dart';
 import 'package:haru_pos/features/orders/presentation/widgets/close_order_dialog.dart';
+import 'package:haru_pos/features/orders/presentation/widgets/delete_order_dialog.dart';
 import 'package:haru_pos/features/orders/presentation/widgets/print_bill_dialog.dart';
 import 'package:haru_pos/features/orders/presentation/widgets/rejected_items_dialog.dart';
 import 'package:haru_pos/features/orders/presentation/widgets/remove_order_item_dialog.dart';
@@ -85,6 +88,20 @@ class _OrderCardState extends State<OrderCard> {
     }
   }
 
+  void _showDeleteOrderDialog(BuildContext context, OrderEntity order) async {
+    final result = await showDialog(
+      context: context,
+      builder: (context) => BlocProvider(
+        create: (context) => getIt<OrderBloc>(),
+        child: DeleteOrderDialog(order: order),
+      ),
+    );
+
+    if (result == true) {
+      widget.onCloseOrder();
+    }
+  }
+
   void _showPrintBillDialog(BuildContext context, OrderEntity order) async {
     final result = await showDialog(
       context: context,
@@ -95,7 +112,7 @@ class _OrderCardState extends State<OrderCard> {
     );
 
     if (result == true) {
-      AppSnackbar.success(context, 'Чек успешно напечатан');
+      AppSnackbar.success(context, LocaleKeys.orders_bill_printed_success.tr());
     }
   }
 
@@ -145,7 +162,7 @@ class _OrderCardState extends State<OrderCard> {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  child: Text('Отказано'),
+                  child: Text(LocaleKeys.orders_rejected_button.tr()),
                 ),
               ],
             ),
@@ -175,7 +192,9 @@ class _OrderCardState extends State<OrderCard> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Заказ #${order.id}',
+              LocaleKeys.orders_order_number.tr(
+                args: [order.orderNumber.toString()],
+              ),
               style: GoogleFonts.inter(
                 fontSize: 16.0,
                 fontWeight: FontWeight.w500,
@@ -195,17 +214,21 @@ class _OrderCardState extends State<OrderCard> {
           iconColor: const Color(0xFF757575),
           icon: const Icon(Icons.more_vert),
           itemBuilder: (context) => [
-            const PopupMenuItem(
+            PopupMenuItem(
               value: 'change_table',
-              child: Text('Пересадить'),
+              child: Text(LocaleKeys.orders_change_table.tr()),
             ),
-            const PopupMenuItem(
+            PopupMenuItem(
               value: 'remove_item',
-              child: Text('Отказ блюд'),
+              child: Text(LocaleKeys.orders_remove_item.tr()),
             ),
-            const PopupMenuItem(
+            PopupMenuItem(
               value: 'add_items',
-              child: Text('Добавить блюда'),
+              child: Text(LocaleKeys.orders_add_items.tr()),
+            ),
+            PopupMenuItem(
+              value: 'delete_order',
+              child: Text(LocaleKeys.orders_delete_order.tr()),
             ),
           ],
           onSelected: (value) {
@@ -215,6 +238,8 @@ class _OrderCardState extends State<OrderCard> {
               _showRemoveItemDialog(context, order);
             } else if (value == 'add_items') {
               widget.onUpdateOrder();
+            } else if (value == 'delete_order') {
+              _showDeleteOrderDialog(context, order);
             }
           },
         ),
@@ -250,14 +275,18 @@ class _OrderCardState extends State<OrderCard> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                item.product.nameRu,
+                context.locale.languageCode == 'ru'
+                    ? item.product.nameRu
+                    : item.product.nameUz,
                 style: GoogleFonts.inter(fontSize: 16.0),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 4.0),
               Text(
-                item.product.category.nameRu,
+                context.locale.languageCode == 'ru'
+                    ? item.product.category.nameRu
+                    : item.product.category.nameUz,
                 style: GoogleFonts.inter(color: const Color(0xFF797B7E)),
               ),
               Text(
@@ -267,7 +296,10 @@ class _OrderCardState extends State<OrderCard> {
             ],
           ),
         ),
-        Text('Ед: ${item.amount}', style: GoogleFonts.inter(fontSize: 15.0)),
+        Text(
+          LocaleKeys.common_count.tr(args: [item.amount.toString()]),
+          style: GoogleFonts.inter(fontSize: 15.0),
+        ),
       ],
     );
   }
@@ -285,7 +317,11 @@ class _OrderCardState extends State<OrderCard> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              isExpanded ? 'Скрыть' : '+ еще $remainingCount товаров',
+              isExpanded
+                  ? LocaleKeys.orders_show_less.tr()
+                  : LocaleKeys.orders_show_more.tr(
+                      args: [remainingCount.toString()],
+                    ),
               style: GoogleFonts.inter(
                 color: AppColors.primary,
                 fontSize: 13.0,
@@ -323,7 +359,7 @@ class _OrderCardState extends State<OrderCard> {
                 width: double.infinity,
                 backgroundColor: AppColors.textPrimary,
                 height: 35,
-                title: 'Печатать чек',
+                title: LocaleKeys.orders_print_bill_button.tr(),
                 textStyle: GoogleFonts.montserrat(
                   fontSize: 12.0,
                   fontWeight: FontWeight.w600,
@@ -339,7 +375,9 @@ class _OrderCardState extends State<OrderCard> {
                     ? AppColors.primary
                     : Colors.green,
                 height: 35,
-                title: widget.order.active ? 'Закрыть заказ' : 'Оплачен',
+                title: widget.order.active
+                    ? LocaleKeys.orders_close_order_button.tr()
+                    : LocaleKeys.orders_paid_button.tr(),
                 textStyle: GoogleFonts.montserrat(
                   fontSize: 12.0,
                   fontWeight: FontWeight.w600,
@@ -362,14 +400,18 @@ class _OrderCardState extends State<OrderCard> {
       children: [
         Text(
           order.type == 'dine_in'
-              ? 'Стол - ${order.table!.tableNumber}'
-              : 'На вынос',
+              ? LocaleKeys.orders_table_label.tr(
+                  args: [order.table!.tableNumber.toString()],
+                )
+              : LocaleKeys.common_order_types_takeaway.tr(),
           style: GoogleFonts.inter(color: const Color(0xFF797B7E)),
         ),
 
         const SizedBox(height: 10.0),
         Text(
-          'Итого - ${order.fullPrice.formatCurrency(context)}',
+          LocaleKeys.orders_total_label.tr(
+            args: [order.fullPrice.formatCurrency(context)],
+          ),
           style: GoogleFonts.inter(color: const Color(0xFF797B7E)),
         ),
       ],
@@ -381,12 +423,12 @@ class _OrderCardState extends State<OrderCard> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Статус',
+          LocaleKeys.orders_status_label.tr(),
           style: GoogleFonts.inter(color: const Color(0xFF797B7E)),
         ),
         const SizedBox(height: 5.0),
         Text(
-          order.status.toLocalizedText('ru'),
+          order.status.toLocalizedText(context.locale.languageCode),
           style: GoogleFonts.inter(fontWeight: FontWeight.w500),
         ),
       ],

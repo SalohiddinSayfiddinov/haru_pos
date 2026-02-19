@@ -7,6 +7,8 @@ import 'package:haru_pos/core/widgets/app_snack_bar.dart';
 import 'package:haru_pos/core/widgets/app_text_field.dart';
 import 'package:haru_pos/features/orders/domain/entities/orders_entity.dart';
 import 'package:haru_pos/features/orders/presentation/bloc/orders_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
 
 class ChangeTableDialog extends StatefulWidget {
   final OrderEntity order;
@@ -51,7 +53,7 @@ class _ChangeTableDialogState extends State<ChangeTableDialog> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Пересадить',
+                      LocaleKeys.orders_change_table_dialog_title.tr(),
                       style: GoogleFonts.inter(
                         fontSize: 20.0,
                         fontWeight: FontWeight.bold,
@@ -67,7 +69,7 @@ class _ChangeTableDialogState extends State<ChangeTableDialog> {
                 const SizedBox(height: 20.0),
                 AppTextField(
                   controller: tableNumberController,
-                  hintText: 'Номер стола',
+                  hintText: LocaleKeys.orders_table_number_hint.tr(),
                   contentPadding: const EdgeInsets.all(16.0),
                   hintStyle: GoogleFonts.inter(
                     fontSize: 13.0,
@@ -92,7 +94,9 @@ class _ChangeTableDialogState extends State<ChangeTableDialog> {
             builder: (context, state) {
               return PrimaryButton(
                 height: 30.0,
-                title: state is OrderLoading ? 'Сохранение...' : 'Сохранить',
+                title: state is OrderLoading
+                    ? LocaleKeys.orders_confirming.tr()
+                    : LocaleKeys.orders_confirm.tr(),
                 textStyle: GoogleFonts.inter(
                   fontSize: 12.0,
                   fontWeight: FontWeight.w600,
@@ -107,7 +111,7 @@ class _ChangeTableDialogState extends State<ChangeTableDialog> {
                         if (tableNumber == null) {
                           AppSnackbar.error(
                             context,
-                            'Номер стола должен быть числом',
+                            LocaleKeys.orders_table_number_must_be_number.tr(),
                           );
                           return;
                         }

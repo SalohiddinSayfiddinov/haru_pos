@@ -12,6 +12,8 @@ import 'package:haru_pos/core/widgets/app_text_field.dart';
 import 'package:haru_pos/features/orders/data/models/orders_dto.dart';
 import 'package:haru_pos/features/orders/domain/entities/orders_entity.dart';
 import 'package:haru_pos/features/orders/presentation/bloc/orders_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
 
 class RemoveOrderItemDialog extends StatefulWidget {
   final OrderEntity order;
@@ -67,7 +69,7 @@ class _RemoveOrderItemDialogState extends State<RemoveOrderItemDialog> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Отказ блюд',
+                        LocaleKeys.orders_remove_item_title.tr(),
                         style: GoogleFonts.inter(
                           fontSize: 20.0,
                           fontWeight: FontWeight.bold,
@@ -82,7 +84,7 @@ class _RemoveOrderItemDialogState extends State<RemoveOrderItemDialog> {
                   ),
                   const SizedBox(height: 20.0),
                   Text(
-                    'Блюда',
+                    LocaleKeys.orders_dishes_label.tr(),
                     style: GoogleFonts.inter(fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 5.0),
@@ -95,7 +97,7 @@ class _RemoveOrderItemDialogState extends State<RemoveOrderItemDialog> {
                   ],
                   const SizedBox(height: 10.0),
                   Text(
-                    'Причина отказа',
+                    LocaleKeys.orders_rejection_reason.tr(),
                     style: GoogleFonts.inter(fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 5.0),
@@ -145,7 +147,7 @@ class _RemoveOrderItemDialogState extends State<RemoveOrderItemDialog> {
                   const SizedBox(height: 10.0),
                   AppTextField(
                     controller: commentController,
-                    hintText: 'Комментарий',
+                    hintText: LocaleKeys.orders_remove_item_comment.tr(),
                     maxLines: 3,
                     contentPadding: const EdgeInsets.all(16.0),
                     hintStyle: GoogleFonts.inter(
@@ -158,7 +160,7 @@ class _RemoveOrderItemDialogState extends State<RemoveOrderItemDialog> {
                   const SizedBox(height: 10.0),
                   AppTextField(
                     controller: _passwordController,
-                    hintText: 'Пароль',
+                    hintText: LocaleKeys.orders_password_hint.tr(),
                     obscureText: true,
                     hintStyle: GoogleFonts.inter(
                       fontSize: 16,
@@ -184,7 +186,9 @@ class _RemoveOrderItemDialogState extends State<RemoveOrderItemDialog> {
             builder: (context, state) {
               return PrimaryButton(
                 height: 30.0,
-                title: state is OrderLoading ? 'Сохранение...' : 'Сохранить',
+                title: state is OrderLoading
+                    ? LocaleKeys.employee_saving.tr()
+                    : LocaleKeys.employee_save.tr(),
                 textStyle: GoogleFonts.inter(
                   fontSize: 12.0,
                   fontWeight: FontWeight.w600,
@@ -240,7 +244,9 @@ class _RemoveOrderItemDialogState extends State<RemoveOrderItemDialog> {
       children: [
         Expanded(
           child: Text(
-            item.product.nameRu,
+            context.locale.languageCode == 'ru'
+                ? item.product.nameRu
+                : item.product.nameUz,
             style: GoogleFonts.inter(fontSize: 16.0),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -253,7 +259,7 @@ class _RemoveOrderItemDialogState extends State<RemoveOrderItemDialog> {
             isNumber: true,
             validator: (value) {
               if (!RegExp(r'^\d+$').hasMatch(value!)) {
-                return 'Только числа';
+                return LocaleKeys.orders_numbers_only.tr();
               }
               return null;
             },

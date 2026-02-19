@@ -3,6 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:haru_pos/core/constants/app_colors.dart';
 import 'package:haru_pos/core/utils/extensions.dart';
 import 'package:haru_pos/features/orders/domain/entities/orders_entity.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:haru_pos/core/locale/locale_keys.g.dart';
 
 class RejectedItemsDialog extends StatefulWidget {
   final OrderEntity order;
@@ -30,7 +32,7 @@ class _RejectedItemsDialogState extends State<RejectedItemsDialog> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Отказанные блюда',
+                    LocaleKeys.orders_rejected_items_title.tr(),
                     style: GoogleFonts.inter(
                       fontSize: 20.0,
                       fontWeight: FontWeight.bold,
@@ -57,7 +59,7 @@ class _RejectedItemsDialogState extends State<RejectedItemsDialog> {
                       ),
                       const SizedBox(height: 10.0),
                       Text(
-                        'Причина отказа',
+                        LocaleKeys.orders_rejection_reason.tr(),
                         style: GoogleFonts.inter(fontWeight: FontWeight.w600),
                       ),
                       const SizedBox(height: 5.0),
@@ -67,7 +69,7 @@ class _RejectedItemsDialogState extends State<RejectedItemsDialog> {
                       ),
                       SizedBox(height: 10.0),
                       Text(
-                        'Комментарий',
+                        LocaleKeys.orders_rejection_comment.tr(),
                         style: GoogleFonts.inter(fontWeight: FontWeight.w600),
                       ),
                       const SizedBox(height: 5.0),
@@ -91,7 +93,9 @@ class _RejectedItemsDialogState extends State<RejectedItemsDialog> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                item.product.nameRu,
+                context.locale.languageCode == 'ru'
+                    ? item.product.nameRu
+                    : item.product.nameUz,
                 style: GoogleFonts.inter(fontSize: 16.0),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
