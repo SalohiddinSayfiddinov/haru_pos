@@ -12,135 +12,151 @@ import 'package:haru_pos/features/hall/presentation/widgets/add_table_dialog.dar
 import 'package:haru_pos/features/hall/presentation/widgets/delete_reservation_dialog.dart';
 import 'package:haru_pos/features/hall/presentation/widgets/delete_table_dialog.dart';
 import 'package:haru_pos/features/hall/presentation/widgets/reserve_table_dialog.dart';
+import 'package:haru_pos/features/hall/presentation/widgets/table_orders_dialog.dart';
+import 'package:haru_pos/features/orders/domain/entities/orders_entity.dart';
 
 class TableCard extends StatelessWidget {
   final TableEntity table;
 
   const TableCard({super.key, required this.table});
 
+  void _showTableOrdersDialog(BuildContext context, List<OrderEntity> orders, int tableNumber) {
+    showDialog(
+      context: context,
+      builder: (context) => TableOrdersDialog(orders: orders, tableNumber: tableNumber),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 341,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(
-          color: table.status ? AppColors.primary : Color(0xFFAEAEAE),
+    return InkWell(
+      onTap: () {
+        _showTableOrdersDialog(context, table.orders, table.tableNumber);
+      },
+      child: Container(
+        width: 341,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(
+            color: table.orders.isNotEmpty
+                ? AppColors.primary
+                : Color(0xFFAEAEAE),
+          ),
+          borderRadius: BorderRadius.circular(10),
         ),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      padding: const EdgeInsets.all(15),
-      child: Column(
-        crossAxisAlignment: .start,
-        children: [
-          Row(
-            mainAxisAlignment: .spaceBetween,
-            children: [
-              Text(
-                LocaleKeys.hall_table_card_title.tr(
-                  args: [table.tableNumber.toString()],
-                ),
-                style: GoogleFonts.inter(
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black,
-                ),
-              ),
-              PopupMenuButton<String>(
-                icon: Icon(Icons.more_vert, color: Colors.black),
-                color: Colors.white,
-                itemBuilder: (context) => [
-                  PopupMenuItem(
-                    value: 'edit',
-                    child: Row(
-                      children: [
-                        const Icon(Icons.edit, size: 18),
-                        const SizedBox(width: 8),
-                        Text(
-                          LocaleKeys.hall_edit.tr(),
-                          style: GoogleFonts.inter(fontSize: 14),
-                        ),
-                      ],
-                    ),
+        padding: const EdgeInsets.all(15),
+        child: Column(
+          crossAxisAlignment: .start,
+          children: [
+            Row(
+              mainAxisAlignment: .spaceBetween,
+              children: [
+                Text(
+                  LocaleKeys.hall_table_card_title.tr(
+                    args: [table.tableNumber.toString()],
                   ),
-                  PopupMenuItem(
-                    value: 'delete',
-                    child: Row(
-                      children: [
-                        const Icon(Icons.delete, size: 18, color: Colors.red),
-                        const SizedBox(width: 8),
-                        Text(
-                          LocaleKeys.hall_delete.tr(),
-                          style: GoogleFonts.inter(
-                            fontSize: 14,
-                            color: Colors.red,
+                  style: GoogleFonts.inter(
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black,
+                  ),
+                ),
+                PopupMenuButton<String>(
+                  icon: Icon(Icons.more_vert, color: Colors.black),
+                  color: Colors.white,
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                      value: 'edit',
+                      child: Row(
+                        children: [
+                          const Icon(Icons.edit, size: 18),
+                          const SizedBox(width: 8),
+                          Text(
+                            LocaleKeys.hall_edit.tr(),
+                            style: GoogleFonts.inter(fontSize: 14),
                           ),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: 'delete',
+                      child: Row(
+                        children: [
+                          const Icon(Icons.delete, size: 18, color: Colors.red),
+                          const SizedBox(width: 8),
+                          Text(
+                            LocaleKeys.hall_delete.tr(),
+                            style: GoogleFonts.inter(
+                              fontSize: 14,
+                              color: Colors.red,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                  onSelected: (value) {
+                    switch (value) {
+                      case 'edit':
+                        _showEditTableDialog(context, table);
+                        break;
+                      case 'delete':
+                        _showDeleteTableDialog(context, table);
+                        break;
+                    }
+                  },
+                ),
+              ],
+            ),
+            SizedBox(height: 15.0),
+            if (table.tableBooks.isNotEmpty)
+              Text(
+                LocaleKeys.hall_reserved.tr(),
+                style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+              ),
+            SizedBox(height: 5),
+            ...table.tableBooks.map((item) {
+              return Row(
+                crossAxisAlignment: .start,
+                mainAxisAlignment: .spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: .start,
+                    children: [
+                      Text(
+                        '${item.dateAndTime.toFancy()}, ${item.fullName}\n${item.phoneNumber}',
+                      ),
+                      if (table.tableBooks.indexOf(item) !=
+                          table.tableBooks.length - 1)
+                        Divider(),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 30,
+                    width: 30,
+                    child: IconButton(
+                      onPressed: () {
+                        _showDeleteReservationDialog(context, item.id);
+                      },
+                      style: IconButton.styleFrom(
+                        foregroundColor: AppColors.primary,
+                        shape: CircleBorder(
+                          side: BorderSide(color: AppColors.primary),
                         ),
-                      ],
+                      ),
+                      icon: Icon(Icons.remove, size: 14.0),
                     ),
                   ),
                 ],
-                onSelected: (value) {
-                  switch (value) {
-                    case 'edit':
-                      _showEditTableDialog(context, table);
-                      break;
-                    case 'delete':
-                      _showDeleteTableDialog(context, table);
-                      break;
-                  }
-                },
-              ),
-            ],
-          ),
-          SizedBox(height: 15.0),
-          if (table.tableBooks.isNotEmpty)
-            Text(
-              LocaleKeys.hall_reserved.tr(),
-              style: GoogleFonts.inter(fontWeight: FontWeight.w600),
+              );
+            }),
+            SizedBox(height: 15.0),
+            Row(
+              mainAxisAlignment: .end,
+              children: [_buildTableStatus(context, table)],
             ),
-          SizedBox(height: 5),
-          ...table.tableBooks.map((item) {
-            return Row(
-              crossAxisAlignment: .start,
-              mainAxisAlignment: .spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: .start,
-                  children: [
-                    Text(
-                      '${item.dateAndTime.toFancy()}, ${item.fullName}\n${item.phoneNumber}',
-                    ),
-                    if (table.tableBooks.indexOf(item) !=
-                        table.tableBooks.length - 1)
-                      Divider(),
-                  ],
-                ),
-                SizedBox(
-                  height: 30,
-                  width: 30,
-                  child: IconButton(
-                    onPressed: () {
-                      _showDeleteReservationDialog(context, item.id);
-                    },
-                    style: IconButton.styleFrom(
-                      foregroundColor: AppColors.primary,
-                      shape: CircleBorder(
-                        side: BorderSide(color: AppColors.primary),
-                      ),
-                    ),
-                    icon: Icon(Icons.remove, size: 14.0),
-                  ),
-                ),
-              ],
-            );
-          }),
-          SizedBox(height: 15.0),
-          Row(
-            mainAxisAlignment: .end,
-            children: [_buildTableStatus(context, table)],
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -153,7 +169,7 @@ class TableCard extends StatelessWidget {
           _showReserveTableDialog(context, table);
         },
         style: ElevatedButton.styleFrom(
-          backgroundColor: table.status
+          backgroundColor: table.orders.isNotEmpty
               ? AppColors.primary
               : const Color(0xFF1BB90C),
           foregroundColor: Colors.white,
@@ -163,9 +179,7 @@ class TableCard extends StatelessWidget {
           ),
         ),
         child: Text(
-          table.status
-              ? LocaleKeys.hall_free_table.tr()
-              : LocaleKeys.hall_occupy_table.tr(),
+          LocaleKeys.hall_occupy_table.tr(),
           style: GoogleFonts.inter(fontSize: 12.0, fontWeight: FontWeight.w600),
         ),
       ),

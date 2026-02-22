@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:haru_pos/features/orders/domain/entities/orders_entity.dart';
 
 class TableBookEntity extends Equatable {
   final int id;
@@ -25,6 +26,7 @@ class TableEntity extends Equatable {
   final bool status;
   final DateTime createdAt;
   final List<TableBookEntity> tableBooks;
+  final List<OrderEntity> orders;
 
   const TableEntity({
     required this.id,
@@ -32,8 +34,16 @@ class TableEntity extends Equatable {
     required this.status,
     required this.createdAt,
     this.tableBooks = const [],
+    this.orders = const [],
   });
 
   @override
-  List<Object> get props => [id, tableNumber, status, createdAt, tableBooks];
+  List<Object> get props => [
+    id,
+    tableNumber,
+    status,
+    createdAt,
+    tableBooks,
+    orders,
+  ];
 }

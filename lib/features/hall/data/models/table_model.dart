@@ -1,3 +1,5 @@
+import 'package:haru_pos/features/orders/data/models/orders_model.dart';
+
 import '../../domain/entities/table_entity.dart';
 
 class TableBookModel extends TableBookEntity {
@@ -49,6 +51,7 @@ class TableModel extends TableEntity {
     required super.status,
     required super.createdAt,
     super.tableBooks,
+    super.orders,
   });
 
   factory TableModel.fromJson(Map<String, dynamic> json) {
@@ -57,7 +60,11 @@ class TableModel extends TableEntity {
             ?.map((book) => TableBookModel.fromJson(book))
             .toList() ??
         [];
-
+    final orders =
+        (json['orders'] as List?)
+            ?.map((order) => OrderModel.fromJson(order))
+            .toList() ??
+        [];
     return TableModel(
       id: json['id'] ?? 0,
       tableNumber: json['table_number'] ?? 0,
@@ -66,6 +73,7 @@ class TableModel extends TableEntity {
         json['created_at'] ?? DateTime.now().toString(),
       ),
       tableBooks: tableBooks,
+      orders: orders,
     );
   }
 
@@ -78,6 +86,7 @@ class TableModel extends TableEntity {
       'table_books': tableBooks
           .map((book) => (book as TableBookModel).toJson())
           .toList(),
+      'orders': orders.map((order) => (order as OrderModel).toJson()).toList(),
     };
   }
 
@@ -96,6 +105,7 @@ class TableModel extends TableEntity {
       status: status,
       createdAt: createdAt,
       tableBooks: tableBooks,
+      orders: orders,
     );
   }
 }
