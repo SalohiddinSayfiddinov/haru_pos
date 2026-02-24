@@ -19,7 +19,7 @@ class OrderDrawer extends StatefulWidget {
 }
 
 class _OrderDrawerState extends State<OrderDrawer> {
-  late final TextEditingController _tableController;
+  final TextEditingController _tableController = TextEditingController();
   int _selectedOrderType = 0;
   final Map<int, TextEditingController> _productCommentControllers = {};
 
@@ -27,9 +27,7 @@ class _OrderDrawerState extends State<OrderDrawer> {
   void initState() {
     super.initState();
     if (widget.tableNumber != null) {
-      _tableController = TextEditingController(
-        text: widget.tableNumber!.toString(),
-      );
+      _tableController.text = widget.tableNumber!.toString();
       _selectedOrderType = 1;
     }
   }

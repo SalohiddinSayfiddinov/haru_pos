@@ -149,7 +149,12 @@ class _HallScreenState extends State<HallScreen> {
             spacing: 25.0,
             runSpacing: 25.0,
             children: tables.map((table) {
-              return TableCard(table: table);
+              return TableCard(
+                table: table,
+                onUpdated: () {
+                  context.read<TableBloc>().add(LoadTablesEvent());
+                },
+              );
             }).toList(),
           );
         }

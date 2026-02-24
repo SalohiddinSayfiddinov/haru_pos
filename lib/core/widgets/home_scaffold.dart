@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:haru_pos/core/assets/app_icons.dart';
@@ -8,6 +9,7 @@ import 'package:haru_pos/core/constants/app_colors.dart';
 import 'package:haru_pos/core/locale/locale_keys.g.dart';
 import 'package:haru_pos/core/widgets/app_header.dart';
 import 'package:haru_pos/core/routes/app_pages.dart';
+import 'package:haru_pos/features/orders/presentation/bloc/orders_bloc.dart';
 
 class HomeScaffold extends StatefulWidget {
   final Widget body;
@@ -29,6 +31,9 @@ class _HomeScaffoldState extends State<HomeScaffold> {
 
   void _onTap(String page) {
     if (_currentUrl != page) {
+      if (_currentUrl == AppPages.products) {
+        context.read<OrderBloc>().add(const ClearCartEvent());
+      }
       context.go(page);
     }
   }

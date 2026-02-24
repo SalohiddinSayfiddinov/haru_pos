@@ -16,21 +16,29 @@ import 'package:haru_pos/features/hall/presentation/widgets/delete_table_dialog.
 import 'package:haru_pos/features/hall/presentation/widgets/reserve_table_dialog.dart';
 import 'package:haru_pos/features/hall/presentation/widgets/table_orders_dialog.dart';
 import 'package:haru_pos/features/orders/domain/entities/orders_entity.dart';
+import 'package:haru_pos/features/orders/presentation/bloc/orders_bloc.dart';
 
 class TableCard extends StatelessWidget {
   final TableEntity table;
+  final VoidCallback onUpdated;
 
-  const TableCard({super.key, required this.table});
+  const TableCard({super.key, required this.table, required this.onUpdated});
 
   void _showTableOrdersDialog(
-    BuildContext context,
+    BuildContext blocContext,
     List<OrderEntity> orders,
     int tableNumber,
   ) {
     showDialog(
-      context: context,
-      builder: (context) =>
-          TableOrdersDialog(orders: orders, tableNumber: tableNumber),
+      context: blocContext,
+      builder: (context) => BlocProvider.value(
+        value: blocContext.read<OrderBloc>(),
+        child: TableOrdersDialog(
+          orders: orders,
+          tableNumber: tableNumber,
+          onUpdated: onUpdated,
+        ),
+      ),
     );
   }
 

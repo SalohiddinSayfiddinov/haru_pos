@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:haru_pos/core/locale/locale_keys.g.dart';
@@ -7,15 +8,18 @@ import 'package:haru_pos/core/routes/app_pages.dart';
 import 'package:haru_pos/core/widgets/app_buttons.dart';
 import 'package:haru_pos/features/hall/presentation/widgets/table_order_card.dart';
 import 'package:haru_pos/features/orders/domain/entities/orders_entity.dart';
+import 'package:haru_pos/features/orders/presentation/bloc/orders_bloc.dart';
 
 class TableOrdersDialog extends StatefulWidget {
   final List<OrderEntity> orders;
   final int tableNumber;
+  final VoidCallback onUpdated;
 
   const TableOrdersDialog({
     super.key,
     required this.orders,
     required this.tableNumber,
+    required this.onUpdated,
   });
 
   @override
@@ -23,6 +27,12 @@ class TableOrdersDialog extends StatefulWidget {
 }
 
 class _TableOrdersDialogState extends State<TableOrdersDialog> {
+  void _onOrderUpdate(OrderEntity order) {
+    context.read<OrderBloc>().add(SetOrderForEditing(order: order));
+    context.pop();
+    context.go(AppPages.products);
+  }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -59,8 +69,13 @@ class _TableOrdersDialogState extends State<TableOrdersDialog> {
             children: widget.orders.map((order) {
               return TableOrderCard(
                 order: order,
-                onCloseOrder: () {},
-                onUpdateOrder: () {},
+                onCloseOrder: () {
+                  Navigator.pop(context);
+                  widget.onUpdated();
+                },
+                onUpdateOrder: () {
+                  _onOrderUpdate(order);
+                },
               );
             }).toList(),
           ),
