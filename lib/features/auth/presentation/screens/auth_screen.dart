@@ -66,16 +66,11 @@ class _AuthScreenState extends State<AuthScreen> {
                     children: [
                       Row(
                         children: [
-                          Expanded(
-                            child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                LocaleKeys.auth_welcome.tr(),
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 40.0,
-                                ),
-                              ),
+                          Text(
+                            LocaleKeys.auth_welcome.tr(),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 40.0,
                             ),
                           ),
                           Image(image: AssetImage(AppImages.sushi)),
@@ -91,7 +86,7 @@ class _AuthScreenState extends State<AuthScreen> {
                         onFieldSubmitted: (_) {
                           FocusScope.of(context).requestFocus(_secondFocus);
                         },
-                      ),  
+                      ),
                       SizedBox(height: 20.0),
                       AppTextField(
                         focusNode: _secondFocus,

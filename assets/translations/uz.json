@@ -82,7 +82,8 @@
         "client_name_hint": "Mijoz ismini kiriting",
         "client_phone_hint": "Mijoz telefon raqamini kiriting",
         "reserving": "Bron qilinmoqda...",
-        "reserve": "Bron qilish"
+        "reserve": "Bron qilish",
+        "new_order": "Yangi buyurtma"
     },
     "dashboard": {
         "title": "Bosh panel",

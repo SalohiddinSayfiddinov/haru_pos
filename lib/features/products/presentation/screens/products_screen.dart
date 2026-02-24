@@ -22,7 +22,8 @@ import 'package:haru_pos/features/products/presentation/widgets/products_header.
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 
 class ProductsScreen extends StatefulWidget {
-  const ProductsScreen({super.key});
+  final int? tableNumber;
+  const ProductsScreen({super.key, this.tableNumber});
 
   @override
   State<ProductsScreen> createState() => _ProductsScreenState();
@@ -222,7 +223,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       return const EditOrderDrawer();
                     }
                     if (state.cartItems.isNotEmpty) {
-                      return const OrderDrawer();
+                      return OrderDrawer(tableNumber: widget.tableNumber);
                     }
                     return SizedBox();
                   },

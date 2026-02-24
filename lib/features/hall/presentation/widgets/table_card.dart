@@ -1,10 +1,12 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:haru_pos/core/locale/locale_keys.g.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:haru_pos/core/constants/app_colors.dart';
 import 'package:haru_pos/core/di/injection.dart';
+import 'package:haru_pos/core/routes/app_pages.dart';
 import 'package:haru_pos/core/utils/date_extensions.dart';
 import 'package:haru_pos/features/hall/domain/entities/table_entity.dart';
 import 'package:haru_pos/features/hall/presentation/bloc/table_bloc.dart';
@@ -20,10 +22,15 @@ class TableCard extends StatelessWidget {
 
   const TableCard({super.key, required this.table});
 
-  void _showTableOrdersDialog(BuildContext context, List<OrderEntity> orders, int tableNumber) {
+  void _showTableOrdersDialog(
+    BuildContext context,
+    List<OrderEntity> orders,
+    int tableNumber,
+  ) {
     showDialog(
       context: context,
-      builder: (context) => TableOrdersDialog(orders: orders, tableNumber: tableNumber),
+      builder: (context) =>
+          TableOrdersDialog(orders: orders, tableNumber: tableNumber),
     );
   }
 
@@ -31,7 +38,11 @@ class TableCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        _showTableOrdersDialog(context, table.orders, table.tableNumber);
+        if (table.orders.isNotEmpty) {
+          _showTableOrdersDialog(context, table.orders, table.tableNumber);
+        } else {
+          context.go(AppPages.products, extra: table.tableNumber);
+        }
       },
       child: Container(
         width: 341,

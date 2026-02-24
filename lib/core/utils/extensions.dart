@@ -22,6 +22,14 @@ extension CurrencyFormat on num {
     }
     return format.format(this);
   }
+
+  String formatCurrencyUz() {
+    final amountStr = toString().replaceAllMapped(
+      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+      (Match m) => '${m[1]} ',
+    );
+    return '$amountStr so\'m';
+  }
 }
 
 extension StatusToBoolExtension on String {
@@ -78,8 +86,19 @@ extension TypeToString on String {
     }
   }
 
-  // Keeping legacy methods for compatibility but redirecting to localized version
-  String typeToUz() => typeToLocalized();
+  String typeToUz() {
+    switch (this) {
+      case 'dine_in':
+        return 'Restoranda';
+      case 'takeaway':
+        return "Olib ketish";
+      case 'delivery':
+        return "Yetkazib berish";
+      default:
+        return "Nomalum";
+    }
+  }
+
   String typeToRu() => typeToLocalized();
 }
 

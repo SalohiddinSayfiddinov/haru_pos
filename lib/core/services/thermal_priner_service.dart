@@ -126,7 +126,7 @@ class ThermalPrinterService {
     buffer.add(_doubleOn);
     buffer.add(_boldOn);
     buffer.add(_alignCenter);
-    buffer.add(_encode('JAMI: ${order.fullPrice.formatCurrency()}'));
+    buffer.add(_encode('JAMI: ${order.fullPrice.formatCurrencyUz()}'));
     buffer.add(_newLine);
     buffer.add(_doubleOff);
     buffer.add(_boldOff);

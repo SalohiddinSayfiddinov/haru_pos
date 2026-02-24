@@ -11,16 +11,28 @@ import 'package:haru_pos/core/widgets/app_text_field.dart';
 import 'package:haru_pos/features/orders/presentation/bloc/orders_bloc.dart';
 
 class OrderDrawer extends StatefulWidget {
-  const OrderDrawer({super.key});
+  final int? tableNumber;
+  const OrderDrawer({super.key, this.tableNumber});
 
   @override
   State<OrderDrawer> createState() => _OrderDrawerState();
 }
 
 class _OrderDrawerState extends State<OrderDrawer> {
-  final TextEditingController _tableController = TextEditingController();
+  late final TextEditingController _tableController;
   int _selectedOrderType = 0;
   final Map<int, TextEditingController> _productCommentControllers = {};
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.tableNumber != null) {
+      _tableController = TextEditingController(
+        text: widget.tableNumber!.toString(),
+      );
+      _selectedOrderType = 1;
+    }
+  }
 
   @override
   void dispose() {

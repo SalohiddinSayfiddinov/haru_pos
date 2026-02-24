@@ -85,16 +85,19 @@ class AppRouter {
           ),
           GoRoute(
             path: AppPages.products,
-            pageBuilder: (context, state) => NoTransitionPage(
-              child: MultiBlocProvider(
-                providers: [
-                  BlocProvider(create: (context) => getIt<CategoryBloc>()),
-                  BlocProvider(create: (context) => getIt<ProductBloc>()),
-                  BlocProvider(create: (context) => getIt<TableBloc>()),
-                ],
-                child: ProductsScreen(),
-              ),
-            ),
+            pageBuilder: (context, state) {
+              final tableNumber = state.extra as int?;
+              return NoTransitionPage(
+                child: MultiBlocProvider(
+                  providers: [
+                    BlocProvider(create: (context) => getIt<CategoryBloc>()),
+                    BlocProvider(create: (context) => getIt<ProductBloc>()),
+                    BlocProvider(create: (context) => getIt<TableBloc>()),
+                  ],
+                  child: ProductsScreen(tableNumber: tableNumber),
+                ),
+              );
+            },
           ),
           GoRoute(
             path: AppPages.addProduct,
