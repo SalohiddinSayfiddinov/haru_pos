@@ -105,6 +105,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                         if (isSmallScreen)
                           Row(
+                            crossAxisAlignment: .start,
                             children: [
                               Expanded(
                                 child: EmployeesSection(

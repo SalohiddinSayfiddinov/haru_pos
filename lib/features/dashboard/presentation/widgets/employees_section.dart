@@ -17,7 +17,7 @@ class EmployeesSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: 270.0,
-      height: 255.0,
+      // height: 255.0,
       child: DashboardSectionCard(
         title: LocaleKeys.dashboard_employees.tr(),
         padding: const EdgeInsets.all(14.0),

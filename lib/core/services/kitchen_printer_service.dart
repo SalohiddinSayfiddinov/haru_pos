@@ -9,7 +9,7 @@ import 'package:intl/intl.dart';
 @injectable
 class KitchenPrinterService {
   // Usually Kitchen printers have a different IP (e.g., ending in .200 or .9)
-  static const String printerIp = '192.168.0.8';
+  static const String printerIp = '192.168.0.9';
   static const int printerPort = 9100;
   static const int timeout = 5;
 
@@ -75,7 +75,6 @@ class KitchenPrinterService {
     buffer.add(_doubleOn); // Big text
     buffer.add(_boldOn);
 
-    print(order.table != null);
     if (order.table != null) {
       buffer.add(_encode('STOL: ${order.table!.tableNumber}'));
     } else {
@@ -87,7 +86,7 @@ class KitchenPrinterService {
     buffer.add(_boldOff);
 
     // 4. Order Meta (ID, Time, Waiter)
-    buffer.add(_encode('Buyurtma: #${order.id}'));
+    buffer.add(_encode('Buyurtma: #${order.orderNumber}'));
     buffer.add(_newLine);
     buffer.add(_encode('Vaqt: ${_formatTime(order.createdAt)}'));
     buffer.add(_newLine);
@@ -112,18 +111,16 @@ class KitchenPrinterService {
       // 5.2 NAME - Standard width, but tall
       // We don't truncate names as aggressively in kitchen, they need to know what it is.
       // But we wrap if too long ideally, or just print full line.
-      buffer.add(_encode(item.product.nameUz));
+      buffer.add(_encode(item.product.nameRu));
 
       buffer.add(_normalSize);
       buffer.add(_boldOff);
       buffer.add(_newLine);
 
-      // 5.3 Modifiers / Notes (Optional but recommended for kitchen)
-      // If you have notes in your entity, print them here in small font.
-      // if (item.notes != null) {
-      //    buffer.add(_encode('   (${item.notes})'));
-      //    buffer.add(_newLine);
-      // }
+      if (item.comment.isNotEmpty) {
+        buffer.add(_encode('   (${item.comment})'));
+        buffer.add(_newLine);
+      }
 
       // Add a small spacing between items
       buffer.add(_newLine);
@@ -133,6 +130,109 @@ class KitchenPrinterService {
     buffer.add(_newLine);
 
     // 6. Footer
+    buffer.add(_cutPaper);
+
+    return buffer.toBytes();
+  }
+
+  Future<bool> printKitchenTicketFromMap({
+    required String orderNumber,
+    required String type,
+    required List<Map<String, dynamic>> items,
+    int? tableNumber,
+    String? waiterName,
+    DateTime? createdAt,
+  }) async {
+    try {
+      final socket = await Socket.connect(
+        printerIp,
+        printerPort,
+        timeout: Duration(seconds: timeout),
+      );
+
+      final data = _generateKitchenDataFromMap(
+        orderNumber: orderNumber,
+        type: type.typeToUz().toUpperCase(),
+        items: items,
+        tableNumber: tableNumber,
+        waiterName: waiterName,
+        createdAt: createdAt ?? DateTime.now(),
+      );
+
+      socket.add(data);
+      await socket.flush();
+      await Future.delayed(Duration(milliseconds: 500));
+      await socket.close();
+      return true;
+    } catch (e) {
+      print('Kitchen Printer error: $e');
+      return false;
+    }
+  }
+
+  Uint8List _generateKitchenDataFromMap({
+    required String orderNumber,
+    required String type,
+    required List<Map<String, dynamic>> items,
+    int? tableNumber,
+    String? waiterName,
+    required DateTime createdAt,
+  }) {
+    final buffer = BytesBuilder();
+
+    buffer.add(_init);
+    buffer.add(_setCP866);
+    buffer.add(_beep);
+
+    buffer.add(_alignLeft);
+    buffer.add(_doubleOn);
+    buffer.add(_boldOn);
+
+    if (tableNumber != null) {
+      buffer.add(_encode('STOL: $tableNumber'));
+    } else {
+      buffer.add(_encode(type.toUpperCase()));
+    }
+
+    buffer.add(_newLine);
+    buffer.add(_normalSize);
+    buffer.add(_boldOff);
+
+    buffer.add(_encode('Buyurtma: #$orderNumber'));
+    buffer.add(_newLine);
+    buffer.add(_encode('Vaqt: ${_formatTime(createdAt)}'));
+    buffer.add(_newLine);
+
+    if (waiterName != null) {
+      buffer.add(_encode('Ofitsiant: $waiterName'));
+      buffer.add(_newLine);
+    }
+
+    buffer.add(_encode(_line(32)));
+    buffer.add(_newLine);
+
+    for (final item in items) {
+      final amount = item['amount'];
+      final name = item['product_name'] ?? '';
+      final comment = item['comment'] ?? '';
+
+      buffer.add(_boldOn);
+      buffer.add(_doubleHeight);
+      buffer.add(_encode('$amount x $name'));
+      buffer.add(_normalSize);
+      buffer.add(_boldOff);
+      buffer.add(_newLine);
+
+      if (comment.toString().isNotEmpty) {
+        buffer.add(_encode('   ($comment)'));
+        buffer.add(_newLine);
+      }
+
+      buffer.add(_newLine);
+    }
+
+    buffer.add(_encode(_line(32)));
+    buffer.add(_newLine);
     buffer.add(_cutPaper);
 
     return buffer.toBytes();

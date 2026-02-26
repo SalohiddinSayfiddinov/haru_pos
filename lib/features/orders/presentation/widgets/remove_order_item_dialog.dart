@@ -61,9 +61,7 @@ class _RemoveOrderItemDialogState extends State<RemoveOrderItemDialog> {
             width: 400,
             child: Form(
               key: formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
+              child: ListView(
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -88,6 +86,7 @@ class _RemoveOrderItemDialogState extends State<RemoveOrderItemDialog> {
                     style: GoogleFonts.inter(fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 5.0),
+
                   for (var i = 0; i < widget.order.orderItems.length; i++) ...[
                     _buildOrderItem(
                       item: widget.order.orderItems[i],

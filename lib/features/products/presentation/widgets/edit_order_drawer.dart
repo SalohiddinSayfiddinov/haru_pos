@@ -59,6 +59,7 @@ class _EditOrderDrawerState extends State<EditOrderDrawer> {
     final orderItems = context.read<OrderBloc>().state.cartItems.map((item) {
       return {
         'product_id': item.productId,
+        'product_name': item.productName,
         'amount': item.quantity,
         'comment': _controllers[item.productId]?.text,
       };
@@ -69,10 +70,18 @@ class _EditOrderDrawerState extends State<EditOrderDrawer> {
     context.read<OrderBloc>().add(
       AddItemsToOrderEvent(
         type: getOrderType,
-        tableId: 1,
-        // _selectedOrderType == 1 ? updatingOrder.order.table?.id : null,
+        tableId: _selectedOrderType == 1 ? updatingOrder.order.table?.id : null,
         orderId: updatingOrder.order.id,
+        orderNumber: updatingOrder.order.orderNumber,
         orderItems: orderItems,
+        oldOrderItems: updatingOrder.order.orderItems.map((item) {
+          return {
+            'product_id': item.product.id,
+            'product_name': item.product.nameRu,
+            'amount': item.amount,
+            'comment': item.comment,
+          };
+        }).toList(),
       ),
     );
   }
@@ -85,7 +94,7 @@ class _EditOrderDrawerState extends State<EditOrderDrawer> {
       builder: (context, state) {
         return Container(
           width: 360.0,
-          height: MediaQuery.sizeOf(context).height - 73.0,
+          // height: MediaQuery.sizeOf(context).height - 73.0,
           margin: EdgeInsets.only(top: 3.0),
           decoration: BoxDecoration(
             borderRadius: const BorderRadius.horizontal(

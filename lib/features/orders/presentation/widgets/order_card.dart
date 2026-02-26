@@ -399,7 +399,7 @@ class _OrderCardState extends State<OrderCard> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          order.type == 'dine_in'
+          order.type == 'dine_in' && order.table != null
               ? LocaleKeys.orders_table_label.tr(
                   args: [order.table!.tableNumber.toString()],
                 )

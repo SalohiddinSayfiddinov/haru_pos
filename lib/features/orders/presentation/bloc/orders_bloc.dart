@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:haru_pos/core/errors/failures.dart';
+import 'package:haru_pos/core/services/kitchen_printer_service.dart';
 import 'package:haru_pos/core/services/thermal_priner_service.dart';
 import 'package:haru_pos/features/auth/domain/usecases/auth_usecases.dart';
 import 'package:haru_pos/features/hall/domain/usecases/table_usecases.dart';
@@ -30,6 +31,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
   final UpdateOrderItemsUseCase updateOrderItemsUseCase;
   final RejectOrderUseCase rejectOrderUseCase;
   final WatchOrdersUseCase watchOrdersUseCase;
+  final KitchenPrinterService kitchenPrinterService;
 
   OrderBloc({
     required this.getOrdersUseCase,
@@ -45,6 +47,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     required this.rejectOrderUseCase,
     required this.getOrdersHistoryUseCase,
     required this.watchOrdersUseCase,
+    required this.kitchenPrinterService,
   }) : super(const OrderInitial()) {
     on<LoadOrdersEvent>(_onLoadOrders);
     on<LoadOrdersHistoryEvent>(_onLoadOrdersHistory);
@@ -231,14 +234,41 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
           ),
         );
       },
-      (order) {
-        emit(
-          OrderOperationSuccess(
-            message: 'Order created successfully',
-            cartItems: const [],
-            orders: [...state.orders, order],
-          ),
-        );
+      (order) async {
+        try {
+          final printResult = await kitchenPrinterService.printKitchenTicket(
+            order,
+          );
+
+          if (emit.isDone) return;
+
+          if (printResult) {
+            emit(
+              OrderOperationSuccess(
+                message: 'Order created successfully',
+                cartItems: const [],
+                orders: [...state.orders, order],
+              ),
+            );
+          } else {
+            emit(
+              OrderCreatedPrintFailed(
+                order: order,
+                errorMessage:
+                    'Buyurtma yaratildi, oshxonadagi printer ishlamadi.',
+              ),
+            );
+          }
+        } catch (e) {
+          if (emit.isDone) return;
+          emit(
+            OrderError(
+              message: 'Xatolik yuz berdi: $e',
+              cartItems: state.cartItems,
+              orders: state.orders,
+            ),
+          );
+        }
       },
     );
   }
@@ -517,6 +547,34 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     AddItemsToOrderEvent event,
     Emitter<OrderState> emit,
   ) async {
+    final newItemsToPrint = <Map<String, dynamic>>[];
+    for (final newItem in event.orderItems) {
+      final oldItem = event.oldOrderItems
+          .cast<Map<String, dynamic>>()
+          .firstWhere(
+            (o) => o['product_id'] == newItem['product_id'],
+            orElse: () => <String, dynamic>{},
+          );
+
+      if (oldItem.isEmpty) {
+        newItemsToPrint.add(newItem);
+      } else {
+        final oldAmount = oldItem['amount'] as int;
+        final newAmount = newItem['amount'] as int;
+        final oldComment = (oldItem['comment'] ?? '').toString().trim();
+        final newComment = (newItem['comment'] ?? '').toString().trim();
+
+        if (newAmount > oldAmount) {
+          newItemsToPrint.add({
+            ...newItem,
+            'amount': newAmount - oldAmount,
+            // Send comment only if it changed, otherwise empty
+            'comment': newComment != oldComment ? newComment : '',
+          });
+        }
+      }
+    }
+
     emit(OrderLoading(cartItems: state.cartItems, orders: state.orders));
 
     final result = await addItemsToOrderUseCase(
@@ -526,18 +584,59 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
       orderItems: event.orderItems,
     );
 
-    result.fold(
-      (failure) => emit(
-        OrderError(
-          message: _mapFailureToMessage(failure),
-          cartItems: state.cartItems,
-          orders: state.orders,
-        ),
-      ),
-      (order) {
+    await result.fold(
+      (failure) {
+        emit(
+          OrderError(
+            message: _mapFailureToMessage(failure),
+            cartItems: state.cartItems,
+            orders: state.orders,
+          ),
+        );
+      },
+      (order) async {
         final updatedOrders = state.orders.map((o) {
           return o.id == order.id ? order : o;
         }).toList();
+
+        if (newItemsToPrint.isNotEmpty) {
+          try {
+            final printResult = await kitchenPrinterService
+                .printKitchenTicketFromMap(
+                  orderNumber: event.orderNumber,
+                  type: event.type,
+                  items: newItemsToPrint,
+                  tableNumber: event.tableId,
+                  waiterName: order.user?.username,
+                  createdAt: order.createdAt,
+                );
+
+            if (emit.isDone) return;
+
+            if (!printResult) {
+              emit(
+                OrderCreatedPrintFailed(
+                  order: order,
+                  errorMessage:
+                      'Buyurtma yangilandi, oshxonadagi printer ishlamadi.',
+                ),
+              );
+              return;
+            }
+          } catch (e) {
+            if (emit.isDone) return;
+            emit(
+              OrderCreatedPrintFailed(
+                order: order,
+                errorMessage:
+                    'Buyurtma yangilandi, oshxonadagi printer ishlamadi.',
+              ),
+            );
+            return;
+          }
+        }
+
+        if (emit.isDone) return;
 
         emit(
           OrderOperationSuccess(

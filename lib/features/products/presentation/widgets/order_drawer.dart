@@ -83,7 +83,7 @@ class _OrderDrawerState extends State<OrderDrawer> {
       builder: (context, state) {
         return Container(
           width: 360.0,
-          height: MediaQuery.sizeOf(context).height - 73.0,
+          // height: MediaQuery.sizeOf(context).height - 73.0,
           margin: EdgeInsets.only(top: 3.0),
           decoration: BoxDecoration(
             borderRadius: const BorderRadius.horizontal(

@@ -282,6 +282,24 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i1016.GetCurrentUserUseCase>(
       () => _i1016.GetCurrentUserUseCase(gh<_i731.AuthRepository>()),
     );
+    gh.factory<_i1019.OrderBloc>(
+      () => _i1019.OrderBloc(
+        getOrdersUseCase: gh<_i949.GetOrdersUseCase>(),
+        getCurrentUserUseCase: gh<_i1016.GetCurrentUserUseCase>(),
+        getTableByNumberUseCase: gh<_i57.GetTableByNumberUseCase>(),
+        createOrderUseCase: gh<_i949.CreateOrderUseCase>(),
+        updateOrderUseCase: gh<_i949.UpdateOrderUseCase>(),
+        deleteOrderUseCase: gh<_i949.DeleteOrderUseCase>(),
+        closeOrderUseCase: gh<_i949.CloseOrderUseCase>(),
+        printerService: gh<_i950.ThermalPrinterService>(),
+        addItemsToOrderUseCase: gh<_i949.AddItemsToOrderUseCase>(),
+        updateOrderItemsUseCase: gh<_i949.UpdateOrderItemsUseCase>(),
+        rejectOrderUseCase: gh<_i949.RejectOrderUseCase>(),
+        getOrdersHistoryUseCase: gh<_i949.GetOrderHistoryUseCase>(),
+        watchOrdersUseCase: gh<_i949.WatchOrdersUseCase>(),
+        kitchenPrinterService: gh<_i114.KitchenPrinterService>(),
+      ),
+    );
     gh.factory<_i1016.TableBloc>(
       () => _i1016.TableBloc(
         getTablesUseCase: gh<_i57.GetTablesUseCase>(),
@@ -328,23 +346,6 @@ extension GetItInjectableX on _i174.GetIt {
         createProductUseCase: gh<_i791.CreateProductUseCase>(),
         updateProductUseCase: gh<_i791.UpdateProductUseCase>(),
         deleteProductUseCase: gh<_i791.DeleteProductUseCase>(),
-      ),
-    );
-    gh.factory<_i1019.OrderBloc>(
-      () => _i1019.OrderBloc(
-        getOrdersUseCase: gh<_i949.GetOrdersUseCase>(),
-        getCurrentUserUseCase: gh<_i1016.GetCurrentUserUseCase>(),
-        getTableByNumberUseCase: gh<_i57.GetTableByNumberUseCase>(),
-        createOrderUseCase: gh<_i949.CreateOrderUseCase>(),
-        updateOrderUseCase: gh<_i949.UpdateOrderUseCase>(),
-        deleteOrderUseCase: gh<_i949.DeleteOrderUseCase>(),
-        closeOrderUseCase: gh<_i949.CloseOrderUseCase>(),
-        printerService: gh<_i950.ThermalPrinterService>(),
-        addItemsToOrderUseCase: gh<_i949.AddItemsToOrderUseCase>(),
-        updateOrderItemsUseCase: gh<_i949.UpdateOrderItemsUseCase>(),
-        rejectOrderUseCase: gh<_i949.RejectOrderUseCase>(),
-        getOrdersHistoryUseCase: gh<_i949.GetOrderHistoryUseCase>(),
-        watchOrdersUseCase: gh<_i949.WatchOrdersUseCase>(),
       ),
     );
     return this;

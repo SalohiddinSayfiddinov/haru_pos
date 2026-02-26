@@ -15,7 +15,7 @@ class TopProductsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: SizedBox(
-        height: 255,
+        // height: 255,
         child: DashboardSectionCard(
           title: LocaleKeys.dashboard_top_products.tr(),
           padding: const EdgeInsets.all(14.0),

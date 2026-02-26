@@ -147,19 +147,30 @@ class RetryPrintEvent extends OrderEvent {
 
 class AddItemsToOrderEvent extends OrderEvent {
   final int orderId;
+  final String orderNumber;
   final String type;
   final int? tableId;
   final List<Map<String, dynamic>> orderItems;
+  final List<Map<String, dynamic>> oldOrderItems;
 
   const AddItemsToOrderEvent({
     required this.orderId,
+    required this.orderNumber,
     required this.orderItems,
     required this.type,
     this.tableId,
+    required this.oldOrderItems,
   });
 
   @override
-  List<Object?> get props => [orderId, orderItems];
+  List<Object?> get props => [
+    orderId,
+    orderItems,
+    oldOrderItems,
+    orderNumber,
+    type,
+    tableId,
+  ];
 }
 
 class UpdateOrderItemsEvent extends OrderEvent {
