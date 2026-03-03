@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -19,74 +20,72 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(15.0),
-      onTap: onTap,
-      child: SizedBox(
-        width: 240.0,
-        child: Column(
-          children: [
-            Container(
-              height: 250.0,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(15.0),
-                image: DecorationImage(
-                  image: NetworkImage(product.image),
-                  fit: BoxFit.cover,
-                ),
+    return SizedBox(
+      width: 240.0,
+      child: Column(
+        children: [
+          InkWell(
+            onTap: onTap,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(15),
+              child: CachedNetworkImage(
+                height: 250.0,
+                imageUrl: product.image,
+                fit: BoxFit.cover,
+                errorWidget: (context, url, error) =>
+                    const Icon(Icons.broken_image),
               ),
             ),
-            const SizedBox(height: 15.0),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        context.locale.languageCode == 'ru'
-                            ? product.nameRu
-                            : product.nameUz,
-                        style: GoogleFonts.inter(
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 15.0),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      context.locale.languageCode == 'ru'
+                          ? product.nameRu
+                          : product.nameUz,
+                      style: GoogleFonts.inter(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.w500,
                       ),
-                      Text(
-                        product.price.formatCurrency(context),
-                        style: GoogleFonts.inter(
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 40.0,
-                  width: 40.0,
-                  child: ElevatedButton(
-                    onPressed: onAddToCart,
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      backgroundColor: AppColors.primary,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      padding: EdgeInsets.zero,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    child: const Icon(Icons.add, size: 30.0),
-                  ),
+                    Text(
+                      product.price.formatCurrency(context),
+                      style: GoogleFonts.inter(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ],
-        ),
+              ),
+              SizedBox(
+                height: 40.0,
+                width: 40.0,
+                child: ElevatedButton(
+                  onPressed: onAddToCart,
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: AppColors.primary,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    padding: EdgeInsets.zero,
+                  ),
+                  child: const Icon(Icons.add, size: 30.0),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

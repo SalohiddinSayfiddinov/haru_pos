@@ -36,6 +36,10 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     Emitter<ProductState> emit,
   ) async {
     if (event.loadMore) {
+      if (state is ProductLoading && (state as ProductLoading).isLoadMore) {
+        return;
+      }
+
       if (state.hasReachedMax) {
         return;
       }
@@ -74,10 +78,9 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       ),
       (products) {
         if (event.loadMore) {
-          final allProducts = [...state.products, ...products];
           emit(
             ProductsLoaded(
-              products: allProducts,
+              products: [...state.products, ...products],
               hasReachedMax: products.length < _productsPerPage,
               currentPage: nextPage,
             ),

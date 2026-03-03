@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,28 +26,31 @@ class CategoryFilter extends StatelessWidget {
           final categories = state.categories;
           return SizedBox(
             height: 40.0,
-            child: ListView.separated(
-              padding: EdgeInsets.zero,
-              scrollDirection: Axis.horizontal,
-              itemCount: categories.length + 1,
-              separatorBuilder: (context, index) => const SizedBox(width: 15.0),
-              itemBuilder: (context, index) {
-                if (index == 0) {
+            child: ScrollConfiguration(
+              behavior: DesktopScrollBehavior(),
+              child: ListView.separated(
+                padding: .symmetric(horizontal: 30.0),
+                scrollDirection: Axis.horizontal,
+                itemCount: categories.length + 1,
+                separatorBuilder: (_, __) => const SizedBox(width: 15),
+                itemBuilder: (context, index) {
+                  if (index == 0) {
+                    return CategoryFilterItem(
+                      title: LocaleKeys.products_all_categories.tr(),
+                      isSelected: selectedCategoryId == null,
+                      onTap: () => onCategorySelected(null),
+                    );
+                  }
+                  final category = categories[index - 1];
                   return CategoryFilterItem(
-                    title: LocaleKeys.products_all_categories.tr(),
-                    isSelected: selectedCategoryId == null,
-                    onTap: () => onCategorySelected(null),
+                    title: context.locale.languageCode == 'ru'
+                        ? category.nameRu
+                        : category.nameUz,
+                    isSelected: selectedCategoryId == category.id,
+                    onTap: () => onCategorySelected(category.id),
                   );
-                }
-                final category = categories[index - 1];
-                return CategoryFilterItem(
-                  title: context.locale.languageCode == 'ru'
-                      ? category.nameRu
-                      : category.nameUz,
-                  isSelected: selectedCategoryId == category.id,
-                  onTap: () => onCategorySelected(category.id),
-                );
-              },
+                },
+              ),
             ),
           );
         }
@@ -94,4 +99,14 @@ class CategoryFilterItem extends StatelessWidget {
       ),
     );
   }
+}
+
+class DesktopScrollBehavior extends MaterialScrollBehavior {
+  @override
+  Set<PointerDeviceKind> get dragDevices => {
+    PointerDeviceKind.mouse,
+    PointerDeviceKind.trackpad,
+    PointerDeviceKind.touch,
+    PointerDeviceKind.stylus,
+  };
 }

@@ -68,6 +68,9 @@ class OrderModel extends OrderEntity {
     required super.orderNumber,
     required super.type,
     required super.fullPrice,
+    required super.discountPercent,
+    required super.feePercent,
+    required super.feeAmount,
     super.table,
     required super.user,
     required super.active,
@@ -93,6 +96,9 @@ class OrderModel extends OrderEntity {
       orderNumber: json['order_number'] ?? '',
       type: json['type'] ?? 'dine_in',
       fullPrice: json['full_price'] ?? 0,
+      discountPercent: json['discount_percent'] ?? 0,
+      feePercent: json['fee_percent'] ?? 0,
+      feeAmount: json['fee_amount'] ?? 0,
       table: json['table'] != null ? TableModel.fromJson(json['table']) : null,
       user: json['user'] != null ? UserModel.fromJson(json['user']) : null,
       active: json['active'] ?? false,
@@ -150,6 +156,9 @@ class OrderModel extends OrderEntity {
       createdAt: createdAt,
       active: active,
       status: status,
+      discountPercent: discountPercent,
+      feeAmount: feeAmount,
+      feePercent: feePercent,
     );
   }
 }

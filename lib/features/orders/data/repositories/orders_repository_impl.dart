@@ -45,6 +45,7 @@ class OrderRepositoryImpl implements OrderRepository {
     required String type,
     required int userId,
     int? tableId,
+    int? discountPercent,
     required List<Map<String, dynamic>> orderItems,
   }) async {
     try {
@@ -52,6 +53,7 @@ class OrderRepositoryImpl implements OrderRepository {
         type: type,
         userId: userId,
         tableId: tableId,
+        discountPercent: discountPercent,
         orderItems: orderItems,
       );
       return Right(order.toEntity());

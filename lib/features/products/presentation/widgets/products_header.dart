@@ -19,32 +19,38 @@ class ProductsHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          LocaleKeys.products_title.tr(),
-          style: GoogleFonts.inter(fontSize: 25.0, fontWeight: FontWeight.w600),
-        ),
-        SizedBox(
-          width: 300,
-          child: SearchField(
-            searchController: searchController,
-            onSearch: onSearch,
+    return Padding(
+      padding: const .only(left: 30.0, right: 30.0, top: 30.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            LocaleKeys.products_title.tr(),
+            style: GoogleFonts.inter(
+              fontSize: 25.0,
+              fontWeight: FontWeight.w600,
+            ),
           ),
-        ),
-        PrimaryButton(
-          width: 185.0,
-          height: 30.0,
-          textStyle: GoogleFonts.montserrat(
-            fontSize: 12.0,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
+          SizedBox(
+            width: 300,
+            child: SearchField(
+              searchController: searchController,
+              onSearch: onSearch,
+            ),
           ),
-          title: LocaleKeys.products_add_button.tr(),
-          onPressed: onAddProduct,
-        ),
-      ],
+          PrimaryButton(
+            width: 185.0,
+            height: 30.0,
+            textStyle: GoogleFonts.montserrat(
+              fontSize: 12.0,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
+            title: LocaleKeys.products_add_button.tr(),
+            onPressed: onAddProduct,
+          ),
+        ],
+      ),
     );
   }
 }

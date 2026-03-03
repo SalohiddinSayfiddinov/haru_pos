@@ -45,6 +45,9 @@ class OrderEntity extends Equatable {
   final String orderNumber;
   final String type;
   final int fullPrice;
+  final int discountPercent;
+  final int feePercent;
+  final int feeAmount;
   final TableEntity? table;
   final UserEntity? user;
   final bool active;
@@ -65,6 +68,9 @@ class OrderEntity extends Equatable {
     required this.orderItems,
     required this.rejectedSessions,
     required this.createdAt,
+    required this.discountPercent,
+    required this.feePercent,
+    required this.feeAmount,
   });
 
   @override
@@ -79,5 +85,8 @@ class OrderEntity extends Equatable {
     orderItems,
     rejectedSessions,
     createdAt,
+    discountPercent,
+    feePercent,
+    feeAmount,
   ];
 }

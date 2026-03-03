@@ -26,6 +26,7 @@ abstract class OrderRemoteDataSource {
     required String type,
     required int userId,
     int? tableId,
+    int? discountPercent,
     required List<Map<String, dynamic>> orderItems,
   });
   Future<OrderModel> addItemsToOrder({
@@ -124,9 +125,15 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
     required String type,
     required int userId,
     int? tableId,
+    int? discountPercent,
     required List<Map<String, dynamic>> orderItems,
   }) async {
-    final data = {'type': type, 'user_id': userId, 'order_items': orderItems};
+    final data = {
+      'type': type,
+      'user_id': userId,
+      'discount_percent': discountPercent,
+      'order_items': orderItems,
+    };
 
     if (tableId != null) {
       data['table_id'] = tableId;

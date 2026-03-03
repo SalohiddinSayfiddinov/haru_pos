@@ -221,6 +221,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
       type: event.type,
       userId: currentUserId,
       tableId: tableId,
+      discountPercent: event.discount,
       orderItems: event.orderItems,
     );
 

@@ -54,11 +54,13 @@ class LoadOrdersHistoryEvent extends OrderEvent {
 class CreateOrderEvent extends OrderEvent {
   final String type;
   final int? tableNumber;
+  final int? discount;
   final List<Map<String, dynamic>> orderItems;
 
   const CreateOrderEvent({
     required this.type,
     this.tableNumber,
+    this.discount,
     required this.orderItems,
   });
 

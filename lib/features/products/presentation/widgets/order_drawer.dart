@@ -20,6 +20,7 @@ class OrderDrawer extends StatefulWidget {
 
 class _OrderDrawerState extends State<OrderDrawer> {
   final TextEditingController _tableController = TextEditingController();
+  final TextEditingController _discountController = TextEditingController();
   int _selectedOrderType = 0;
   final Map<int, TextEditingController> _productCommentControllers = {};
 
@@ -34,6 +35,7 @@ class _OrderDrawerState extends State<OrderDrawer> {
 
   @override
   void dispose() {
+    _discountController.dispose();
     _tableController.dispose();
     for (var controller in _productCommentControllers.values) {
       controller.dispose();
@@ -71,6 +73,7 @@ class _OrderDrawerState extends State<OrderDrawer> {
         type: getOrderType,
         tableNumber: getOrderType == 'dine_in' ? tableNumber : null,
         orderItems: orderItems,
+        discount: int.parse(_discountController.text),
       ),
     );
   }
@@ -110,6 +113,33 @@ class _OrderDrawerState extends State<OrderDrawer> {
 
                   // Order Type Section
                   _buildOrderTypeSection(),
+                  const SizedBox(height: 20),
+                  Text(
+                    "Discount",
+                    style: GoogleFonts.inter(
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  AppTextField(
+                    controller: _discountController,
+                    isNumber: true,
+                    hintText: "Discount",
+                    hintStyle: GoogleFonts.inter(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xFFA5AAB5),
+                    ),
+                    textStyle: GoogleFonts.inter(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 11.0,
+                      horizontal: 15.0,
+                    ),
+                  ),
                   const SizedBox(height: 20),
 
                   // Payment Methods Section
@@ -162,14 +192,15 @@ class _OrderDrawerState extends State<OrderDrawer> {
                       ),
                     ),
                     SizedBox(width: 20.0),
-                    Text(
-                      item.productName,
-                      style: GoogleFonts.inter(
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.w500,
+                    Expanded(
+                      child: Text(
+                        item.productName,
+                        style: GoogleFonts.inter(
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
-                    Spacer(),
                     IconButton(
                       onPressed: () {
                         context.read<OrderBloc>().add(
@@ -354,7 +385,13 @@ class _OrderDrawerState extends State<OrderDrawer> {
           builder: (context, state) {
             return Expanded(
               child: state is OrderLoading
-                  ? CircularProgressIndicator.adaptive()
+                  ? Center(
+                      child: SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator.adaptive(),
+                      ),
+                    )
                   : _buildOrderTypeButton(
                       LocaleKeys.orders_confirm_order.tr(),
                       _onCheckout,

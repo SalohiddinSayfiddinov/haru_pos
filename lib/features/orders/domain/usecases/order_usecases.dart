@@ -62,12 +62,14 @@ class CreateOrderUseCase {
     required String type,
     required int userId,
     int? tableId,
+    int? discountPercent,
     required List<Map<String, dynamic>> orderItems,
   }) async {
     return await repository.createOrder(
       type: type,
       userId: userId,
       tableId: tableId,
+      discountPercent: discountPercent,
       orderItems: orderItems,
     );
   }
