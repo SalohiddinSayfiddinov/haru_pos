@@ -27,7 +27,9 @@ class ProductModel extends ProductEntity {
       comment: json['comment'],
       descriptionRu: json['description_ru'] ?? '',
       descriptionUz: json['description_uz'] ?? '',
-      image: json['image'] != null ? "${Api.baseUrl}${json['image']}" : '',
+      image: json['image'] != null
+          ? "${Api.baseUrl}${json['image']}?w=400&h=300"
+          : '',
     );
   }
 

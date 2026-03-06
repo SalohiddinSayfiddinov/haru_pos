@@ -73,7 +73,7 @@ class _OrderDrawerState extends State<OrderDrawer> {
         type: getOrderType,
         tableNumber: getOrderType == 'dine_in' ? tableNumber : null,
         orderItems: orderItems,
-        discount: int.parse(_discountController.text),
+        discount: int.tryParse(_discountController.text),
       ),
     );
   }

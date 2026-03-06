@@ -66,21 +66,17 @@ class ProductCard extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(
-                height: 40.0,
-                width: 40.0,
-                child: ElevatedButton(
-                  onPressed: onAddToCart,
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    backgroundColor: AppColors.primary,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    padding: EdgeInsets.zero,
+              Material(
+                color: AppColors.primary,
+                borderRadius: const BorderRadius.all(Radius.circular(10.0)),
+                child: InkWell(
+                  onTap: onAddToCart,
+                  borderRadius: const BorderRadius.all(Radius.circular(10.0)),
+                  child: const SizedBox(
+                    height: 40.0,
+                    width: 40.0,
+                    child: Icon(Icons.add, size: 30.0, color: Colors.white),
                   ),
-                  child: const Icon(Icons.add, size: 30.0),
                 ),
               ),
             ],

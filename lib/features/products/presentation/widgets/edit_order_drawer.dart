@@ -169,14 +169,16 @@ class _EditOrderDrawerState extends State<EditOrderDrawer> {
                       ),
                     ),
                     SizedBox(width: 20.0),
-                    Text(
-                      item.productName,
-                      style: GoogleFonts.inter(
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.w500,
+
+                    Expanded(
+                      child: Text(
+                        item.productName,
+                        style: GoogleFonts.inter(
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
-                    Spacer(),
                     IconButton(
                       onPressed: canDecrease
                           ? () {
